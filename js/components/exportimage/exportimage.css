@@ -1,0 +1,70 @@
+.exportimage-from {
+    padding: 0px 20px 20px;
+    width: 450px
+}
+
+.labels-exportimage {
+    color: black;
+    background-color: white;
+    display: block;
+    text-align: left; /* Testo allineato a sinistra */
+    padding: 30px 10px 10px; /* Margini ottimizzati */
+    font-size: 15px;
+    font-weight: bold;
+}
+
+#button-exportimage-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 3px;
+    margin: 20px;
+    /* gap: 40px; */
+}
+#button-exportimage-container button {
+    /* margin: 0 10px; */
+    width: 120px;
+}
+
+.exportimage-alert-date strong {
+    display: block;
+    color: #d32f2f; /* Colore del testo in grassetto rosso */
+    margin-bottom: 5px; /* Spazio a destra del testo in grassetto */
+}
+
+
+.exportimage-alert-date {
+    background-color: #f8d7da; /* Colore di sfondo rosso chiaro */
+    color: #721c24; /* Colore del testo rosso scuro */
+    border: 1px solid #f5c6cb; /* Bordo rosso chiaro */
+    padding: 10px; /* Spaziatura interna */
+    margin-top: 10px; /* Margine superiore per distanziare dagli elementi superiori */
+    font-size: 16px; /* Dimensione del testo */
+}
+
+#exportimage-portal-root {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Importante per evitare che il portal blocchi gli eventi del mouse */
+    z-index: 1000; /* Assicurati che il portal sia sopra gli altri elementi */
+  }
+
+#exportimage-portal-root > div {
+    pointer-events: auto; /* Consente agli elementi all'interno del portal di ricevere eventi del mouse */
+}
+
+.exportimage-tabbar {
+    display: flex;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.exportimage-tabbar-item {
+    padding: 10px 20px;
+    transition: color 0.3s, border-bottom 0.3s;
+}

@@ -1,0 +1,104 @@
+.ms-fixedrangepicker-action,
+.ms-freerangepicker-action  {
+  background-color: #FFFFFF;
+  /* overflow: hidden; */
+  display: flex;
+  left: 4px;
+  /* height: 200px; */
+  flex-direction: column;
+  margin: 0;
+  border: none;
+  z-index: 10;
+  top: 4px;
+  width: 280px;
+}
+
+.labels-fixedrangepicker,
+.labels-freerangepicker {
+    border-radius: 0%;
+    padding: 10px;
+    font-size: 14px;
+    flex: 1
+}
+
+.collapse-rangepicker-icon {
+    display: inline-block;
+    font-size: 0.85rem;
+    margin-left: 0.25rem;
+    transition: transform 0.3s ease-out;
+}
+
+.collapse-rangepicker.collapsed .collapse-rangepicker-icon  {
+    transform: rotate(180deg);
+  }
+
+#button-rangepicker-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 3px;
+    margin: 10px 0;
+    /* gap: 40px; */
+}
+#button-rangepicker-container button {
+    margin: 0 10px;
+}
+
+.alert-date {
+    background-color: #f8d7da; /* Colore di sfondo rosso chiaro */
+    color: #721c24; /* Colore del testo rosso scuro */
+    border: 1px solid #f5c6cb; /* Bordo rosso chiaro */
+    padding: 10px; /* Spaziatura interna */
+    margin-top: 10px; /* Margine superiore per distanziare dagli elementi superiori */
+    font-size: 12px; /* Dimensione del testo */
+}
+
+.alert-date strong {
+    display: block;
+    color: #d32f2f; /* Colore del testo in grassetto rosso */
+    margin-bottom: 5px; /* Spazio a destra del testo in grassetto */
+}
+
+@media (max-width: 1310px) {
+    .ms-fixedrangemanager-action  {
+        background-color: #FFFFFF;
+        /* overflow: hidden; */
+        display: flex;
+        left: 4px;
+        /* height: 200px; */
+        flex-direction: column;
+        margin: 0;
+        border: none;
+        z-index: 10;
+        top: 4px;
+      }
+}
+
+
+@media (min-width: 769px) {
+    div#mapstore-freerangepicker-map,
+    div#mapstore-fixedrangepicker-map {
+        /*width: 300px;*/
+        margin-left: auto;
+        margin-bottom: 40px;
+        /* visibility: hidden; */
+    }
+}
+
+@media (max-width: 768px) {
+    div#mapstore-freerangepicker,
+    div#mapstore-fixedrangepicker {
+        width: 100%;
+        /* visibility: hidden; */
+    }
+}
+
+@media (max-width: 1310px) {
+    .daterangelabel {
+      color: white;
+      bottom: 20px;   /* Sposta l'elemento a 20px dal fondo */
+      left: 50%;      /* Mantieni centrato orizzontalmente */
+      transform: translateX(-50%);  /* Mantieni la traduzione per centrarlo */
+      top: auto;      /* Assicurati che 'top' non sovrascriva il 'bottom' */
+    }
+  }
