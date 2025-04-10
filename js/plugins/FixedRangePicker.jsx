@@ -331,6 +331,7 @@ class FixedRangePicker extends React.Component {
                 minDate={this.props.firstAvailableDate}
                 maxDate={this.props.lastAvailableDate}
                 isInteractionDisabled={this.props.isInteractionDisabled}
+                isLayerLoading={this.props.isLayerLoading}
                 onChangePeriodToData={this.props.onChangePeriodToData}
                 updateParams={this.updateParams}
                 alertMessage={this.props.alertMessage}

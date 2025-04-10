@@ -25,6 +25,7 @@ const DailyManager = ({
     format,
     defaultPeriod,
     isInteractionDisabled,
+    isLayerLoading,
     onChangePeriodToData,
     updateParams,
     alertMessage,
@@ -98,7 +99,7 @@ const DailyManager = ({
                 <Button  onClick={() => changeDateTime('days', -1)} disabled={isDecrementDayDisabled}>
                     <Glyphicon glyph="glyphicon glyphicon-chevron-left" />
                 </Button>
-                { isInteractionDisabled ? ( <LoadingSpinner />) : ( renderDateTimePicker() )}
+                { isLayerLoading ? ( <LoadingSpinner />) : ( renderDateTimePicker() )}
                 <Button onClick={() => changeDateTime('days', +1)} disabled={isIncrementDayDisabled}>
                     <Glyphicon glyph="glyphicon glyphicon-chevron-right" />
                 </Button>
