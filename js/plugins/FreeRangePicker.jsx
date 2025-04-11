@@ -12,8 +12,9 @@ import { Button, ButtonGroup, Collapse, FormGroup, Glyphicon } from 'react-boots
 import Message from '@mapstore/components/I18N/Message';
 import { updateSettings, updateNode } from '@mapstore/actions/layers';
 import { layersSelector } from '@mapstore/selectors/layers';
-import { fromDataLayerSelector, toDataLayerSelector, isPluginLoadedSelector,
-    firstAvailableDateSelector, lastAvailableDateSelector } from '../selectors/freeRangePicker';
+import { fromDataLayerSelector, toDataLayerSelector, isPluginLoadedSelector, isCollapsedPluginSelector,
+    firstAvailableDateSelector, lastAvailableDateSelector, fromDataFormSelector,
+    toDataFormSelector } from '../selectors/freeRangePicker';
 import { compose } from 'redux';
 import { exportImageApiSelector, isLayerLoadingSelector } from '../selectors/exportImage';
 import DateAPI, { DATE_FORMAT, DEFAULT_DATA_FINE, DEFAULT_DATA_INIZIO} from '../utils/ManageDateUtils';
@@ -160,6 +161,9 @@ class FreeRangePicker extends React.Component {
         if (this.props.alertMessage) {
             this.props.onCloseAlert();
         }
+        if (this.props.isCollapsedPlugin) {
+            this.props.onCollapsePlugin();
+        }
     }
 
     render() {
@@ -289,9 +293,8 @@ class FreeRangePicker extends React.Component {
 }
 
 const mapStateToProps = createStructuredSelector({
-    isCollapsedPlugin: (state) => state?.freerangepicker?.isCollapsedPlugin,
-    fromData: (state) => state?.freerangepicker?.fromData,
-    toData: (state) => state?.freerangepicker?.toData,
+    isCollapsedPlugin: isCollapsedPluginSelector,
+    fromData: fromDataFormSelector,
     fromDataLayer: fromDataLayerSelector,
     settings: (state) => state?.layers?.settings || { expanded: false, options: { opacity: 1 } },
     layers: layersSelector,
@@ -304,6 +307,7 @@ const mapStateToProps = createStructuredSelector({
     isPluginLoaded: isPluginLoadedSelector,
     firstAvailableDate: firstAvailableDateSelector,
     lastAvailableDate: lastAvailableDateSelector,
+    toData: toDataFormSelector,
     toDataLayer: toDataLayerSelector
 });
 

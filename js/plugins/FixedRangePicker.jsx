@@ -244,6 +244,9 @@ class FixedRangePicker extends React.Component {
         if (this.props.alertMessage !== null) {
             this.props.onCloseAlert();
         }
+        if (this.props.isCollapsedPlugin) {
+            this.props.onCollapsePlugin();
+        }
     }
 
     render() {
