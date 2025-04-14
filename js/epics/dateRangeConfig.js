@@ -104,7 +104,7 @@ const updateParamsByDateRangeEpic = (action$, store) =>
             const timeUnit = action.payload.timeUnit;
             const defaultPeriod = action.payload.defaultPeriod;
             const isCheckPrefixes = appState.fixedrangepicker.checkPrefixes;
-            const variabiliMeteo = appState.fixedrangepicker.variabiliMeteo;
+            const variabiliMeteo = getVariabiliMeteo(appState);
             const actionsUpdateParams = updateLayersParams(layers, defaultPeriod, toData, timeUnit, isMapfilenameNotChange, isCheckPrefixes, variabiliMeteo);
             return Observable.of(...actionsUpdateParams);
         });

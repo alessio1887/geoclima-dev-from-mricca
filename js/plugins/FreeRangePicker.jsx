@@ -146,7 +146,7 @@ class FreeRangePicker extends React.Component {
 
     componentDidMount() {
         if (!this.props.isPluginLoaded) {
-            this.props.onMarkPluginAsLoaded();
+            this.props.onMarkPluginAsLoaded(this.props.variabiliMeteo);
             if ( this.props.isFetchAvailableDates && this.props.defaultUrlSelectDate && this.props.variabileSelectDate) {
                 const defaultPeriod = DateAPI.getDefaultPeriod(this.props.periodTypes);
                 this.props.onFetchAvailableDates(this.props.variabileSelectDate, this.props.defaultUrlSelectDate, this.props.timeUnit, defaultPeriod);
