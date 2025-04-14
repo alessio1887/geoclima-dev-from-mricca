@@ -14,7 +14,7 @@ import { TOGGLE_PLUGIN, changePeriod, changePeriodToData } from '../actions/fixe
 import { changeFromData, changeToData  } from '../actions/freerangepicker';
 import DateAPI from '../utils/ManageDateUtils';
 import { getVisibleLayers, FIXED_RANGE, FREE_RANGE } from '@js/utils/VariabiliMeteoUtils';
-import { isVariabiliMeteoLayer } from '../utils/VariabiliMeteoUtils';
+import {  getVariabiliMeteo, isVariabiliMeteoLayer } from '../utils/VariabiliMeteoUtils';
 import moment from 'moment';
 import momentLocaliser from 'react-widgets/lib/localizers/moment';
 momentLocaliser(moment);
@@ -161,7 +161,7 @@ const updateRangePickerInfoEpic = (action$, store) =>
         .mergeMap(({layerId}) => {
             const currentState = store.getState();
             const layers = currentState.layers?.flat || [];
-            const variabiliMeteo = currentState.daterangelabel.variabiliMeteo;
+            const variabiliMeteo = getVariabiliMeteo(currentState);
             const activeLayer = layers.find(layer => layer.id === layerId);
             if (!activeLayer) {
                 return Observable.of(errorLayerNotFound(layerId));

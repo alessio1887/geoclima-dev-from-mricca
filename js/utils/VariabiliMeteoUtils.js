@@ -72,6 +72,15 @@ function getIntersection(x1, y1, x2, y2, climY1, climY2) {
 
     return [intersectionX, yIntersect];
 }
+
+export function getVariabiliMeteo(currentState) {
+    if (currentState.fixedrangepicker?.isPluginLoaded ) {
+        return currentState.fixedrangepicker?.variabiliMeteo;
+    }
+    return currentState.freerangepicker?.variabiliMeteo;
+}
+
+
 /**
  * Colors the areas between the observed data and climatology using two different colors:
  * one color if the observed values are below climatology, and another color if they are above.
