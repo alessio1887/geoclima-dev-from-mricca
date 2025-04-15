@@ -48,9 +48,10 @@ export function collapsePlugin() {
     };
 }
 
-export function markFreeRangeAsLoaded() {
+export function markFreeRangeAsLoaded(variabiliMeteo) {
     return {
-        type: PLUGIN_LOADED
+        type: PLUGIN_LOADED,
+        variabiliMeteo
     };
 }
 

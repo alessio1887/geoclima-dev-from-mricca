@@ -68,7 +68,8 @@ function freerangepicker(state = defaultState, action) {
     case PLUGIN_LOADED:
         return {
             ...state,
-            isPluginLoaded: true
+            isPluginLoaded: true,
+            variabiliMeteo: action.variabiliMeteo
         };
     case PLUGIN_NOT_LOADED:
         return {

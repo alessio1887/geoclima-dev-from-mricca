@@ -14,7 +14,7 @@ import { TOGGLE_PLUGIN, changePeriod, changePeriodToData } from '../actions/fixe
 import { changeFromData, changeToData  } from '../actions/freerangepicker';
 import DateAPI from '../utils/ManageDateUtils';
 import { getVisibleLayers, FIXED_RANGE, FREE_RANGE } from '@js/utils/VariabiliMeteoUtils';
-import { isVariabiliMeteoLayer } from '../utils/VariabiliMeteoUtils';
+import {  getVariabiliMeteo, isVariabiliMeteoLayer } from '../utils/VariabiliMeteoUtils';
 import moment from 'moment';
 import momentLocaliser from 'react-widgets/lib/localizers/moment';
 momentLocaliser(moment);
@@ -104,7 +104,7 @@ const updateParamsByDateRangeEpic = (action$, store) =>
             const timeUnit = action.payload.timeUnit;
             const defaultPeriod = action.payload.defaultPeriod;
             const isCheckPrefixes = appState.fixedrangepicker.checkPrefixes;
-            const variabiliMeteo = appState.fixedrangepicker.variabiliMeteo;
+            const variabiliMeteo = getVariabiliMeteo(appState);
             const actionsUpdateParams = updateLayersParams(layers, defaultPeriod, toData, timeUnit, isMapfilenameNotChange, isCheckPrefixes, variabiliMeteo);
             return Observable.of(...actionsUpdateParams);
         });
@@ -161,7 +161,7 @@ const updateRangePickerInfoEpic = (action$, store) =>
         .mergeMap(({layerId}) => {
             const currentState = store.getState();
             const layers = currentState.layers?.flat || [];
-            const variabiliMeteo = currentState.daterangelabel.variabiliMeteo;
+            const variabiliMeteo = getVariabiliMeteo(currentState);
             const activeLayer = layers.find(layer => layer.id === layerId);
             if (!activeLayer) {
                 return Observable.of(errorLayerNotFound(layerId));

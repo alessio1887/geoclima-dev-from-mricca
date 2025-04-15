@@ -47,3 +47,8 @@ export const lastAvailableDateSelector = createSelector(
     [getFreeRangePickerState],
     (freerangepicker) => freerangepicker?.lastAvailableDate
 );
+
+export const isCollapsedPluginSelector = createSelector(
+    [getFreeRangePickerState],
+    (freerangepicker) => freerangepicker?.isCollapsedPlugin || false
+);

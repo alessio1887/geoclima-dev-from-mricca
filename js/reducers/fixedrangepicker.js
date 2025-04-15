@@ -80,7 +80,8 @@ function fixedrangepicker(state = defaultState, action) {
     case PLUGIN_NOT_LOADED:
         return {
             ...state,
-            isPluginLoaded: false
+            isPluginLoaded: false,
+            checkPrefixes: false
         };
     case FETCHED_AVAILABLE_DATES:
         const newDataFine = action.dataFine || DEFAULT_DATA_FINE;
