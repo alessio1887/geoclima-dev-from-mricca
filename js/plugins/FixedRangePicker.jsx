@@ -201,8 +201,7 @@ class FixedRangePicker extends React.Component {
         className: "mapstore-fixederange",
         style: {
             position: 'absolute',
-            zIndex: 10,
-            width: 280
+            zIndex: 10
         },
         showFixedRangePicker: false,
         showOneDatePicker: false,

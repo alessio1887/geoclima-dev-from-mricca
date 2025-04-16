@@ -130,8 +130,7 @@ class FreeRangePicker extends React.Component {
         variabileSelectDate: "prec",
         style: {
             position: 'absolute',
-            zIndex: 10,
-            width: 280
+            zIndex: 10
         },
         showFreeRangePicker: false,
         alertMessage: null,

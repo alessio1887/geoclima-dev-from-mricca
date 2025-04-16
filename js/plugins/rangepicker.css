@@ -13,6 +13,11 @@
   width: 280px
 }
 
+.ms-fixedrangepicker-action button,
+.ms-freerangepicker-action button {
+    width: 280px;
+}
+
 .labels-fixedrangepicker,
 .labels-freerangepicker {
     border-radius: 0%;
@@ -64,5 +69,11 @@
     .ms-freerangepicker-action  {
         top: 45px;
         left: 5px;
+        width: 270px;
+    }
+
+    .ms-fixedrangepicker-action button,
+    .ms-freerangepicker-action button {
+        width: 270px;
     }
 }
