@@ -14,6 +14,7 @@ import { setVariabiliMeteo } from '../actions/daterangelabel';
 import daterangelabel from '../reducers/daterangelabel';
 import assign from 'object-assign';
 import updateDateLabelEpic from '../epics/daterangelabel';
+import './daterangelabel.css';
 import moment from 'moment';
 import momentLocaliser from 'react-widgets/lib/localizers/moment';
 momentLocaliser(moment);

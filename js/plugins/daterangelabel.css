@@ -1,0 +1,9 @@
+@media (max-width: 1310px) {
+    .daterangelabel {
+      color: white;
+      bottom: 20px;   /* Sposta l'elemento a 20px dal fondo */
+      left: 50%;      /* Mantieni centrato orizzontalmente */
+      transform: translateX(-50%);  /* Mantieni la traduzione per centrarlo */
+      top: auto;      /* Assicurati che 'top' non sovrascriva il 'bottom' */
+    }
+  }
