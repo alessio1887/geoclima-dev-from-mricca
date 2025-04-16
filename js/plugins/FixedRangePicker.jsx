@@ -158,6 +158,7 @@ class FixedRangePicker extends React.Component {
         onOpenAlert: PropTypes.func,
         onCloseAlert: PropTypes.func,
         settings: PropTypes.object,
+        shiftDown: PropTypes.bool,
         shiftRight: PropTypes.bool,
         showOneDatePicker: PropTypes.bool,
         showChangeRangePickerButton: PropTypes.bool,
@@ -199,7 +200,6 @@ class FixedRangePicker extends React.Component {
         variabileSelectDate: "prec",
         className: "mapstore-fixederange",
         style: {
-            top: 0,
             position: 'absolute',
             zIndex: 10,
             width: 280
@@ -209,6 +209,7 @@ class FixedRangePicker extends React.Component {
         alertMessage: null,
         isInteractionDisabled: true,
         shiftRight: false,
+        shiftDown: false,
         showChangeRangePickerButton: false,
         firstAvailableDate: DEFAULT_DATA_INIZIO,
         lastAvailableDate: DEFAULT_DATA_FINE,
@@ -253,10 +254,9 @@ class FixedRangePicker extends React.Component {
         if (!this.props.showFixedRangePicker) {
             return null;
         }
-        const marginLeft = this.props.shiftRight ? '265px' : '5px';
         const pluginStyle = {
-            marginLeft,
-            left: "40px",
+            ...(this.props.shiftRight ? { left: '305px' } : {}),
+            ...(this.props.shiftDown ? { top: '100px' } : {}),
             ...this.props.style
         };
         const rotateIcon = this.props.isCollapsedPlugin ? 'rotate(180deg)' : 'rotate(0deg)';
@@ -312,7 +312,7 @@ class FixedRangePicker extends React.Component {
                     format={this.props.timeUnit}
                     onChangePeriod={this.handleChangePeriodType}
                     styleLabels="labels-fixedrangepicker"
-                    classAttribute="ms-freerangepicker-action"
+                    classAttribute="ms-fixedrangepicker-action"
                 />
                 <ButtonGroup id="button-rangepicker-container">
                     <Button onClick={() => this.handleApplyPeriod()} disabled={this.props.isInteractionDisabled}>
@@ -444,6 +444,7 @@ const mapStateToProps = createStructuredSelector({
     isInteractionDisabled: (state) => isLayerLoadingSelector(state) || exportImageApiSelector(state),
     isLayerLoading: isLayerLoadingSelector,
     shiftRight: (state) => !!state?.controls?.drawer?.enabled,
+    shiftDown: (state) => !!state?.controls?.search?.enabled,
     showChangeRangePickerButton: showFixedRangePickerSelector,
     isPluginLoaded: isPluginLoadedSelector,
     firstAvailableDate: firstAvailableDateSelector,

@@ -100,6 +100,7 @@ class FreeRangePicker extends React.Component {
         showFreeRangePicker: PropTypes.bool, // serve per la visibilita del componente
         onToggleFreeRangePicker: PropTypes.func,
         alertMessage: PropTypes.string,
+        shiftDown: PropTypes.bool,
         shiftRight: PropTypes.bool,
         settings: PropTypes.object,
         showChangeRangePickerButton: PropTypes.bool,
@@ -128,7 +129,6 @@ class FreeRangePicker extends React.Component {
         defaultUrlSelectDate: "geoportale.lamma.rete.toscana.it/cgi-bin/geoclima_app/selectDate.py",
         variabileSelectDate: "prec",
         style: {
-            top: 0,
             position: 'absolute',
             zIndex: 10,
             width: 280
@@ -137,6 +137,7 @@ class FreeRangePicker extends React.Component {
         alertMessage: null,
         isInteractionDisabled: true,
         shiftRight: false,
+        shiftDown: false,
         showChangeRangePickerButton: true,
         firstAvailableDate: DEFAULT_DATA_INIZIO,
         lastAvailableDate: DEFAULT_DATA_FINE,
@@ -170,15 +171,14 @@ class FreeRangePicker extends React.Component {
         if (!this.props.showFreeRangePicker) {
             return null;
         }
-        const marginLeft = this.props.shiftRight ? '265px' : '5px';
         const pluginStyle = {
-            marginLeft,
-            left: "40px",
+            ...(this.props.shiftRight ? { left: '305px' } : {}),
+            ...(this.props.shiftDown ? { top: '100px' } : {}),
             ...this.props.style
         };
         const rotateIcon = this.props.isCollapsedPlugin ? 'rotate(180deg)' : 'rotate(0deg)';
         return (
-            <div className={this.props.className} style={pluginStyle}>
+            <div className={"ms-freerangepicker-action"} style={pluginStyle}>
                 <Button  onClick= {this.props.onCollapsePlugin} style={this.props.style}>
                     <Message msgId="gcapp.freeRangePicker.collapsePlugin"/>{' '}
                     <span className="collapse-rangepicker-icon" style={{ transform: rotateIcon }}>&#9650;</span>
@@ -302,7 +302,8 @@ const mapStateToProps = createStructuredSelector({
     alertMessage: (state) => state?.freerangepicker?.alertMessage || null,
     isInteractionDisabled: (state) => isLayerLoadingSelector(state) || exportImageApiSelector(state),
     isLayerLoading: isLayerLoadingSelector,
-    shiftRight: (state) => state?.controls?.drawer?.enabled,
+    shiftDown: (state) => !!state?.controls?.search?.enabled,
+    shiftRight: (state) => !!state?.controls?.drawer?.enabled,
     showChangeRangePickerButton: (state) => state.fixedrangepicker.isPluginLoaded,
     isPluginLoaded: isPluginLoadedSelector,
     firstAvailableDate: firstAvailableDateSelector,
