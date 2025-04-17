@@ -8,13 +8,13 @@
   margin: 0;
   border: none;
   z-index: 10;
-  top: 4px;
+  top: 5px;
   left: 45px;
   width: 280px
 }
 
-.ms-fixedrangepicker-action button,
-.ms-freerangepicker-action button {
+.ms-fixedrangepicker-action > button,
+.ms-freerangepicker-action > button {
     width: 280px;
 }
 
@@ -72,8 +72,8 @@
         width: 270px;
     }
 
-    .ms-fixedrangepicker-action button,
-    .ms-freerangepicker-action button {
+    .ms-fixedrangepicker-action > button,
+    .ms-freerangepicker-action > button {
         width: 270px;
     }
 }
