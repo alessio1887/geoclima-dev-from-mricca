@@ -1,6 +1,11 @@
-.exportimage-from {
+.exportimage-form {
     padding: 0px 20px 20px;
-    width: 450px
+    width: 100%;
+}
+
+#exportimage-dialog {
+    top: -200px;
+    width: 100%;
 }
 
 .labels-exportimage {
@@ -67,4 +72,19 @@
 .exportimage-tabbar-item {
     padding: 10px 20px;
     transition: color 0.3s, border-bottom 0.3s;
+}
+
+@media (max-width: 760px) {
+    .exportimage-form {
+        padding: 0px;
+        width: 100%;
+        position: relative;
+        top: 10px;
+        background-color: white;
+    }
+
+    #exportimage-dialog {
+        top: -70px;
+        width: 100%;
+    }
 }
