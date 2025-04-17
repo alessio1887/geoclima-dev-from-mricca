@@ -1,9 +1,11 @@
 @media (max-width: 1310px) {
     .daterangelabel {
-      color: white;
-      bottom: 20px;   /* Sposta l'elemento a 20px dal fondo */
-      left: 50%;      /* Mantieni centrato orizzontalmente */
-      transform: translateX(-50%);  /* Mantieni la traduzione per centrarlo */
-      top: auto;      /* Assicurati che 'top' non sovrascriva il 'bottom' */
+        color: black; /* Testo nero */
+        bottom: 35px;
+        top: auto;
+        background-color: white;
+        border: 1px solid white; /* Bordino bianco */
+        border-radius: 4px; /* Angoli arrotondati */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Ombra leggera */
     }
-  }
+}
