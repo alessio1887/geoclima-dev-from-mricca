@@ -205,6 +205,58 @@ export function getXPositionPanel()  {
     return -(screenWidth * xPositionPercentage);
 }
 
+/**
+ * Calculates the default position of the panel based on the screen size,
+ * maintaining a proportion relative to a reference resolution, and applying an offset.
+ * @returns {{x: number, y: number}} The X and Y positions to place the panel in the top-left area of the screen.
+ */
+/*
+export function getStartPositionPanel() {
+    // const screenWidth = window.innerWidth;
+    // const screenHeight = window.innerHeight;
+    // console.log("screenWidth final position:", screenWidth);
+    // console.log("screeenHeight final position:", screenHeight);
+
+    // // Calcola un offset proporzionale con un limite massimo
+    // const xOffset = Math.min(screenWidth * 0.35, 850); // max 850px
+    // const yOffset = Math.min(screenHeight * 0.1, 80);  // max 80px
+
+    // // Evita di posizionare il pannello fuori dallo schermo
+    // const x = Math.max(-xOffset, -screenWidth + 100);  // lascia almeno 100px visibili
+    // const y = Math.max(-yOffset, -screenHeight + 100);
+
+    // console.log("x final position:", x);
+    // console.log("y final position:", y);
+    // return { x, y };
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+    console.log("screenWidth final position:", screenWidth);
+    console.log("screeenHeight final position:", screenHeight);
+
+    // Calcola un offset proporzionale con un limite massimo
+    let xOffset = screenWidth * 0.35;
+    let yOffset = screenHeight * 0.1;
+
+    // Arrotonda xOffset a una cifra specifica se è più vicino a un valore desiderato
+    if (screenWidth <= 1137) {
+        xOffset = -475; // Imposta un valore fisso per schermi più piccoli
+    } else {
+        // Limita l'offset per larghezze più grandi
+        xOffset = Math.min(xOffset, 850);
+    }
+
+    // Limita l'offset di y per evitare che sia troppo grande
+    yOffset = Math.min(yOffset, 80);
+
+    // Evita di posizionare il pannello fuori dallo schermo
+    const x = Math.max(-xOffset, -screenWidth + 100);  // lascia almeno 100px visibili
+    const y = Math.max(-yOffset, -screenHeight + 100);
+    console.log("x final position:", x);
+    console.log("y final position:", y);
+    return { x, y };
+}
+*/
+
 // Function to calculate the dynamic dtick for the y-axis
 export function  getDtick(maxValue) {
     if (maxValue <= 10) {
