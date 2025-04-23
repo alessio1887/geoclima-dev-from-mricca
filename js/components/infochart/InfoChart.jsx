@@ -20,7 +20,7 @@ import TabBar from '../buttons/TabBar';
 import FixedRangeManager from '../../components/datepickers/FixedRangeManager';
 import FreeRangeManager from '../../components/datepickers/FreeRangeManager';
 import DateAPI, { DATE_FORMAT, DEFAULT_DATA_INIZIO, DEFAULT_DATA_FINE } from '../../utils/ManageDateUtils';
-import { FIXED_RANGE, FREE_RANGE, MARKER_ID, MULTI_VARIABLE_CHART, getXPositionPanel }  from '../../utils/VariabiliMeteoUtils';
+import { FIXED_RANGE, FREE_RANGE, MARKER_ID, MULTI_VARIABLE_CHART, getStartPositionPanel }  from '../../utils/VariabiliMeteoUtils';
 import { get, isEqual } from 'lodash';
 import moment from 'moment';
 import momentLocaliser from 'react-widgets/lib/localizers/moment';
@@ -425,19 +425,17 @@ class InfoChart extends React.Component {
     }
     getBody = () => {
         const rotateIcon = this.props.isCollapsedFormGroup ? 'rotate(180deg)' : 'rotate(0deg)';
-        const xPosition = getXPositionPanel();
-        const yPosition = 115;
+        const startPosition = getStartPositionPanel();
+        console.log("InfoChart final position:", { x: startPosition.x, y: startPosition.y });
         return (
             <Dialog maskLoading={this.props.maskLoading} id={this.props.id}
                 style={{
                     maxWidth: "100vw",
                     maxHeight: "100vh",
-                    left: "calc(50% - 440px)",
-                    top: "-100px",
                     width: this.props.infoChartSize.widthResizable,
                     height: "fit-content"
                 }}
-                start={{ x: xPosition, y: yPosition }}
+                start={{ x: startPosition.x, y: startPosition.y}}
                 className={this.props.panelClassName}>
                 {this.getHeader()}
                 <div role="body"

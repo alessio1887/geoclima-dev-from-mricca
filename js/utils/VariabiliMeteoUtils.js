@@ -192,70 +192,55 @@ export function formatDataTemp(values, propVariable) {
     }));
 }
 /**
- * Calculates the horizontal position (xPosition) of the panel based on the screen width,
- * maintaining a proportion relative to a reference width and rounding up.
- * @returns {number} The negative X position to correctly position the panel.
+ * Calculates a horizontal offset based on screen width and height.
+ * The base offset is linearly interpolated between known reference screen widths.
+ * An additional adjustment is applied based on the screen aspect ratio (width/height),
+ * to prevent the panel from appearing too centered on short screens.
+ *
+ * @param {number} screenWidth - Current screen width in pixels.
+ * @param {number} screenHeight - Current screen height in pixels.
+ * @returns {number} - Calculated X offset to apply to panel position.
  */
-export function getXPositionPanel()  {
-    const screenWidth = window.innerWidth;
-    const referenceWidth = 2390;
-    const basePercentage = 0.30;
-    let xPositionPercentage = (screenWidth / referenceWidth) * basePercentage;
-    xPositionPercentage = (Math.ceil(xPositionPercentage * 100) / 100) + 0.01;
-    return -(screenWidth * xPositionPercentage);
+function calculateOffset(screenWidth, screenHeight) {
+    const x1 = 2390; const y1 = 0;
+    const x2 = 1510; const  y2 = 130;
+    const m = (y2 - y1) / (x2 - x1);
+    const b = y1 - m * x1;
+    const baseOffset = m * screenWidth + b;
+
+    const aspectRatio = screenWidth / screenHeight;
+    const aspectAdjustment = (aspectRatio - 16 / 9); // tuning: 16/9 è "standard"
+    return baseOffset + aspectAdjustment;
 }
-
 /**
- * Calculates the default position of the panel based on the screen size,
- * maintaining a proportion relative to a reference resolution, and applying an offset.
- * @returns {{x: number, y: number}} The X and Y positions to place the panel in the top-left area of the screen.
+ * Returns a dynamic starting position for a panel based on current screen size.
+ * The position is calculated proportionally using screen diagonal and an offset,
+ * so the panel remains in a visually appropriate location across various resolutions.
+ *
+ * @returns {{x: number, y: number}} - Object with `x` and `y` coordinates.
  */
-/*
 export function getStartPositionPanel() {
-    // const screenWidth = window.innerWidth;
-    // const screenHeight = window.innerHeight;
-    // console.log("screenWidth final position:", screenWidth);
-    // console.log("screeenHeight final position:", screenHeight);
-
-    // // Calcola un offset proporzionale con un limite massimo
-    // const xOffset = Math.min(screenWidth * 0.35, 850); // max 850px
-    // const yOffset = Math.min(screenHeight * 0.1, 80);  // max 80px
-
-    // // Evita di posizionare il pannello fuori dallo schermo
-    // const x = Math.max(-xOffset, -screenWidth + 100);  // lascia almeno 100px visibili
-    // const y = Math.max(-yOffset, -screenHeight + 100);
-
-    // console.log("x final position:", x);
-    // console.log("y final position:", y);
-    // return { x, y };
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
     console.log("screenWidth final position:", screenWidth);
     console.log("screeenHeight final position:", screenHeight);
 
+    // Diagonale e posizione di riferimento
+    const currentDiagonal = Math.sqrt(screenWidth ** 2 + screenHeight ** 2);
+    const referenceDiagonal = Math.sqrt(2390 ** 2 + 850 ** 2);
+    const scale = currentDiagonal / referenceDiagonal;
+
     // Calcola un offset proporzionale con un limite massimo
-    let xOffset = screenWidth * 0.35;
-    let yOffset = screenHeight * 0.1;
+    const offsetY = Math.min(screenHeight * 0.1, 80);
 
-    // Arrotonda xOffset a una cifra specifica se è più vicino a un valore desiderato
-    if (screenWidth <= 1137) {
-        xOffset = -475; // Imposta un valore fisso per schermi più piccoli
-    } else {
-        // Limita l'offset per larghezze più grandi
-        xOffset = Math.min(xOffset, 850);
-    }
+    const offsetX = calculateOffset(screenWidth, screenHeight);
+    const x = -810 * scale + offsetX;
+    const y = Math.max(-offsetY, -screenHeight + 100);
 
-    // Limita l'offset di y per evitare che sia troppo grande
-    yOffset = Math.min(yOffset, 80);
-
-    // Evita di posizionare il pannello fuori dallo schermo
-    const x = Math.max(-xOffset, -screenWidth + 100);  // lascia almeno 100px visibili
-    const y = Math.max(-yOffset, -screenHeight + 100);
     console.log("x final position:", x);
     console.log("y final position:", y);
     return { x, y };
 }
-*/
 
 // Function to calculate the dynamic dtick for the y-axis
 export function  getDtick(maxValue) {
