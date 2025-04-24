@@ -191,6 +191,26 @@ export function formatDataTemp(values, propVariable) {
             : 0
     }));
 }
+export function getDefaultInfoChartSize() {
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+
+    // Calcola le dimensioni come percentuale della finestra (es. 80%)
+    const widthPercentage = screenWidth * 0.8;
+    const heightPercentage = screenHeight * 0.8;
+
+    // Applica le dimensioni massime
+    const maxWidth = 880;
+    const maxHeight = 880;
+
+    const width = Math.min(widthPercentage, maxWidth);
+    const height = Math.min(heightPercentage, maxHeight);
+
+    return {
+        width: width,
+        height: height
+    };
+}
 /**
  * Calculates a horizontal offset based on screen width and height.
  * The base offset is linearly interpolated between known reference screen widths.

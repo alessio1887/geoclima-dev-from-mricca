@@ -20,7 +20,8 @@ import TabBar from '../buttons/TabBar';
 import FixedRangeManager from '../../components/datepickers/FixedRangeManager';
 import FreeRangeManager from '../../components/datepickers/FreeRangeManager';
 import DateAPI, { DATE_FORMAT, DEFAULT_DATA_INIZIO, DEFAULT_DATA_FINE } from '../../utils/ManageDateUtils';
-import { FIXED_RANGE, FREE_RANGE, MARKER_ID, MULTI_VARIABLE_CHART, getStartPositionPanel }  from '../../utils/VariabiliMeteoUtils';
+import { FIXED_RANGE, FREE_RANGE, MARKER_ID, MULTI_VARIABLE_CHART, getStartPositionPanel,
+    getDefaultInfoChartSize }  from '../../utils/VariabiliMeteoUtils';
 import { get, isEqual } from 'lodash';
 import moment from 'moment';
 import momentLocaliser from 'react-widgets/lib/localizers/moment';
@@ -42,6 +43,7 @@ class InfoChart extends React.Component {
         onSetChartRelayout: PropTypes.func,
         onResetChartZoom: PropTypes.func,
         onResizeInfoChart: PropTypes.func,
+        onSetDafaultPanelSize: PropTypes.func,
         onSetRangeManager: PropTypes.func,
         onChangeChartType: PropTypes.func,
         onSetTabList: PropTypes.func,
@@ -105,6 +107,7 @@ class InfoChart extends React.Component {
         onSetChartRelayout: () => {},
         onResetChartZoom: () => {},
         onResizeInfoChart: () => {},
+        onSetDafaultPanelSize: () => {},
         onInitializeVariableTabs: () => {},
         unitPrecipitazione: "mm",
         unitTemperatura: "°C",
@@ -176,6 +179,8 @@ class InfoChart extends React.Component {
         classNameInfoChartDate: "mapstore-infochartdate",
         isCollapsedFormGroup: false,
         infoChartSize: {
+            defaultWidth: 880,
+            defaultHeight: 880,
             widthResizable: 880,
             heightResizable: 880
         },
@@ -204,6 +209,13 @@ class InfoChart extends React.Component {
         this.props.onInitializeVariableTabs(variableTabs);
     }
 
+    setPanelSize = () => {
+        const { width: newWidth, height: newHeight } = getDefaultInfoChartSize();
+        if ( this.props.infoChartSize.defaultWidth !== newWidth || this.props.infoChartSize.defaultHeight !== newHeight) {
+            this.props.onSetDafaultPanelSize(newWidth, newHeight);
+        }
+    }
+
     // Set some props to the plugin's state
     componentDidMount() {
         if (!this.props.isPluginLoaded) {
@@ -217,6 +229,7 @@ class InfoChart extends React.Component {
             if ( this.props.isFetchAvailableDates && this.props.defaultUrlSelectDate && this.props.variabileSelectDate) {
                 this.props.onFetchAvailableDates(this.props.variabileSelectDate, this.props.defaultUrlSelectDate, this.props.timeUnit, defaultPeriod);
             }
+            this.setPanelSize();
             this.props.onMarkPluginAsLoaded();
         }
     }
@@ -427,6 +440,7 @@ class InfoChart extends React.Component {
         const rotateIcon = this.props.isCollapsedFormGroup ? 'rotate(180deg)' : 'rotate(0deg)';
         const startPosition = getStartPositionPanel();
         console.log("InfoChart final position:", { x: startPosition.x, y: startPosition.y });
+        console.log("InfoChartSize final position:", this.props.infoChartSize);
         return (
             <Dialog maskLoading={this.props.maskLoading} id={this.props.id}
                 style={{
@@ -488,8 +502,9 @@ class InfoChart extends React.Component {
         this.props.onSetInfoChartVisibility(false);
         this.props.onSetInfoChartDates(this.props.lastAvailableDate, DateAPI.getDefaultPeriod(this.props.periodTypes));
         this.props.onResetChartZoom();
-        if ( this.props.infoChartSize.widthResizable !== 880 || this.props.infoChartSize.heightResizable !== 880) {
-            this.props.onResizeInfoChart(880, 880);
+        if ( this.props.infoChartSize.defaultWidth !== this.props.infoChartSize.widthResizable
+            || this.props.infoChartSize.defaultHeight !== this.props.infoChartSize.heightResizable) {
+            this.props.onResizeInfoChart(this.props.infoChartSize.defaultWidth, this.props.infoChartSize.defaultHeight);
         }
         this.initializeTabs();
         this.props.onHideMapinfoMarker({ id: MARKER_ID});
