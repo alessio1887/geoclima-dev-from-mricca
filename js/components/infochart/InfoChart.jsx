@@ -21,7 +21,7 @@ import FixedRangeManager from '../../components/datepickers/FixedRangeManager';
 import FreeRangeManager from '../../components/datepickers/FreeRangeManager';
 import DateAPI, { DATE_FORMAT, DEFAULT_DATA_INIZIO, DEFAULT_DATA_FINE } from '../../utils/ManageDateUtils';
 import { FIXED_RANGE, FREE_RANGE, MARKER_ID, MULTI_VARIABLE_CHART, getStartPositionPanel,
-    getDefaultInfoChartSize }  from '../../utils/VariabiliMeteoUtils';
+    getDefaultPanelSize }  from '../../utils/VariabiliMeteoUtils';
 import { get, isEqual } from 'lodash';
 import moment from 'moment';
 import momentLocaliser from 'react-widgets/lib/localizers/moment';
@@ -208,14 +208,6 @@ class InfoChart extends React.Component {
         }));
         this.props.onInitializeVariableTabs(variableTabs);
     }
-
-    setPanelSize = () => {
-        const { width: newWidth, height: newHeight } = getDefaultInfoChartSize();
-        if ( this.props.infoChartSize.defaultWidth !== newWidth || this.props.infoChartSize.defaultHeight !== newHeight) {
-            this.props.onSetDafaultPanelSize(newWidth, newHeight);
-        }
-    }
-
     // Set some props to the plugin's state
     componentDidMount() {
         if (!this.props.isPluginLoaded) {
@@ -229,7 +221,9 @@ class InfoChart extends React.Component {
             if ( this.props.isFetchAvailableDates && this.props.defaultUrlSelectDate && this.props.variabileSelectDate) {
                 this.props.onFetchAvailableDates(this.props.variabileSelectDate, this.props.defaultUrlSelectDate, this.props.timeUnit, defaultPeriod);
             }
-            this.setPanelSize();
+            // Set panel size
+            const { width: newWidth, height: newHeight } = getDefaultPanelSize();
+            this.props.onSetDafaultPanelSize(newWidth, newHeight);
             this.props.onMarkPluginAsLoaded();
         }
     }
@@ -439,8 +433,6 @@ class InfoChart extends React.Component {
     getBody = () => {
         const rotateIcon = this.props.isCollapsedFormGroup ? 'rotate(180deg)' : 'rotate(0deg)';
         const startPosition = getStartPositionPanel();
-        console.log("InfoChart final position:", { x: startPosition.x, y: startPosition.y });
-        console.log("InfoChartSize final position:", this.props.infoChartSize);
         return (
             <Dialog maskLoading={this.props.maskLoading} id={this.props.id}
                 style={{

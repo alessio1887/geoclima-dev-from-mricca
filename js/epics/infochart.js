@@ -29,7 +29,7 @@ import { CLICK_ON_MAP } from '@mapstore/actions/map';
 import { LOADING } from '@mapstore/actions/maps';
 import { getMarkerLayer } from '../../MapStore2/web/client/utils/MapInfoUtils';
 import API from '../api/GeoClimaApi';
-import { FIXED_RANGE, FREE_RANGE, MARKER_ID, getVisibleLayers, getDefaultInfoChartSize } from '../utils/VariabiliMeteoUtils';
+import { FIXED_RANGE, FREE_RANGE, MARKER_ID, getVisibleLayers, getDefaultPanelSize } from '../utils/VariabiliMeteoUtils';
 import DateAPI from '../utils/ManageDateUtils';
 import { showFixedRangePickerSelector, periodTypeSelector, isPluginLoadedSelector as isFixedRangeLoaded,
     fromDataFormSelector as fromDataFixedRangeForm, toDataFormSelector as toDataFixedRangeForm  } from '../selectors/fixedRangePicker';
@@ -285,23 +285,18 @@ const toggleMapInfoEpic = (action$, store) =>
 
 /**
  * Epic that toggles the activation of the MapInfoButton (state.controls.chartinfo.enabled).
- * It also manages the visibility of the InfoChart and optionally restores some default settings (e.g., size and alert closure).
+ * It also manages the visibility of the InfoChart and optionally restores some default settings (e.g., alert closure).
  * Triggered when clicking on the InfoChartButton in the Toolbar menu.
  */
 const toggleInfoChartEpic = (action$, store) =>
     action$.ofType(TOGGLE_INFOCHART).switchMap((action) => {
         const appState = store.getState();
-        const infoChartSize = appState.infochart.infoChartSize;
-        const { width: newWidth, height: newHeight } = getDefaultInfoChartSize();
         const actions = [
             setControlProperty("chartinfo", "enabled", action.enable)
         ];
         if (!action.enable && appState.infochart.showInfoChartPanel) {
             actions.push(setInfoChartVisibility(false));
             actions.push(removeAdditionalLayer({ id: MARKER_ID }));
-        }
-        if ( infoChartSize.defaultWidth !== newWidth || infoChartSize.defaultHeight !== newHeight) {
-            actions.push(setDafaultPanelSize(newWidth, newHeight));
         }
         if (appState.infochart.alertMessage) {
             actions.push(closeAlert());
@@ -390,6 +385,7 @@ const clickedPointCheckEpic = (action$, store) =>
                 const { fromData: fromDataTmp, toData: toDataTmp, periodType: periodTypeTmp, rangeManager } = getDateFromRangePicker(appState, timeUnit);
                 const { variable: variableTmp, idTab: idTabTmp } = getVariableFromLayer(appState, appState.infochart.idVariabiliLayers);
                 const infoChartSize = appState.infochart.infoChartSize;
+                const { width: newWidth, height: newHeight } = getDefaultPanelSize();
                 fromData = fromDataTmp;
                 toData = toDataTmp;
                 periodType = periodTypeTmp;
@@ -406,7 +402,9 @@ const clickedPointCheckEpic = (action$, store) =>
                 if (periodType) {
                     actions.push(changePeriod(periodType));
                 }
-                if ( infoChartSize.defaultWidth !== infoChartSize.widthResizable || infoChartSize.defaultHeight !== infoChartSize.heightResizable) {
+                if ( infoChartSize.defaultWidth !== newWidth || infoChartSize.defaultHeight !== newHeight) {
+                    actions.push(setDafaultPanelSize(newWidth, newHeight));
+                } else if ( infoChartSize.defaultWidth !== infoChartSize.widthResizable || infoChartSize.defaultHeight !== infoChartSize.heightResizable) {
                     actions.push(resizeInfoChart(infoChartSize.defaultWidth, infoChartSize.defaultHeight));
                 }
             } else {

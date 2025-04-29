@@ -191,7 +191,7 @@ export function formatDataTemp(values, propVariable) {
             : 0
     }));
 }
-export function getDefaultInfoChartSize() {
+export function getDefaultPanelSize() {
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
     let width = 880;
@@ -199,7 +199,7 @@ export function getDefaultInfoChartSize() {
 
     if (screenWidth < 710 || screenHeight < 710) {
         width = screenWidth;
-        height = screenHeight;
+        height = screenHeight - 60;
     } else {
         width = Math.min(screenWidth * 0.9, 880);
         height = Math.min(screenHeight * 0.9, 880);
@@ -257,11 +257,11 @@ export function getStartPositionPanel() {
     // When screen is too small, panel is positioned at the top-left corner (0, 0)
     let y = 0; // Default Y position (top)
     let x = 0; // Default X position (left)
-    if (screenWidth >= 1400 || screenHeight >= 1400) {
+    if ( (screenWidth >= 1400 || screenHeight >= 1400) && (screenWidth > screenHeight)) {
         x = getXPositionFromScreen(screenWidth, screenHeight);
         const offsetY = Math.min(screenHeight * 0.1, 80);
         y = Math.max(-offsetY, -screenHeight + 100);
-    } else if (screenWidth >= 450 && screenHeight >= 450) {
+    } else if (screenWidth >= 450 && screenHeight >= 450 && screenWidth > screenHeight) {
         y = -80;
         const xPositionA = -180;
         const xPositionB = - (Math.max(screenWidth, screenHeight) / 10 + 100);
