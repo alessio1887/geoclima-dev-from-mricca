@@ -24,8 +24,6 @@
     display: flex;
     justify-content: flex-end;
     gap: 10px; /* Distanza tra i pulsanti invece di margini negativi */
-    margin-top: -10px;
-    margin-bottom: -15px
 }
 
 .rangepicker-button {
