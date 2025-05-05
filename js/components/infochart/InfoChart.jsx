@@ -16,7 +16,6 @@ import Dialog from '@mapstore/components/misc/Dialog';
 import BorderLayout from '@mapstore/components/layout/BorderLayout';
 import InfoChartForm from './InfoChartForm';
 import InfoChartRender from './InfoChartRender';
-import TabBar from '../buttons/TabBar';
 import DateAPI, { DATE_FORMAT, DEFAULT_DATA_INIZIO, DEFAULT_DATA_FINE } from '../../utils/ManageDateUtils';
 import { FIXED_RANGE, MARKER_ID, MULTI_VARIABLE_CHART, getStartPositionPanel, getDefaultPanelSize }  from '../../utils/VariabiliMeteoUtils';
 import { get, isEqual } from 'lodash';
@@ -310,35 +309,23 @@ class InfoChart extends React.Component {
     showChart = () => {
         if (!this.props.maskLoading) {
             const activeTab = this.getActiveTab();
-            let isTabBarVisible = false;
             let chartTypeSelected = {};
             if (activeTab.chartType === MULTI_VARIABLE_CHART) {
                 chartTypeSelected = this.getMultiVariableChartParams();
-            } else { // get chart type of single variable and check if chart choice tab bar is visible
+            } else {
                 chartTypeSelected = this.getSingleVariableChartParams(activeTab);
-                isTabBarVisible = activeTab.variables[0].chartList && activeTab.variables[0].chartList.length > 1;
             }
             return (
-                <div id="infochart-rendering">
-                    { isTabBarVisible && !this.props.isCollapsedFormGroup && // this.props.infoChartSize.widthResizable >= 550 &&
-                        !this.props.alertMessage &&
-                        <TabBar tabList={activeTab.variables[0].chartList}
-                            activeTab={activeTab.variables[0].chartList.find(chart =>
-                                chart.active)}
-                            onChangeTab={this.handleChangeChartType}
-                            classAttribute={"chart-type"} />
-                    }
-                    <InfoChartRender
-                        dataFetched = {this.props.data}
-                        handleRelayout= { this.handleRelayout }
-                        chartRelayout= { this.props.chartRelayout}
-                        infoChartSize={ this.props.infoChartSize}
-                        isCollapsedFormGroup={this.props.isCollapsedFormGroup}
-                        variableChartParams={ chartTypeSelected }
-                        unitPrecipitazione = { this.props.unitPrecipitazione }
-                        format={ this.props.timeUnit }
-                    />
-                </div>);
+                <InfoChartRender
+                    dataFetched = {this.props.data}
+                    handleRelayout= { this.handleRelayout }
+                    chartRelayout= { this.props.chartRelayout}
+                    infoChartSize={ this.props.infoChartSize}
+                    isCollapsedFormGroup={this.props.isCollapsedFormGroup}
+                    variableChartParams={ chartTypeSelected }
+                    unitPrecipitazione = { this.props.unitPrecipitazione }
+                    format={ this.props.timeUnit }
+                />);
         }
         return null;
     }
@@ -380,6 +367,7 @@ class InfoChart extends React.Component {
                     alertMessage={this.props.alertMessage}
                     toDataSelected={this.state.toDataSelected}
                     fromDataSelected={this.state.fromDataSelected}
+                    handleChangeChartType={this.handleChangeChartType}
                 />
             </div>
         );

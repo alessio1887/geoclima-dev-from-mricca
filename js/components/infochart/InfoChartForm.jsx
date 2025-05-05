@@ -1,7 +1,14 @@
-// FormGroup.js
+/*
+ * Copyright 2024, Riccardo Mari - CNR-Ibimet - Consorzio LaMMA.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree.
+*/
 import React from 'react';
 import { Button, ButtonGroup, Glyphicon, Panel, Grid, Label} from 'react-bootstrap';
 import SelectVariableTab from '../buttons/SelectVariableTab';
+import TabBar from '../buttons/TabBar';
 import FixedRangeManager from '../../components/datepickers/FixedRangeManager';
 import FreeRangeManager from '../../components/datepickers/FreeRangeManager';
 import Message from '@mapstore/components/I18N/Message';
@@ -35,7 +42,8 @@ const InfoChartForm = ({
     onSetRangeManager,
     alertMessage,
     toDataSelected,
-    fromDataSelected
+    fromDataSelected,
+    handleChangeChartType
 }) => {
     const handleChangePeriod = (newPeriodType) => {
         onChangePeriod(newPeriodType);
@@ -53,6 +61,11 @@ const InfoChartForm = ({
         onChangeChartVariable(newIdTab, [selectedVariable]);
         handleApplyPeriod([selectedVariable], newIdTab);
     };
+    const isTabBarVisible = () => {
+        return activeTab.variables[0].chartList && activeTab.variables[0].chartList.length > 1;
+    };
+    const rangepickerButtonFlexDirection = (!isTabBarVisible() || infoChartSize?.widthResizable > 460) ? 'row' : 'column';
+
     return (
         <Panel className="infochart-panel">
             <Grid fluid style={{ padding: 0 }}>
@@ -97,16 +110,34 @@ const InfoChartForm = ({
                         format={timeUnit}
                     />
                 )}
-                <ButtonGroup className="button-group-wrapper">
-                    <Button className="rangepicker-button" onClick={() => handleApplyPeriod(variable)} disabled={isInteractionDisabled}>
-                        <Glyphicon glyph="calendar" /><Message msgId="gcapp.applyPeriodButton" />
-                    </Button>
-                    <Button className="rangepicker-button" onClick={switchRangeManager} disabled={isInteractionDisabled}>
-                        <Message msgId={activeRangeManager === FIXED_RANGE
-                            ? "gcapp.fixedRangePicker.dateRangeButton"
-                            : "gcapp.freeRangePicker.dateRangeButton"} />
-                    </Button>
-                </ButtonGroup>
+                <div className="button-group-wrapper">
+                    { isTabBarVisible() && (
+                        <TabBar
+                            tabList={activeTab?.variables[0]?.chartList || []}
+                            activeTab={activeTab?.variables[0]?.chartList?.find(chart => chart.active)}
+                            onChangeTab={handleChangeChartType}
+                            classAttribute={"chart-type"}
+                        />
+                    )}
+                    <ButtonGroup className="rangepicker-button-container"
+                        style={{
+                            flexDirection: rangepickerButtonFlexDirection,
+                            alignItems: 'flex-end',
+                            marginLeft: 'auto',
+                            gap: '10px',
+                            top: (!isTabBarVisible() || infoChartSize?.widthResizable > 460) ? undefined : '10px'}}>
+                        <Button className="rangepicker-button" onClick={() => handleApplyPeriod(variable)} disabled={isInteractionDisabled}
+                            style={{ marginTop: (!isTabBarVisible() || infoChartSize?.widthResizable > 460) ? '20px' : undefined }}>
+                            <Glyphicon glyph="calendar" /><Message msgId="gcapp.applyPeriodButton" />
+                        </Button>
+                        <Button className="rangepicker-button" onClick={switchRangeManager} disabled={isInteractionDisabled}
+                            style={{ marginTop: (!isTabBarVisible() || infoChartSize?.widthResizable > 460) ? '20px' : undefined }}>
+                            <Message msgId={activeRangeManager === FIXED_RANGE
+                                ? "gcapp.fixedRangePicker.dateRangeButton"
+                                : "gcapp.freeRangePicker.dateRangeButton"} />
+                        </Button>
+                    </ButtonGroup>
+                </div>
                 {alertMessage && (
                     <div className="alert-date" >
                         <strong><Message msgId="warning" /></strong>

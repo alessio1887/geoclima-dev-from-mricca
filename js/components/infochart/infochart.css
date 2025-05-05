@@ -20,15 +20,16 @@
 }
 
 .button-group-wrapper {
-    position: relative;
     display: flex;
-    justify-content: flex-end;
-    gap: 10px; /* Distanza tra i pulsanti invece di margini negativi */
+    justify-content: space-between; /* Distribuisce lo spazio tra gli elementi figli */
+    align-items: center; /* Allinea verticalmente al centro (opzionale) */
+    width: 100%; /* Assicurati che il div abbia una larghezza */
 }
 
-.rangepicker-button {
-    margin-top: 20px; /* Sposta i pulsanti verso il basso */
-    padding: 5px 10px; /* Migliora la dimensione cliccabile */
+.rangepicker-button-container { /* Questo ora stila il ButtonGroup */
+    margin-left: auto; /* Spinge questo contenitore a destra */
+    display: flex; /* Potrebbe non essere necessario per ButtonGroup */
+    gap: 10px; /* Spazio tra i bottoni */
 }
 
 .infochart-panel {
@@ -52,9 +53,9 @@
     border-bottom: 1px solid #ccc;
     cursor: pointer;
     position: relative;
-    top: -60px;
-    margin-bottom: -40px;
     pointer-events: none;
+    margin-bottom: 10px;
+    top: 20px
 }
 
 .chart-type-tabbar-item {
@@ -88,3 +89,4 @@
 #infochart-fixedrangemanager-action-dropdownlist{
     width: 150px;
   }
+
