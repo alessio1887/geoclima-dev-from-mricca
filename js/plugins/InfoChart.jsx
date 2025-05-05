@@ -69,7 +69,54 @@ Plugin configuration
                                                                 ],
                                                           "chartTitle": "Indice SPI - Standardized Precipitation Index",
                                                           "menuType": "multi_select",
-                                                          "chartType": "multi_variable"
+                                                          "chartType": "multi_variable",
+                                                          "backgroundBands": [
+                                                                                {
+                                                                                    "min": -3,
+                                                                                    "max": -2,
+                                                                                    "color": "rgba(99,0,4,0.5)"
+                                                                                },
+                                                                                {
+                                                                                    "min": -2,
+                                                                                    "max": -1.5,
+                                                                                    "color": "rgba(198,0,16,0.5)"
+                                                                                },
+                                                                                {
+                                                                                    "min": -1.5,
+                                                                                    "max": -1,
+                                                                                    "color": "rgba(253,127,31,0.5)"
+                                                                                },
+                                                                                {
+                                                                                    "min": -1,
+                                                                                    "max": -0.5,
+                                                                                    "color": "rgba(253,254,123,0.5)"
+                                                                                },
+                                                                                {
+                                                                                    "min": -0.5,
+                                                                                    "max": 0.5,
+                                                                                    "color": "rgba(225,225,225,0.5)"
+                                                                                },
+                                                                                {
+                                                                                    "min": 0.5,
+                                                                                    "max": 1,
+                                                                                    "color": "rgba(210,255,192,0.5)"
+                                                                                },
+                                                                                {
+                                                                                    "min": 1,
+                                                                                    "max": 1.5,
+                                                                                    "color": "rgba(153,229,39,0.5)"
+                                                                                },
+                                                                                {
+                                                                                    "min": 1.5,
+                                                                                    "max": 2,
+                                                                                    "color": "rgba(52,150,20,0.5)"
+                                                                                },
+                                                                                {
+                                                                                    "min": 2,
+                                                                                    "max": 3,
+                                                                                    "color": "rgba(39,80,6,0.5)"
+                                                                                }
+                                                                            ]
               },
             {"id": "speiList", "name": "SPEI", "groupList": [
                                                                     { "id": "spei1", "name": "SPEI-1" },
@@ -79,7 +126,54 @@ Plugin configuration
                                                           ],
                                                           "chartTitle": "Indice SPEI - Standardized Precipitation-Evapotranspiration Index",
                                                           "menuType": "multi_select",
-                                                          "chartType": "multi_variable"
+                                                          "chartType": "multi_variable",
+                                                          "backgroundBands": [
+                                                                                {
+                                                                                    "min": -3,
+                                                                                    "max": -2,
+                                                                                    "color": "rgba(99,0,4,0.5)"
+                                                                                },
+                                                                                {
+                                                                                    "min": -2,
+                                                                                    "max": -1.5,
+                                                                                    "color": "rgba(198,0,16,0.5)"
+                                                                                },
+                                                                                {
+                                                                                    "min": -1.5,
+                                                                                    "max": -1,
+                                                                                    "color": "rgba(253,127,31,0.5)"
+                                                                                },
+                                                                                {
+                                                                                    "min": -1,
+                                                                                    "max": -0.5,
+                                                                                    "color": "rgba(253,254,123,0.5)"
+                                                                                },
+                                                                                {
+                                                                                    "min": -0.5,
+                                                                                    "max": 0.5,
+                                                                                    "color": "rgba(225,225,225,0.5)"
+                                                                                },
+                                                                                {
+                                                                                    "min": 0.5,
+                                                                                    "max": 1,
+                                                                                    "color": "rgba(210,255,192,0.5)"
+                                                                                },
+                                                                                {
+                                                                                    "min": 1,
+                                                                                    "max": 1.5,
+                                                                                    "color": "rgba(153,229,39,0.5)"
+                                                                                },
+                                                                                {
+                                                                                    "min": 1.5,
+                                                                                    "max": 2,
+                                                                                    "color": "rgba(52,150,20,0.5)"
+                                                                                },
+                                                                                {
+                                                                                    "min": 2,
+                                                                                    "max": 3,
+                                                                                    "color": "rgba(39,80,6,0.5)"
+                                                                                }
+                                                                            ]
             }
           ],
           "idVariabiliLayers": {

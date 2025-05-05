@@ -45,7 +45,7 @@ const InfoChartRender = ({
         switch (variableChartParams.chartType) {
         case MULTI_VARIABLE_CHART:
             newTraces = createMultiTraces(variableChartParams.tabVariableParams, dates, dataFetched);
-            newTraces = createBackgroundBands(dates).concat(newTraces);
+            newTraces = createBackgroundBands(dates, variableChartParams.backgroundBands).concat(newTraces);
             newLayout = createLayout(chartTitle, "", dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, MULTI_VARIABLE_CHART);
             break;
         case CUMULATA_CHART:

@@ -200,11 +200,13 @@ class InfoChart extends React.Component {
     initializeTabs = () => {
         const variableTabs = this.props.tabList.map((tab, index) => ({
             id: tab.id,
-            // TODO aggiungi tutte le variabile con un flag active true\false
             variables: [tab.groupList[0]],
             active: index === 0,
             chartType: tab.chartType,
-            chartTitle: tab.chartTitle
+            chartTitle: tab.chartTitle,
+            backgroundBands: Array.isArray(tab.backgroundBands) && tab.backgroundBands.length > 0
+                ? tab.backgroundBands
+                : [] // fallback sicuro
         }));
         this.props.onInitializeVariableTabs(variableTabs);
     }
@@ -293,7 +295,8 @@ class InfoChart extends React.Component {
             tabVariableParams: variableListParam.groupList.filter(variable =>
                 variableArray.includes(variable.id)),
             name: variableListParam.chartTitle,
-            chartType: variableListParam.chartType
+            chartType: variableListParam.chartType,
+            backgroundBands: variableListParam.backgroundBands
         };
     };
     getSingleVariableChartParams = (tabSelected) => {

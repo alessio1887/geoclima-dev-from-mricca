@@ -285,18 +285,10 @@ export function  getDtick(maxValue) {
 
 
 // for MultiTraces graph
-export const createBackgroundBands = (dates) => {
-    const bands = [
-        { min: MIN_Y_INDEX, max: -2.0, color: 'rgba(99,0,4, 0.5)' },
-        { min: -2.0, max: -1.5, color: 'rgba(198,0,16, 0.5)' },
-        { min: -1.5, max: -1.0, color: 'rgba(253,127,31, 0.5)' },
-        { min: -1.0, max: -0.5, color: 'rgba(253,254,123, 0.5)' },
-        { min: -0.5, max: 0.5, color: 'rgba(225,225,225, 0.5)' },
-        { min: 0.5, max: 1.0, color: 'rgba(210,255,192, 0.5)' },
-        { min: 1.0, max: 1.5, color: 'rgba(153,229,39, 0.5)' },
-        { min: 1.5, max: 2.0, color: 'rgba(52,150,20, 0.5)' },
-        { min: 2.0, max: MAX_Y_INDEX, color: 'rgba(39,80,6, 0.5)' }
-    ];
+export const createBackgroundBands = (dates, bands) => {
+    if (!Array.isArray(bands) || bands.length === 0) {
+        return []; // Nessuna banda da disegnare
+    }
 
     return bands.map(({ min, max, color }) => ({
         x: dates.concat(dates.slice().reverse()),
