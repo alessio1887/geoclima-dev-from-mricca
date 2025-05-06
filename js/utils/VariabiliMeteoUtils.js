@@ -15,14 +15,14 @@ export const SINGLE_VARIABLE_CHART = "single_variable";
 export const MULTI_VARIABLE_CHART = "multi_variable";
 export const CUMULATA_CHART = "cumulata";
 export const MARKER_ID = "InfoChartMarker";
-// type of chart based on tabLyst.type of pluginsConfig
+// type of chart based on tabList.type of pluginsConfig
 export const DROP_DOWN = "single_select";
 export const MULTI_SELECT = "multi_select";
 
 export const DEFAULT_FILENAME = 'exported_image.png';
 
 const ST_VALUE = "st_value_";
-const colors = ['green', 'black', 'teal', 'gray'];
+const defaultColors = ['green', 'black', 'teal', 'gray'];
 const MIN_Y_INDEX = -3.0;
 const MAX_Y_INDEX = 3.0;
 
@@ -303,18 +303,24 @@ export const createBackgroundBands = (dates, bands) => {
 };
 
 // Funzione per creare le tracce delle variabili
-export const createMultiTraces = (variables, dates, dataFetched) => {
-    return variables.map((variable, index) => {
+export const createMultiTraces = (dataSetDefinitions, dates, dataFetched) => {
+    return dataSetDefinitions.map((variable, index) => {
         const valueKey = ST_VALUE + variable.id;
         const values = dataFetched.map(item =>
             item[valueKey] !== null ? parseFloat(item[valueKey].toFixed(2)) : null
         );
+        const lineaStyle = variable.lineChartStyle && Object.keys(variable.lineChartStyle).length > 0
+            ? variable.lineChartStyle
+            : {
+                color: defaultColors[index % defaultColors.length],
+                width: 2
+            };
         return {
             x: dates,
             y: values,
             mode: 'lines',
             name: variable.name,
-            line: { color: colors[index % colors.length], width: 2, shape: 'linear' },
+            line: lineaStyle,
             marker: { size: 6 },
             type: 'scatter',
             connectgaps: true
@@ -385,7 +391,6 @@ export const createCumulataBarTraces = (variables, times, dataFetched) => {
         mode: 'lines',
         name: variables.yaxis2,
         line: { color: 'rgba(0, 0, 255, 1)', width: 1 },
-        // hovertemplate: '%{y:.1f} mm<br>%{x:%d/%m/%Y}',
         yaxis: 'y2'
     };
 
@@ -410,8 +415,6 @@ export const createCumulataBarLayout = (variables, chartTitle, traces, dates, fo
     const endDate = chartRelayout?.endDate
         ? new Date(chartRelayout.endDate)
         : new Date(Math.max(...dates));
-    // const startDate = new Date(Math.min(...dates));
-    // const endDate = new Date(Math.max(...dates));
 
     // Determina il range per l asse y
     const yaxisRange = [chartRelayout?.yaxisStart || 0, chartRelayout?.yaxisEnd || y1max];

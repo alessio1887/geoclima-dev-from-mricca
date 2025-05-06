@@ -870,19 +870,23 @@
             "groupList": [
               {
                 "id": "spi1",
-                "name": "SPI-1"
+                "name": "SPI-1",
+                "lineChartStyle": { "color": "green", "width": 2, "shape": "linear" }
               },
               {
                 "id": "spi3",
-                "name": "SPI-3"
+                "name": "SPI-3",
+                "lineChartStyle": { "color": "black", "width": 2, "shape": "linear" }
               },
               {
                 "id": "spi6",
-                "name": "SPI-6"
+                "name": "SPI-6",
+                "lineChartStyle": { "color": "teal", "width": 2, "shape": "linear" }
               },
               {
                 "id": "spi12",
-                "name": "SPI-12"
+                "name": "SPI-12",
+                "lineChartStyle": { "color": "gray", "width": 2, "shape": "linear" }
               }
             ],
             "chartTitle": "Indice SPI - Standardized Precipitation Index",
@@ -942,19 +946,23 @@
             "groupList": [
               {
                 "id": "spei1",
-                "name": "SPEI-1"
+                "name": "SPEI-1",
+                "lineChartStyle": { "color": "green", "width": 2, "shape": "linear" }
               },
               {
                 "id": "spei3",
-                "name": "SPEI-3"
+                "name": "SPEI-3",
+                "lineChartStyle": { "color": "black", "width": 2, "shape": "linear" }
               },
               {
                 "id": "spei6",
-                "name": "SPEI-6"
+                "name": "SPEI-6",
+                "lineChartStyle": { "color": "teal", "width": 2, "shape": "linear" }
               },
               {
                 "id": "spei12",
-                "name": "SPEI-12"
+                "name": "SPEI-12",
+                "lineChartStyle": { "color": "gray", "width": 2, "shape": "linear" }
               }
             ],
             "chartTitle": "Indice SPEI - Standardized Precipitation-Evapotranspiration Index",
