@@ -871,22 +871,22 @@
               {
                 "id": "spi1",
                 "name": "SPI-1",
-                "lineChartStyle": { "color": "green", "width": 2, "shape": "linear" }
+                "chartStyle": { "color": "green", "width": 2, "shape": "linear" }
               },
               {
                 "id": "spi3",
                 "name": "SPI-3",
-                "lineChartStyle": { "color": "black", "width": 2, "shape": "linear" }
+                "chartStyle": { "color": "black", "width": 2, "shape": "linear" }
               },
               {
                 "id": "spi6",
                 "name": "SPI-6",
-                "lineChartStyle": { "color": "teal", "width": 2, "shape": "linear" }
+                "chartStyle": { "color": "teal", "width": 2, "shape": "linear" }
               },
               {
                 "id": "spi12",
                 "name": "SPI-12",
-                "lineChartStyle": { "color": "gray", "width": 2, "shape": "linear" }
+                "chartStyle": { "color": "gray", "width": 2, "shape": "linear" }
               }
             ],
             "chartTitle": "Indice SPI - Standardized Precipitation Index",
@@ -1013,6 +1013,91 @@
                 "min": 2,
                 "max": 3,
                 "color": "rgba(39,80,6,0.5)"
+              }
+            ]
+          },
+          {
+            "id": "aib",
+            "name": "AIB indici previsione",
+            "menuType": "single_select",
+            "chartType": "aib_historic_chart",
+            "groupList": [
+              {
+                "id": "fwi",
+                "name": "Fire Weather Index",
+                "lineChartStyle": { "color": "#E0E0E0", "width": 2, "shape": "linear" },
+                "backgroundBands": [
+                  { "class": "Low", "min": 0, "max": 11.2, "color": "#bffccf" },
+                  { "class": "Moderate", "min": 11.2, "max": 21.3, "color": "#f1e869" },
+                  { "class": "High", "min": 21.3, "max": 38.0, "color": "#fca311" },
+                  { "class": "Very High", "min": 38.0, "max": 50.0, "color": "#e63946" },
+                  { "class": "Extreme", "min": 50.0, "max": 70.0, "color": "#9d0208" },
+                  { "class": "Very Extreme", "min": 70.0, "max": 100, "color": "#6a040f" }
+                ]
+              },
+              {
+                "id": "ffmc",
+                "name": "Fine Fuel Moisture Code",
+                "lineChartStyle": { "color": "#E0E0E0", "width": 2, "shape": "linear" },
+                "backgroundBands": [
+                  { "class": "Low", "min": 0, "max": 82.7, "color": "#bffccf" },
+                  { "class": "Moderate", "min": 82.7, "max": 86.1, "color": "#f1e869" },
+                  { "class": "High", "min": 86.1, "max": 89.2, "color": "#fca311" },
+                  { "class": "Very High", "min": 89.2, "max": 93.0, "color": "#e63946" },
+                  { "class": "Extreme", "min": 93.0, "max": 96.0, "color": "#9d0208" },
+                  { "class": "Very Extreme", "min": 96.0, "max": 100, "color": "#6a040f" }
+                ]
+              },
+              {
+                "id": "dmc",
+                "name": "Duff Moisture Code",
+                "lineChartStyle": { "color": "#E0E0E0", "width": 2, "shape": "linear" },
+                "backgroundBands": [
+                  { "class": "Low", "min": 0, "max": 15.7, "color": "#bffccf" },
+                  { "class": "Moderate", "min": 15.7, "max": 27.9, "color": "#f1e869" },
+                  { "class": "High", "min": 27.9, "max": 53.1, "color": "#fca311" },
+                  { "class": "Very High", "min": 53.1, "max": 83.6, "color": "#e63946" },
+                  { "class": "Extreme", "min": 83.6, "max": 160.7, "color": "#9d0208" },
+                  { "class": "Very Extreme", "min": 160.7, "max": 200, "color": "#6a040f" }
+                ]
+              },
+              {
+                "id": "dc",
+                "name": "Drought Code",
+                "lineChartStyle": { "color": "grey", "width": 2, "shape": "linear" },
+                "backgroundBands": [
+                  { "class": "Low", "min": 0, "max": 256.1, "color": "#bffccf" },
+                  { "class": "Moderate", "min": 256.1, "max": 334.1, "color": "#f1e869" },
+                  { "class": "High", "min": 334.1, "max": 450.6, "color": "#fca311" },
+                  { "class": "Very High", "min": 450.6, "max": 600.0, "color": "#e63946" },
+                  { "class": "Extreme", "min": 600.0, "max": 749.4, "color": "#9d0208" },
+                  { "class": "Very Extreme", "min": 749.4, "max": 1000, "color": "#6a040f" }
+                ]
+              },
+              {
+                "id": "isi",
+                "name": "Initial Spread Index",
+                "lineChartStyle": { "color": "#E0E0E0", "width": 2, "shape": "linear" },
+                "backgroundBands": [
+                  { "class": "Low", "min": 0, "max": 3.2, "color": "#bffccf" },
+                  { "class": "Moderate", "min": 3.2, "max": 5.0, "color": "#f1e869" },
+                  { "class": "High", "min": 5.0, "max": 7.5, "color": "#fca311" },
+                  { "class": "Very High", "min": 7.5, "max": 13.4, "color": "#e63946" },
+                  { "class": "Extreme", "min": 13.4, "max": 26.8, "color": "#9d0208" },
+                  { "class": "Very Extreme", "min": 26.8, "max": 50, "color": "#6a040f" }
+                ]
+              },
+              {
+                "id": "bui",
+                "name": "Build Up Index",
+                "backgroundBands": [
+                  { "class": "Low", "min": 0, "max": 24.2, "color": "#bffccf" },
+                  { "class": "Moderate", "min": 24.2, "max": 40.7, "color": "#f1e869" },
+                  { "class": "High", "min": 40.7, "max": 73.3, "color": "#fca311" },
+                  { "class": "Very High", "min": 73.3, "max": 133.1, "color": "#e63946" },
+                  { "class": "Extreme", "min": 133.1, "max": 193.1, "color": "#9d0208" },
+                  { "class": "Very Extreme", "min": 193.1, "max": 250, "color": "#6a040f" }
+                ]
               }
             ]
           }
