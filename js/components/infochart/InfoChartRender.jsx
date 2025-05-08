@@ -11,6 +11,7 @@ import {
     SINGLE_VARIABLE_CHART,
     MULTI_VARIABLE_CHART,
     CUMULATA_CHART,
+    AIB_HISTORIC_CHART,
     createMultiTraces,
     createBackgroundBands,
     createCumulataBarTraces,
@@ -51,6 +52,11 @@ const InfoChartRender = ({
         case CUMULATA_CHART:
             newTraces = createCumulataBarTraces(variableChartParams, dates, dataFetched);
             newLayout = createCumulataBarLayout(variableChartParams, chartTitle, newTraces, dates, format, chartRelayout, infoChartSize, isCollapsedFormGroup);
+            break;
+        case AIB_HISTORIC_CHART:
+            newTraces = createMultiTraces([variableChartParams], dates, dataFetched);
+            newTraces = createBackgroundBands(dates, variableChartParams.backgroundBands).concat(newTraces);
+            newLayout = createLayout(chartTitle, "", dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, AIB_HISTORIC_CHART);
             break;
         default: // SINGLE_VARIABLE_CHART or other cases
             newTraces = createObservedAndClimatologicalTraces(variableChartParams, dates, dataFetched, unitPrecipitazione);

@@ -13,6 +13,7 @@ export const FREE_RANGE = "free_range_picker";
 // type of chart based on tabLyst.type of pluginsConfig
 export const SINGLE_VARIABLE_CHART = "single_variable";
 export const MULTI_VARIABLE_CHART = "multi_variable";
+export const AIB_HISTORIC_CHART = "aib_historic_chart";
 export const CUMULATA_CHART = "cumulata";
 export const MARKER_ID = "InfoChartMarker";
 // type of chart based on tabList.type of pluginsConfig
@@ -302,15 +303,23 @@ export const createBackgroundBands = (dates, bands) => {
     }));
 };
 
-// Funzione per creare le tracce delle variabili
+/**
+ * Generates Plotly-compatible traces from a list of variable definitions and time series data.
+ * This method is designed to be flexible and works for both single-variable and multi-variable datasets.
+ *
+ * @param {Array} dataSetDefinitions - List of variable objects, each containing `id`, `name`, and optional `chartStyle`.
+ * @param {Array} dates - Array of date strings used as the x-axis values.
+ * @param {Array} dataFetched - Array of data objects, each containing properties like `st_value_<id>`.
+ * @returns {Array} An array of trace objects ready to be used in a Plotly chart.
+ */
 export const createMultiTraces = (dataSetDefinitions, dates, dataFetched) => {
     return dataSetDefinitions.map((variable, index) => {
         const valueKey = ST_VALUE + variable.id;
         const values = dataFetched.map(item =>
-            item[valueKey] !== null ? parseFloat(item[valueKey].toFixed(2)) : null
+            item[valueKey] !== null ? parseFloat(item[valueKey].toFixed(5)) : null
         );
-        const lineaStyle = variable.lineChartStyle && Object.keys(variable.lineChartStyle).length > 0
-            ? variable.lineChartStyle
+        const lineaStyle = variable.chartStyle && Object.keys(variable.chartStyle).length > 0
+            ? variable.chartStyle
             : {
                 color: defaultColors[index % defaultColors.length],
                 width: 2
@@ -363,8 +372,27 @@ export const createObservedAndClimatologicalTraces = (variable, dates, dataFetch
 
     return [trace1, trace2].concat(fillTraces);
 };
+/*
+export const createAIBTraces = (variable, dates, dataFetched) => {
+    const idVariable = variable.id;
+    const propVariable = "st_value_" + idVariable;
 
+    // const chartData = dataFetched[propVariable].map(stValue => (stValue !== null ? parseFloat(stValue.toFixed(2)) : null));
+    const chartData = dataFetched.map(stValue =>
+        stValue[propVariable] !== null ? parseFloat(stValue[propVariable].toFixed(2)) : null
+    );
+    const trace = {
+        x: dates,
+        y: chartData,
+        mode: 'lines',
+        name: variable.name,
+        type: 'lines+markers',
+        line: variable.chartStyle
+    };
 
+    return [trace];
+};
+*/
 export const createCumulataBarTraces = (variables, times, dataFetched) => {
     const chartVariable = variables.id;
     const propVariable = ST_VALUE + chartVariable;

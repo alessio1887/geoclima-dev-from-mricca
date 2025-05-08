@@ -8,14 +8,7 @@
 import axios from '../../MapStore2/web/client/libs/ajax';
 import assign from 'object-assign';
 import urlUtil from 'url';
-// const DEFAULT_URL_GEOCLIMA_CHART = 'geoportale.lamma.rete.toscana.it/cgi-bin/geoclima_app/geoclima_chart.py';
 
-// const defaultOptions = {
-//     format: 'json',
-//     bounded: 0,
-//     polygon_geojson: 1,
-//     priority: 5
-// };
 /**
  * API using localConfig.json for AJAX proxy settings
  * The proxy URL and allowed CORS domains are defined in localConfig.json

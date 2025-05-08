@@ -947,22 +947,22 @@
               {
                 "id": "spei1",
                 "name": "SPEI-1",
-                "lineChartStyle": { "color": "green", "width": 2, "shape": "linear" }
+                "chartStyle": { "color": "green", "width": 2, "shape": "linear" }
               },
               {
                 "id": "spei3",
                 "name": "SPEI-3",
-                "lineChartStyle": { "color": "black", "width": 2, "shape": "linear" }
+                "chartStyle": { "color": "black", "width": 2, "shape": "linear" }
               },
               {
                 "id": "spei6",
                 "name": "SPEI-6",
-                "lineChartStyle": { "color": "teal", "width": 2, "shape": "linear" }
+                "chartStyle": { "color": "teal", "width": 2, "shape": "linear" }
               },
               {
                 "id": "spei12",
                 "name": "SPEI-12",
-                "lineChartStyle": { "color": "gray", "width": 2, "shape": "linear" }
+                "chartStyle": { "color": "gray", "width": 2, "shape": "linear" }
               }
             ],
             "chartTitle": "Indice SPEI - Standardized Precipitation-Evapotranspiration Index",

@@ -314,7 +314,11 @@ class InfoChart extends React.Component {
                 chartType: chartActive.chartType || ""
             };
         } else {
-            chartParams = variableParams;
+            chartParams = {
+                ...variableParams,
+                chartType: tabSelected.chartType,
+                backgroundBands: variableParams.backgroundBands
+            };
         }
         return chartParams;
     };
