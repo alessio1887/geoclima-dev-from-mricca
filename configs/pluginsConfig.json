@@ -1025,71 +1025,69 @@
               {
                 "id": "fwi",
                 "name": "Fire Weather Index",
-                "lineChartStyle": { "color": "#E0E0E0", "width": 2, "shape": "linear" },
+                "chartStyle": { "color": "#000", "width": 2, "shape": "linear" },
                 "backgroundBands": [
-                  { "class": "Low", "min": 0, "max": 11.2, "color": "#bffccf" },
-                  { "class": "Moderate", "min": 11.2, "max": 21.3, "color": "#f1e869" },
-                  { "class": "High", "min": 21.3, "max": 38.0, "color": "#fca311" },
-                  { "class": "Very High", "min": 38.0, "max": 50.0, "color": "#e63946" },
-                  { "class": "Extreme", "min": 50.0, "max": 70.0, "color": "#9d0208" },
-                  { "class": "Very Extreme", "min": 70.0, "max": 100, "color": "#6a040f" }
+                  { "class": "Low", "min": 0, "max": 5, "color": "#bffccf" },
+                  { "class": "Moderate", "min": 5, "max": 10, "color": "#f1e869" },
+                  { "class": "High", "min": 10, "max": 20, "color": "#fca311" },
+                  { "class": "Very High", "min": 20, "max": 30, "color": "#e63946" },
+                  { "class": "Extreme", "min": 30, "max": 50, "color": "#9d0208" }
                 ]
               },
               {
                 "id": "ffmc",
                 "name": "Fine Fuel Moisture Code",
-                "lineChartStyle": { "color": "#E0E0E0", "width": 2, "shape": "linear" },
+                "chartStyle": { "color": "#000", "width": 2, "shape": "linear" },
                 "backgroundBands": [
-                  { "class": "Low", "min": 0, "max": 82.7, "color": "#bffccf" },
-                  { "class": "Moderate", "min": 82.7, "max": 86.1, "color": "#f1e869" },
-                  { "class": "High", "min": 86.1, "max": 89.2, "color": "#fca311" },
-                  { "class": "Very High", "min": 89.2, "max": 93.0, "color": "#e63946" },
-                  { "class": "Extreme", "min": 93.0, "max": 96.0, "color": "#9d0208" },
-                  { "class": "Very Extreme", "min": 96.0, "max": 100, "color": "#6a040f" }
+                  { "class": "Low", "min": 0, "max": 63, "color": "#bffccf" },
+                  { "class": "Moderate", "min": 63, "max": 84, "color": "#f1e869" },
+                  { "class": "High", "min": 84, "max": 88, "color": "#fca311" },
+                  { "class": "Very High", "min": 88, "max": 91, "color": "#e63946" },
+                  { "class": "Extreme", "min": 91, "max": 100, "color": "#9d0208" }
                 ]
               },
               {
                 "id": "dmc",
                 "name": "Duff Moisture Code",
-                "lineChartStyle": { "color": "#E0E0E0", "width": 2, "shape": "linear" },
+                "chartStyle": { "color": "#000", "width": 2, "shape": "linear" },
                 "backgroundBands": [
-                  { "class": "Low", "min": 0, "max": 15.7, "color": "#bffccf" },
-                  { "class": "Moderate", "min": 15.7, "max": 27.9, "color": "#f1e869" },
-                  { "class": "High", "min": 27.9, "max": 53.1, "color": "#fca311" },
-                  { "class": "Very High", "min": 53.1, "max": 83.6, "color": "#e63946" },
-                  { "class": "Extreme", "min": 83.6, "max": 160.7, "color": "#9d0208" },
-                  { "class": "Very Extreme", "min": 160.7, "max": 200, "color": "#6a040f" }
+                  { "class": "Low", "min": 0, "max": 21, "color": "#bffccf" },
+                  { "class": "Moderate", "min": 21, "max": 27, "color": "#f1e869" },
+                  { "class": "High", "min": 27, "max": 40, "color": "#fca311" },
+                  { "class": "Very High", "min": 40, "max": 60, "color": "#e63946" },
+                  { "class": "Extreme", "min": 60, "max": 90, "color": "#9d0208" }
                 ]
               },
               {
                 "id": "dc",
                 "name": "Drought Code",
-                "lineChartStyle": { "color": "grey", "width": 2, "shape": "linear" },
+                "chartStyle": { "color": "#000", "width": 2, "shape": "linear" },
                 "backgroundBands": [
-                  { "class": "Low", "min": 0, "max": 256.1, "color": "#bffccf" },
-                  { "class": "Moderate", "min": 256.1, "max": 334.1, "color": "#f1e869" },
-                  { "class": "High", "min": 334.1, "max": 450.6, "color": "#fca311" },
-                  { "class": "Very High", "min": 450.6, "max": 600.0, "color": "#e63946" },
-                  { "class": "Extreme", "min": 600.0, "max": 749.4, "color": "#9d0208" },
-                  { "class": "Very Extreme", "min": 749.4, "max": 1000, "color": "#6a040f" }
+                  { "class": "Low", "min": 0, "max": 80, "color": "#bffccf" },
+                  { "class": "Moderate", "min": 80, "max": 190, "color": "#f1e869" },
+                  { "class": "High", "min": 190, "max": 300, "color": "#fca311" },
+                  { "class": "Very High", "min": 300, "max": 425, "color": "#e63946" },
+                  { "class": "Extreme", "min": 425, "max": 600, "color": "#9d0208" },
+                  { "class": "Very Extreme", "min": 600, "max": 800, "color": "#6a040f" },
+                  { "class": "Very Very Extreme", "min": 800, "max": 1000, "color": "#e0b0ff" }
                 ]
               },
               {
                 "id": "isi",
                 "name": "Initial Spread Index",
-                "lineChartStyle": { "color": "#E0E0E0", "width": 2, "shape": "linear" },
+                "chartStyle": { "color": "#000", "width": 2, "shape": "linear" },
                 "backgroundBands": [
-                  { "class": "Low", "min": 0, "max": 3.2, "color": "#bffccf" },
-                  { "class": "Moderate", "min": 3.2, "max": 5.0, "color": "#f1e869" },
-                  { "class": "High", "min": 5.0, "max": 7.5, "color": "#fca311" },
-                  { "class": "Very High", "min": 7.5, "max": 13.4, "color": "#e63946" },
-                  { "class": "Extreme", "min": 13.4, "max": 26.8, "color": "#9d0208" },
-                  { "class": "Very Extreme", "min": 26.8, "max": 50, "color": "#6a040f" }
+                  { "class": "Low", "min": 0, "max": 3, "color": "#bffccf" },
+                  { "class": "Moderate", "min": 3, "max": 5.0, "color": "#f1e869" },
+                  { "class": "High", "min": 5.0, "max": 7, "color": "#fca311" },
+                  { "class": "Very High", "min": 7, "max": 13, "color": "#e63946" },
+                  { "class": "Extreme", "min": 13, "max": 20, "color": "#9d0208" }
                 ]
               },
               {
                 "id": "bui",
                 "name": "Build Up Index",
+                "chartStyle": { "color": "#000", "width": 2, "shape": "linear" },
                 "backgroundBands": [
                   { "class": "Low", "min": 0, "max": 24.2, "color": "#bffccf" },
                   { "class": "Moderate", "min": 24.2, "max": 40.7, "color": "#f1e869" },
