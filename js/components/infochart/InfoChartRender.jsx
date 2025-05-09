@@ -40,6 +40,7 @@ const InfoChartRender = ({
         const dates = dataFetched.map(item => moment(item.data).toDate());
         let newTraces = [];
         const chartTitle = variableChartParams.name || "";
+        const chartSubtitle = variableChartParams.subtitle || "";
         let newLayout = {};
 
         // Calculate the traces and layout based on the chart type
@@ -47,7 +48,7 @@ const InfoChartRender = ({
         case MULTI_VARIABLE_CHART:
             newTraces = createMultiTraces(variableChartParams.tabVariableParams, dates, dataFetched);
             newTraces = createBackgroundBands(dates, variableChartParams.backgroundBands).concat(newTraces);
-            newLayout = createLayout(chartTitle, "", dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, MULTI_VARIABLE_CHART);
+            newLayout = createLayout(chartTitle, "", chartSubtitle, dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, MULTI_VARIABLE_CHART);
             break;
         case CUMULATA_CHART:
             newTraces = createCumulataBarTraces(variableChartParams, dates, dataFetched);
@@ -56,11 +57,11 @@ const InfoChartRender = ({
         case AIB_HISTORIC_CHART:
             newTraces = createMultiTraces([variableChartParams], dates, dataFetched);
             newTraces = createBackgroundBands(dates, variableChartParams.backgroundBands).concat(newTraces);
-            newLayout = createLayout(chartTitle, "", dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, AIB_HISTORIC_CHART);
+            newLayout = createLayout(chartTitle, "", chartSubtitle, dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, AIB_HISTORIC_CHART);
             break;
         default: // SINGLE_VARIABLE_CHART or other cases
             newTraces = createObservedAndClimatologicalTraces(variableChartParams, dates, dataFetched, unitPrecipitazione);
-            newLayout = createLayout(chartTitle, variableChartParams.yaxis, dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, SINGLE_VARIABLE_CHART);
+            newLayout = createLayout(chartTitle, variableChartParams.yaxis, chartSubtitle, dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, SINGLE_VARIABLE_CHART);
             break;
         }
         // Merge the new traces with the previously set ones to preserve the visibility state

@@ -496,13 +496,13 @@ export const createCumulataBarLayout = (variables, chartTitle, traces, dates, fo
 };
 
 
-export const createLayout = (chartTitle, yaxisTitle, dates, format, dataTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, chartType) => {
+export const createLayout = (chartTitle, yaxisTitle, chartSubtitle, dates, format, dataTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, chartType) => {
     const isMultiVariable = chartType === MULTI_VARIABLE_CHART;
     const yaxisRange = isMultiVariable
         ? [chartRelayout?.yaxisStart || MIN_Y_INDEX, chartRelayout?.yaxisEnd || MAX_Y_INDEX]
         : [chartRelayout?.yaxisStart || Math.min([dataTraces[0], dataTraces[1]]), chartRelayout?.yaxisEnd || Math.max([dataTraces[0], dataTraces[1]])];
 
-    return {
+    const layout =  {
         width: infoChartSize.widthResizable - 10,
         height: infoChartSize.heightResizable - (isCollapsedFormGroup ? 140 : 400),
         title: {
@@ -537,7 +537,21 @@ export const createLayout = (chartTitle, yaxisTitle, dates, format, dataTraces, 
         showlegend: true,
         hovermode: 'x unified',
         legend: { orientation: 'h', x: 0.5, y: 1.05 },
-        dragmode: chartRelayout?.dragmode
+        dragmode: chartRelayout?.dragmode,
+        annotations: [{
+            x: - 0.02, // Stessa posizione x del titolo principale
+            y: 1.08, // Posizione y leggermente sopra il titolo principale
+            xref: 'paper',
+            yref: 'paper',
+            text: chartSubtitle,
+            showarrow: false,
+            align: 'left',
+            font: {
+                size: 12,  // Dimensione del sottotitolo
+                color: 'gray'
+            }
+        }]
     };
+    return layout;
 };
 
