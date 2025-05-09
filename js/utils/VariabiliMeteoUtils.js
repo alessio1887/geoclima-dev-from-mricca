@@ -353,13 +353,12 @@ export const createObservedAndClimatologicalTraces = (variable, dates, dataFetch
     const climatologicalData = chartData.map(item => item.st_value_clima);
     const fillTraces = fillAreas(dates, observedData, climatologicalData, variable, unitPrecipitazione);
 
-    // const colorTraceObserved = unit === unitPrecipitazione ? 'rgba(0, 0, 255, 1)' : 'rgba(255, 0, 0, 1)';
     const trace1 = {
         x: dates,
         y: climatologicalData,
         mode: 'lines',
         name: climaLabel,
-        line: { color: 'rgba(0, 0, 255, 1)', width: 1 }
+        line: variable.climatologicalStyle
     };
 
     const trace2 = {
@@ -367,7 +366,7 @@ export const createObservedAndClimatologicalTraces = (variable, dates, dataFetch
         y: observedData,
         mode: 'lines',
         name: currentYearLabel,
-        line: { color: 'rgba(255, 0, 0, 1)', width: 1 }
+        line: variable.observedStyle
     };
 
     return [trace1, trace2].concat(fillTraces);

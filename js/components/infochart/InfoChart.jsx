@@ -311,7 +311,9 @@ class InfoChart extends React.Component {
                 unit: chartActive.unit,
                 yaxis: chartActive.yaxis,
                 yaxis2: chartActive.yaxis2,
-                chartType: chartActive.chartType || ""
+                chartType: chartActive.chartType || "",
+                climatologicalStyle: chartActive.climatologicalStyle,
+                observedStyle: chartActive.observedStyle
             };
         } else {
             chartParams = {
