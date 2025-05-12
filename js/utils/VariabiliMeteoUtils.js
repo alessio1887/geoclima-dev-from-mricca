@@ -371,27 +371,7 @@ export const createObservedAndClimatologicalTraces = (variable, dates, dataFetch
 
     return [trace1, trace2].concat(fillTraces);
 };
-/*
-export const createAIBTraces = (variable, dates, dataFetched) => {
-    const idVariable = variable.id;
-    const propVariable = "st_value_" + idVariable;
 
-    // const chartData = dataFetched[propVariable].map(stValue => (stValue !== null ? parseFloat(stValue.toFixed(2)) : null));
-    const chartData = dataFetched.map(stValue =>
-        stValue[propVariable] !== null ? parseFloat(stValue[propVariable].toFixed(2)) : null
-    );
-    const trace = {
-        x: dates,
-        y: chartData,
-        mode: 'lines',
-        name: variable.name,
-        type: 'lines+markers',
-        line: variable.chartStyle
-    };
-
-    return [trace];
-};
-*/
 export const createCumulataBarTraces = (variables, times, dataFetched) => {
     const chartVariable = variables.id;
     const propVariable = ST_VALUE + chartVariable;
@@ -400,28 +380,30 @@ export const createCumulataBarTraces = (variables, times, dataFetched) => {
     const precipitations = dataFetched.map(item => parseFloat(parseFloat(item[propVariable]).toFixed(1)));
     const cumulativePrecip = formatDataCum(dataFetched, propVariable).map(item => item[propVariable]);
 
+    const barStyle = variables.chartStyle1 ? { ...variables.chartStyle1 } : { color: '#FFAF1F', opacity: 0.6 };
+
     // Traccia a barre per la precipitazione istantanea
-    const barTrace = {
+    const trace1 = {
         x: times,
         y: precipitations,
         type: 'bar',
         name: variables.yaxis,
-        marker: { color: '#FFAF1F', opacity: 0.6 }
-        // hovertemplate: '%{y:.1f} mm<br>%{x:%d/%m/%Y}'
+        marker: barStyle
+        // marker: { color: '#ff821f', opacity: 0.6 }
     };
 
     // Traccia a linea per la precipitazione cumulata (asse y secondario)
-    const lineTrace = {
+    const trace2 = {
         x: times,
         y: cumulativePrecip,
         type: 'scatter',
         mode: 'lines',
         name: variables.yaxis2,
-        line: { color: 'rgba(0, 0, 255, 1)', width: 1 },
+        line: variables.chartStyle2,
         yaxis: 'y2'
     };
 
-    return [barTrace, lineTrace];
+    return [trace1, trace2];
 };
 
 

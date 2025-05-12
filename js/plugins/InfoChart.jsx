@@ -87,8 +87,8 @@ Plugin configuration
                     "unit": "mm",
                     "yaxis": "Precipitazione (mm)",
                     "yaxis2": "Precipitazione cumulata (mm)",
-                    "climatologicalStyle": { "color": "rgba(0, 0, 255, 1)", "width": 1 },
-                    "observedStyle": { "color": "rgba(255, 0, 0, 1)", "width": 1 }
+                    "chartStyle1": { "color": "rgba(0, 0, 255, 1)", "width": 1 },
+                    "chartStyle2": { "color": "rgba(255, 0, 0, 1)", "width": 1 }
                   },
                   {
                     "id": "prec2",
@@ -96,8 +96,8 @@ Plugin configuration
                     "chartType": "clima",
                     "unit": "mm",
                     "yaxis": "Precipitazione (mm)",
-                    "climatologicalStyle": { "color": "rgba(0, 0, 255, 1)", "width": 1 },
-                    "observedStyle": { "color": "rgba(255, 0, 0, 1)", "width": 1 }
+                    "chartStyle1": { "color": "#FFAF1F", "opacity": 0.6 },
+                    "chartStyle2": { "color": "rgba(0, 0, 255, 1)", "width": 1 }
                   }
                 ]
               },
@@ -106,40 +106,40 @@ Plugin configuration
                 "name": "Temperatura Media",
                 "unit": "°C",
                 "yaxis": "Temperatura (°C)",
-                "climatologicalStyle": { "color": "rgba(0, 0, 255, 1)", "width": 1 },
-                "observedStyle": { "color": "rgba(255, 0, 0, 1)", "width": 1 }
+                "chartStyle1": { "color": "rgba(0, 0, 255, 1)", "width": 1 },
+                "chartStyle2": { "color": "rgba(255, 0, 0, 1)", "width": 1 }
               },
               {
                 "id": "tmax",
                 "name": "Temperatura Massima",
                 "unit": "°C",
                 "yaxis": "Temperatura (°C)",
-                "climatologicalStyle": { "color": "rgba(0, 0, 255, 1)", "width": 1 },
-                "observedStyle": { "color": "rgba(255, 0, 0, 1)", "width": 1 }
+                "chartStyle1": { "color": "rgba(0, 0, 255, 1)", "width": 1 },
+                "chartStyle2": { "color": "rgba(255, 0, 0, 1)", "width": 1 }
               },
               {
                 "id": "tmin",
                 "name": "Temperatura Minima",
                 "unit": "°C",
                 "yaxis": "Temperatura (°C)",
-                    "climatologicalStyle": { "color": "rgba(0, 0, 255, 1)", "width": 1 },
-                    "observedStyle": { "color": "rgba(255, 0, 0, 1)", "width": 1 }
+                    "chartStyle1": { "color": "rgba(0, 0, 255, 1)", "width": 1 },
+                    "chartStyle2": { "color": "rgba(255, 0, 0, 1)", "width": 1 }
               },
               {
                 "id": "ret",
                 "name": "Evapotraspirazione Potenziale",
                 "unit": "mm",
                 "yaxis": "Valore (mm)",
-                    "climatologicalStyle": { "color": "rgba(0, 0, 255, 1)", "width": 1 },
-                    "observedStyle": { "color": "rgba(255, 0, 0, 1)", "width": 1 }
+                    "chartStyle1": { "color": "rgba(0, 0, 255, 1)", "width": 1 },
+                    "chartStyle2": { "color": "rgba(255, 0, 0, 1)", "width": 1 }
               },
               {
                 "id": "bis",
                 "name": "Bilancio Idrico Semplificato",
                 "unit": "mm",
                 "yaxis": "Valore (mm)",
-                    "climatologicalStyle": { "color": "rgba(0, 0, 255, 1)", "width": 1 },
-                    "observedStyle": { "color": "rgba(255, 0, 0, 1)", "width": 1 }
+                    "chartStyle1": { "color": "rgba(0, 0, 255, 1)", "width": 1 },
+                    "chartStyle2": { "color": "rgba(255, 0, 0, 1)", "width": 1 }
               }
             ],
             "menuType": "single_select",
