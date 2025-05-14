@@ -1035,6 +1035,18 @@
             "name": "AIB indici previsione",
             "menuType": "single_select",
             "chartType": "aib_historic_chart",
+            "chartList": [
+                  {
+                    "id": "aib1",
+                    "name": "Storico",
+                    "chartType": "aib_historic_chart"
+                  },
+                  {
+                    "id": "aib2",
+                    "name": "Previsonale",
+                    "chartType": "aib_previsionale"
+                  }
+            ],
             "groupList": [
               {
                 "id": "fwi",

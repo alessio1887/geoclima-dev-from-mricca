@@ -79,8 +79,15 @@ function infochart(state = infoChartDefaultState, action) {
         return {
             ...state,
             tabVariables: state.tabVariables.map(tab => {
-                // Only update the active tab
-                if (tab.active) {
+                if (tab.active && tab.chartList) {// Only update the active tab
+                    return {
+                        ...tab,
+                        chartList: tab.chartList.map(chart => ({
+                            ...chart,
+                            active: chart.id === action.idChartType
+                        }))
+                    };
+                } else if (tab.active) {
                     return {
                         ...tab,
                         variables: tab.variables.map(variable => ({

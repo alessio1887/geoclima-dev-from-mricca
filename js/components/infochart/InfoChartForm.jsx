@@ -62,9 +62,14 @@ const InfoChartForm = ({
         handleApplyPeriod([selectedVariable], newIdTab);
     };
     const isTabBarVisible = () => {
-        return activeTab.variables[0].chartList && activeTab.variables[0].chartList.length > 1;
+        const isChartListOnActiveTab = activeTab.chartList && activeTab.chartList.length > 1;
+        const isChartListInVariables = activeTab.variables[0].chartList && activeTab.variables[0].chartList.length > 1;
+
+        return isChartListOnActiveTab || isChartListInVariables;
     };
     const rangepickerButtonFlexDirection = (!isTabBarVisible() || infoChartSize?.widthResizable > 460) ? 'row' : 'column';
+
+    const chartList = activeTab?.variables[0]?.chartList || activeTab?.chartList || [];
 
     return (
         <Panel className="infochart-panel">
@@ -113,8 +118,8 @@ const InfoChartForm = ({
                 <div className="button-group-wrapper">
                     { isTabBarVisible() && (
                         <TabBar
-                            tabList={activeTab?.variables[0]?.chartList || []}
-                            activeTab={activeTab?.variables[0]?.chartList?.find(chart => chart.active)}
+                            tabList={chartList}
+                            activeTab={chartList.find(chart => chart.active)}
                             onChangeTab={handleChangeChartType}
                             classAttribute={"chart-type"}
                         />

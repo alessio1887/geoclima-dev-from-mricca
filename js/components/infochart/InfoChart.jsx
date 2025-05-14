@@ -202,7 +202,8 @@ class InfoChart extends React.Component {
             chartTitle: tab.chartTitle,
             backgroundBands: Array.isArray(tab.backgroundBands) && tab.backgroundBands.length > 0
                 ? tab.backgroundBands
-                : [] // fallback sicuro
+                : [],
+            ...(tab.chartList && { chartList: tab.chartList })
         }));
         this.props.onInitializeVariableTabs(variableTabs);
     }
@@ -269,26 +270,20 @@ class InfoChart extends React.Component {
             this.props.onSetChartRelayout(zoomData);
         }
     };
-    handleChangeChartType = (idTab) => {
-        this.props.onChangeChartType(idTab);
+    handleChangeChartType = (idChartType) => {
+        this.props.onChangeChartType(idChartType);
         this.props.onResetChartZoom();
     }
     getActiveTab = () => {
         return this.props.tabVariables.find(tab => tab.active === true);
     }
     // Get the selected tab's parameters (chart title, chart list, etc.) based on the traces applied to the chart.
-    getMultiVariableChartParams = () => {
-        const variableListParam = this.props.tabList.find(
-            tab => tab.id === this.props.infoChartData.idTab
-        );
-        // get variable ids applied to the chart
-        const variableArray = this.props.infoChartData.variables?.split(',') || [];
+    getMultiVariableChartParams = (activeTab) => {
         return {
-            tabVariableParams: variableListParam.groupList.filter(variable =>
-                variableArray.includes(variable.id)),
-            name: variableListParam.chartTitle,
-            chartType: variableListParam.chartType,
-            backgroundBands: variableListParam.backgroundBands
+            tabVariableParams: activeTab.variables,
+            name: activeTab.chartTitle,
+            chartType: activeTab.chartType,
+            backgroundBands: activeTab.backgroundBands
         };
     };
     getSingleVariableChartParams = (tabSelected) => {
@@ -305,7 +300,8 @@ class InfoChart extends React.Component {
                 yaxis2: chartActive.yaxis2,
                 chartType: chartActive.chartType || "",
                 chartStyle1: chartActive.chartStyle1,
-                chartStyle2: chartActive.chartStyle2
+                chartStyle2: chartActive.chartStyle2,
+                backgroundBands: variableParams.backgroundBands
             };
         } else {
             chartParams = {
@@ -321,7 +317,7 @@ class InfoChart extends React.Component {
             const activeTab = this.getActiveTab();
             let chartTypeSelected = {};
             if (activeTab.chartType === MULTI_VARIABLE_CHART) {
-                chartTypeSelected = this.getMultiVariableChartParams();
+                chartTypeSelected = this.getMultiVariableChartParams(activeTab);
             } else {
                 chartTypeSelected = this.getSingleVariableChartParams(activeTab);
             }

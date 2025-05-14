@@ -304,37 +304,46 @@ export const createBackgroundBands = (dates, bands) => {
 };
 
 /**
- * Generates Plotly-compatible traces from a list of variable definitions and time series data.
- * This method is designed to be flexible and works for both single-variable and multi-variable datasets.
+ * Generates Plotly-compatible trace objects from a list of variable definitions and their time series data.
+ * This method supports both single-variable and multi-variable datasets by dynamically mapping values.
  *
- * @param {Array} dataSetDefinitions - List of variable objects, each containing `id`, `name`, and optional `chartStyle`.
- * @param {Array} dates - Array of date strings used as the x-axis values.
- * @param {Array} dataFetched - Array of data objects, each containing properties like `st_value_<id>`.
- * @returns {Array} An array of trace objects ready to be used in a Plotly chart.
+ * @param {Array} dataSetDefinitions - Array of variable objects, each containing at least an `id`, `name`, and optionally `chartStyle`.
+ * @param {Array} dates - Array of date strings or timestamps to be used as x-axis values.
+ * @param {Array} dataFetched - Array of data records, each containing keys like `st_value_<id>`.
+ * @returns {Array} Array of Plotly trace objects for visualizing the data.
  */
 export const createMultiTraces = (dataSetDefinitions, dates, dataFetched) => {
-    return dataSetDefinitions.map((variable, index) => {
-        const valueKey = ST_VALUE + variable.id;
-        const values = dataFetched.map(item =>
-            item[valueKey] !== null ? parseFloat(item[valueKey].toFixed(5)) : null
-        );
-        const lineaStyle = variable.chartStyle && Object.keys(variable.chartStyle).length > 0
-            ? variable.chartStyle
-            : {
-                color: defaultColors[index % defaultColors.length],
-                width: 2
+    return dataSetDefinitions
+        .filter(function(variable) {
+            var valueKey = ST_VALUE + variable.id;
+            return dataFetched.some(function(item) {
+                return item[valueKey] !== null && item[valueKey] !== undefined;
+            });
+        })
+        .map(function(variable, index) {
+            var valueKey = ST_VALUE + variable.id;
+            var values = dataFetched.map(function(item) {
+                return item[valueKey] !== null && item[valueKey] !== undefined ? parseFloat(Number(item[valueKey]).toFixed(5)) : null;
+            });
+
+            var lineStyle = variable.chartStyle && Object.keys(variable.chartStyle).length
+                ? variable.chartStyle
+                : {
+                    color: defaultColors[index % defaultColors.length],
+                    width: 2
+                };
+
+            return {
+                x: dates,
+                y: values,
+                mode: 'lines',
+                name: variable.name,
+                line: lineStyle,
+                marker: { size: 6 },
+                type: 'scatter',
+                connectgaps: true
             };
-        return {
-            x: dates,
-            y: values,
-            mode: 'lines',
-            name: variable.name,
-            line: lineaStyle,
-            marker: { size: 6 },
-            type: 'scatter',
-            connectgaps: true
-        };
-    });
+        });
 };
 
 export const createObservedAndClimatologicalTraces = (variable, dates, dataFetched, unitPrecipitazione) => {
