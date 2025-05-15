@@ -10,13 +10,12 @@ import { DATE_FORMAT } from './ManageDateUtils';
 // type of range picher
 export const FIXED_RANGE = "fixed_range_picker";
 export const FREE_RANGE = "free_range_picker";
-// type of chart based on tabLyst.type of pluginsConfig
 export const SINGLE_VARIABLE_CHART = "single_variable";
 export const MULTI_VARIABLE_CHART = "multi_variable";
 export const AIB_HISTORIC_CHART = "aib_historic_chart";
+export const AIB_PREVISIONALE = "aib_previsionale";
 export const CUMULATA_CHART = "cumulata";
 export const MARKER_ID = "InfoChartMarker";
-// type of chart based on tabList.type of pluginsConfig
 export const DROP_DOWN = "single_select";
 export const MULTI_SELECT = "multi_select";
 

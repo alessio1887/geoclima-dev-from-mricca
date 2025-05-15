@@ -12,6 +12,7 @@ import {
     MULTI_VARIABLE_CHART,
     CUMULATA_CHART,
     AIB_HISTORIC_CHART,
+    AIB_PREVISIONALE,
     createMultiTraces,
     createBackgroundBands,
     createCumulataBarTraces,
@@ -55,6 +56,7 @@ const InfoChartRender = ({
             newLayout = createCumulataBarLayout(variableChartParams, chartTitle, newTraces, dates, format, chartRelayout, infoChartSize, isCollapsedFormGroup);
             break;
         case AIB_HISTORIC_CHART:
+        case AIB_PREVISIONALE:
             newTraces = createMultiTraces([variableChartParams], dates, dataFetched);
             newTraces = createBackgroundBands(dates, variableChartParams.backgroundBands).concat(newTraces);
             newLayout = createLayout(chartTitle, "", chartSubtitle, dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, AIB_HISTORIC_CHART);

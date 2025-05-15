@@ -1044,7 +1044,8 @@
                   {
                     "id": "aib2",
                     "name": "Previsonale",
-                    "chartType": "aib_previsionale"
+                    "chartType": "aib_previsionale",
+                    "showOneDatePicker": true
                   }
             ],
             "groupList": [

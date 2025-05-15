@@ -17,7 +17,8 @@ import BorderLayout from '@mapstore/components/layout/BorderLayout';
 import InfoChartForm from './InfoChartForm';
 import InfoChartRender from './InfoChartRender';
 import DateAPI, { DATE_FORMAT, DEFAULT_DATA_INIZIO, DEFAULT_DATA_FINE } from '../../utils/ManageDateUtils';
-import { FIXED_RANGE, MARKER_ID, MULTI_VARIABLE_CHART, getStartPositionPanel, getDefaultPanelSize }  from '../../utils/VariabiliMeteoUtils';
+import { FIXED_RANGE, MARKER_ID, MULTI_VARIABLE_CHART, AIB_HISTORIC_CHART,
+    getStartPositionPanel, getDefaultPanelSize }  from '../../utils/VariabiliMeteoUtils';
 import { get, isEqual } from 'lodash';
 import moment from 'moment';
 import momentLocaliser from 'react-widgets/lib/localizers/moment';
@@ -289,9 +290,9 @@ class InfoChart extends React.Component {
     getSingleVariableChartParams = (tabSelected) => {
         const variableParams = tabSelected.variables[0];
         let chartParams;
-        if (variableParams.chartList) {
-            const chartActive = variableParams.chartList.find(chart =>
-                chart.active) || variableParams.chartList[0];
+        const chartList = variableParams.chartList || tabSelected.chartList || [];
+        if (Array.isArray(chartList) && chartList.length > 0) {
+            const chartActive = chartList.find(chart => chart.active) || chartList[0];
             chartParams = {
                 id: variableParams.id,
                 name: variableParams.name,
@@ -301,7 +302,8 @@ class InfoChart extends React.Component {
                 chartType: chartActive.chartType || "",
                 chartStyle1: chartActive.chartStyle1,
                 chartStyle2: chartActive.chartStyle2,
-                backgroundBands: variableParams.backgroundBands
+                backgroundBands: variableParams.backgroundBands,
+                showOneDatePicker: chartActive.showOneDatePicker || false
             };
         } else {
             chartParams = {
@@ -312,28 +314,47 @@ class InfoChart extends React.Component {
         }
         return chartParams;
     };
-    showChart = () => {
-        if (!this.props.maskLoading) {
-            const activeTab = this.getActiveTab();
-            let chartTypeSelected = {};
-            if (activeTab.chartType === MULTI_VARIABLE_CHART) {
-                chartTypeSelected = this.getMultiVariableChartParams(activeTab);
-            } else {
-                chartTypeSelected = this.getSingleVariableChartParams(activeTab);
-            }
-            return (
-                <InfoChartRender
-                    dataFetched = {this.props.data}
-                    handleRelayout= { this.handleRelayout }
-                    chartRelayout= { this.props.chartRelayout}
-                    infoChartSize={ this.props.infoChartSize}
-                    isCollapsedFormGroup={this.props.isCollapsedFormGroup}
-                    variableChartParams={ chartTypeSelected }
-                    unitPrecipitazione = { this.props.unitPrecipitazione }
-                    format={ this.props.timeUnit }
-                />);
+
+    getChartTypeSelected = () => {
+        let chartTypeSelected = {};
+        const activeTab = this.getActiveTab();
+        if (activeTab.chartType === MULTI_VARIABLE_CHART) {
+            chartTypeSelected = this.getMultiVariableChartParams(activeTab);
+        } else {
+            chartTypeSelected = this.getSingleVariableChartParams(activeTab);
         }
-        return null;
+        return chartTypeSelected;
+    }
+    showChart = (chartTypeSelected) => {
+        // if (activeTab.chartType === MULTI_VARIABLE_CHART) {
+        //     chartTypeSelected = this.getMultiVariableChartParams(activeTab);
+        // } else {
+        //     chartTypeSelected = this.getSingleVariableChartParams(activeTab);
+        // }
+        // const chartTypeSelected = this.getVariableChartParams(activeTab);
+
+        // TOREMOVE - AIB charts
+        let chartData = this.props.data;
+        const activeTab = this.getActiveTab();
+        if ( activeTab.id === 'aib') {
+            if (chartTypeSelected.chartType === AIB_HISTORIC_CHART) {
+                chartData = wildfireData;
+            } else {
+                chartData = wildfireData.slice(0, 3);
+            }
+        }
+
+        return (
+            <InfoChartRender
+                dataFetched = { chartData }
+                handleRelayout= { this.handleRelayout }
+                chartRelayout= { this.props.chartRelayout}
+                infoChartSize={ this.props.infoChartSize}
+                isCollapsedFormGroup={this.props.isCollapsedFormGroup}
+                variableChartParams={ chartTypeSelected }
+                unitPrecipitazione = { this.props.unitPrecipitazione }
+                format={ this.props.timeUnit }
+            />);
     }
     getHeader = () => {
         return ( <span role="header" style={{ position: 'relative', zIndex: 1000, padding: "10px" }}>
@@ -343,7 +364,7 @@ class InfoChart extends React.Component {
         );
     }
 
-    getPanelFormGroup = () => {
+    getPanelFormGroup = (showOneDatePicker) => {
         const tabSelected = this.getActiveTab();
         return (
             <div id="collapse-form-group">
@@ -362,6 +383,7 @@ class InfoChart extends React.Component {
                     onChangeFixedRangeTodata={this.props.onChangeFixedRangeTodata}
                     onChangePeriod={this.props.onChangePeriod}
                     infoChartSize={this.props.infoChartSize}
+                    isOneDatePicker={false}
                     timeUnit={this.props.timeUnit}
                     fromData={this.props.fromData}
                     onChangeFromData={this.props.onChangeFromData}
@@ -374,6 +396,7 @@ class InfoChart extends React.Component {
                     toDataSelected={this.state.toDataSelected}
                     fromDataSelected={this.state.fromDataSelected}
                     handleChangeChartType={this.handleChangeChartType}
+                    showOneDatePicker={showOneDatePicker}
                 />
             </div>
         );
@@ -381,6 +404,7 @@ class InfoChart extends React.Component {
     getBody = () => {
         const rotateIcon = this.props.isCollapsedFormGroup ? 'rotate(180deg)' : 'rotate(0deg)';
         const startPosition = getStartPositionPanel();
+        const chartTypeSelected = this.getChartTypeSelected();
         return (
             <Dialog maskLoading={this.props.maskLoading} id={this.props.id}
                 style={{
@@ -420,9 +444,9 @@ class InfoChart extends React.Component {
                                 <span className="collapse-rangepicker-icon"  style={{ transform: rotateIcon }}>&#9650;</span>
                             </Button>
                             <Collapse in={!this.props.isCollapsedFormGroup}>
-                                {this.getPanelFormGroup()}
+                                {this.getPanelFormGroup(chartTypeSelected.showOneDatePicker)}
                             </Collapse>
-                            {this.showChart()}
+                            {!this.props.maskLoading && this.showChart(chartTypeSelected)}
                         </div>
                     </Resizable>
                 </div>

@@ -24,6 +24,7 @@ const InfoChartForm = ({
     activeTab, // Riceve direttamente il valore di activeTab
     onChangeTab,
     activeRangeManager,
+    showOneDatePicker,
     firstAvailableDate,
     lastAvailableDate,
     toData,
@@ -47,7 +48,7 @@ const InfoChartForm = ({
 }) => {
     const handleChangePeriod = (newPeriodType) => {
         onChangePeriod(newPeriodType);
-        this.handleApplyPeriod(null, null, newPeriodType);
+        handleApplyPeriod(null, null, newPeriodType);
     };
     const handleChangeTab = (newIdTab) => {
         onChangeTab(newIdTab);
@@ -70,6 +71,51 @@ const InfoChartForm = ({
     const rangepickerButtonFlexDirection = (!isTabBarVisible() || infoChartSize?.widthResizable > 460) ? 'row' : 'column';
 
     const chartList = activeTab?.variables[0]?.chartList || activeTab?.chartList || [];
+    /**
+     * Renders the date picker component based on the active range manager type.
+     *
+     * If `activeRangeManager` is FIXED_RANGE or `showOneDatePicker` is true,
+     * it displays the FixedRangeManager component (showing only one date picker if showOneDatePicker is true).
+     * Otherwise, it displays the FreeRangeManager component, allowing selection of both fromDate and toDate.
+     */
+    const renderDatesManager = () => {
+        const commonProps = {
+            minDate: firstAvailableDate,
+            maxDate: lastAvailableDate,
+            isInteractionDisabled,
+            widthPanel: infoChartSize.widthResizable,
+            format: timeUnit
+        };
+
+        if (activeRangeManager === FIXED_RANGE || showOneDatePicker) {
+            return (
+                <FixedRangeManager
+                    {...commonProps}
+                    toData={toData}
+                    periodType={periodType}
+                    periodTypes={periodTypes}
+                    onChangeToData={onChangeFixedRangeTodata}
+                    onChangePeriod={handleChangePeriod}
+                    styleLabels="labels-infochart"
+                    classAttribute="infochart-fixedrangemanager-action"
+                    showOneDatePicker={showOneDatePicker}
+                />
+            );
+        }
+
+        return (
+            <FreeRangeManager
+                {...commonProps}
+                fromData={fromData}
+                toData={toData}
+                onChangeFromData={onChangeFromData}
+                onChangeToData={onChangeToData}
+                styleLabels="labels-infochart"
+                lablesType="gcapp.freeRangePicker"
+                classAttribute="infochart-freerangemanager-action"
+            />
+        );
+    };
 
     return (
         <Panel className="infochart-panel">
@@ -84,37 +130,7 @@ const InfoChartForm = ({
                     onChangeTab={handleChangeTab}
                     isInteractionDisabled={false}
                 />
-                {activeRangeManager === FIXED_RANGE ? (
-                    <FixedRangeManager
-                        minDate={firstAvailableDate}
-                        maxDate={lastAvailableDate}
-                        toData={toData}
-                        periodType={periodType}
-                        periodTypes={periodTypes}
-                        onChangeToData={onChangeFixedRangeTodata}
-                        onChangePeriod={handleChangePeriod}
-                        isInteractionDisabled={isInteractionDisabled}
-                        styleLabels="labels-infochart"
-                        classAttribute="infochart-fixedrangemanager-action"
-                        widthPanel={infoChartSize.widthResizable}
-                        format={timeUnit}
-                    />
-                ) : (
-                    <FreeRangeManager
-                        minDate={firstAvailableDate}
-                        maxDate={lastAvailableDate}
-                        fromData={fromData}
-                        toData={toData}
-                        onChangeFromData={onChangeFromData}
-                        onChangeToData={onChangeToData}
-                        isInteractionDisabled={isInteractionDisabled}
-                        styleLabels="labels-infochart"
-                        lablesType="gcapp.freeRangePicker"
-                        classAttribute="infochart-freerangemanager-action"
-                        widthPanel={infoChartSize.widthResizable}
-                        format={timeUnit}
-                    />
-                )}
+                {renderDatesManager()}
                 <div className="button-group-wrapper">
                     { isTabBarVisible() && (
                         <TabBar
@@ -135,12 +151,12 @@ const InfoChartForm = ({
                             style={{ marginTop: (!isTabBarVisible() || infoChartSize?.widthResizable > 460) ? '20px' : undefined }}>
                             <Glyphicon glyph="calendar" /><Message msgId="gcapp.applyPeriodButton" />
                         </Button>
-                        <Button className="rangepicker-button" onClick={switchRangeManager} disabled={isInteractionDisabled}
+                        {!showOneDatePicker && <Button className="rangepicker-button" onClick={switchRangeManager} disabled={isInteractionDisabled}
                             style={{ marginTop: (!isTabBarVisible() || infoChartSize?.widthResizable > 460) ? '20px' : undefined }}>
                             <Message msgId={activeRangeManager === FIXED_RANGE
                                 ? "gcapp.fixedRangePicker.dateRangeButton"
                                 : "gcapp.freeRangePicker.dateRangeButton"} />
-                        </Button>
+                        </Button>}
                     </ButtonGroup>
                 </div>
                 {alertMessage && (
@@ -159,5 +175,10 @@ const InfoChartForm = ({
         </Panel>
     );
 };
+
+InfoChartForm.defaultProps = {
+    showOneDatePicker: false
+};
+
 
 export default InfoChartForm;
