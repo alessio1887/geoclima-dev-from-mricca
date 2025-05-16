@@ -38,10 +38,11 @@ const InfoChartRender = ({
     const [layout, setLayout] = useState({});
 
     useEffect(() => {
-        const dates = dataFetched.map(item => moment(item.data).toDate());
+        const dates = Array.isArray(dataFetched) ? dataFetched.map(item => moment(item.data).toDate())
+            : dataFetched.data.map(item => moment(item.data).toDate());
         let newTraces = [];
         const chartTitle = variableChartParams.name || "";
-        const chartSubtitle = variableChartParams.subtitle || "";
+        const chartSubtitle = dataFetched.comune || "";
         let newLayout = {};
 
         // Calculate the traces and layout based on the chart type
@@ -57,7 +58,7 @@ const InfoChartRender = ({
             break;
         case AIB_HISTORIC_CHART:
         case AIB_PREVISIONALE:
-            newTraces = createMultiTraces([variableChartParams], dates, dataFetched);
+            newTraces = createMultiTraces([variableChartParams], dates, dataFetched.data);
             newTraces = createBackgroundBands(dates, variableChartParams.backgroundBands).concat(newTraces);
             newLayout = createLayout(chartTitle, "", chartSubtitle, dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, AIB_HISTORIC_CHART);
             break;
