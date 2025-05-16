@@ -366,7 +366,7 @@ export const createObservedAndClimatologicalTraces = (variable, dates, dataFetch
         y: climatologicalData,
         mode: 'lines',
         name: climaLabel,
-        line: variable.climatologicalStyle
+        line: variable.chartStyle1
     };
 
     const trace2 = {
@@ -374,7 +374,7 @@ export const createObservedAndClimatologicalTraces = (variable, dates, dataFetch
         y: observedData,
         mode: 'lines',
         name: currentYearLabel,
-        line: variable.observedStyle
+        line: variable.chartStyle2
     };
 
     return [trace1, trace2].concat(fillTraces);
