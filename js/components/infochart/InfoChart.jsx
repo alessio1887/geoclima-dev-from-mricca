@@ -326,12 +326,6 @@ class InfoChart extends React.Component {
         return chartTypeSelected;
     }
     showChart = (chartTypeSelected) => {
-        // if (activeTab.chartType === MULTI_VARIABLE_CHART) {
-        //     chartTypeSelected = this.getMultiVariableChartParams(activeTab);
-        // } else {
-        //     chartTypeSelected = this.getSingleVariableChartParams(activeTab);
-        // }
-        // const chartTypeSelected = this.getVariableChartParams(activeTab);
 
         // TOREMOVE - AIB charts
         let chartData = this.props.data;

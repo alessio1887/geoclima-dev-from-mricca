@@ -82,22 +82,34 @@ Plugin configuration
                 "chartList": [
                   {
                     "id": "prec1",
+                    "name": "Pioggia clima",
+                    "chartType": "clima",
+                    "unit": "mm",
+                    "yaxis": "Precipitazione (mm)",
+                    "chartStyle1": { // climatologico
+                      "color": "rgba(0, 0, 255, 1",
+                      "opacity": 0.6
+                    },
+                    "chartStyle2": { // anno in corso
+                      "color": "rgba(255, 0, 0, 1)",
+                      "width": 1
+                    }
+                  },
+                  {
+                    "id": "prec2",
                     "name": "Pioggia cumulata",
                     "chartType": "cumulata",
                     "unit": "mm",
                     "yaxis": "Precipitazione (mm)",
                     "yaxis2": "Precipitazione cumulata (mm)",
-                    "chartStyle1": { "color": "rgba(0, 0, 255, 1)", "width": 1 },
-                    "chartStyle2": { "color": "rgba(255, 0, 0, 1)", "width": 1 }
-                  },
-                  {
-                    "id": "prec2",
-                    "name": "Pioggia clima",
-                    "chartType": "clima",
-                    "unit": "mm",
-                    "yaxis": "Precipitazione (mm)",
-                    "chartStyle1": { "color": "#FFAF1F", "opacity": 0.6 },
-                    "chartStyle2": { "color": "rgba(0, 0, 255, 1)", "width": 1 }
+                    "chartStyle1": { // giornaliero
+                      "color": "#ffaf1f",
+                      "width": 1
+                    },
+                    "chartStyle2": { // cumulata
+                      "color": "rgba(255, 0, 0, 1)",
+                      "width": 1
+                    }
                   }
                 ]
               },
@@ -302,6 +314,19 @@ Plugin configuration
             "name": "AIB indici previsione",
             "menuType": "single_select",
             "chartType": "aib_historic_chart",
+            "chartList": [
+                  {
+                    "id": "aib1",
+                    "name": "Storico",
+                    "chartType": "aib_historic_chart"
+                  },
+                  {
+                    "id": "aib2",
+                    "name": "Previsonale",
+                    "chartType": "aib_previsionale",
+                    "showOneDatePicker": true
+                  }
+            ],
             "groupList": [
               {
                 "id": "fwi",
