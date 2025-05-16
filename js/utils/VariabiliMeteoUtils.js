@@ -15,6 +15,7 @@ export const MULTI_VARIABLE_CHART = "multi_variable";
 export const AIB_HISTORIC_CHART = "aib_historic_chart";
 export const AIB_PREVISIONALE = "aib_previsionale";
 export const CUMULATA_CHART = "cumulata";
+export const CLIMA_CHART = "clima";
 export const MARKER_ID = "InfoChartMarker";
 export const DROP_DOWN = "single_select";
 export const MULTI_SELECT = "multi_select";

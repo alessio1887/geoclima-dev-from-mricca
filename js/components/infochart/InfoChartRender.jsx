@@ -13,6 +13,7 @@ import {
     CUMULATA_CHART,
     AIB_HISTORIC_CHART,
     AIB_PREVISIONALE,
+    CLIMA_CHART,
     createMultiTraces,
     createBackgroundBands,
     createCumulataBarTraces,
@@ -52,6 +53,10 @@ const InfoChartRender = ({
             newTraces = createBackgroundBands(dates, variableChartParams.backgroundBands).concat(newTraces);
             newLayout = createLayout(chartTitle, "", chartSubtitle, dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, MULTI_VARIABLE_CHART);
             break;
+        case CLIMA_CHART:
+            newTraces = createObservedAndClimatologicalTraces(variableChartParams, dates, dataFetched, unitPrecipitazione);
+            newLayout = createLayout(chartTitle, variableChartParams.yaxis, chartSubtitle, dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, SINGLE_VARIABLE_CHART);
+            break;
         case CUMULATA_CHART:
             newTraces = createCumulataBarTraces(variableChartParams, dates, dataFetched);
             newLayout = createCumulataBarLayout(variableChartParams, chartTitle, newTraces, dates, format, chartRelayout, infoChartSize, isCollapsedFormGroup);
@@ -62,9 +67,9 @@ const InfoChartRender = ({
             newTraces = createBackgroundBands(dates, variableChartParams.backgroundBands).concat(newTraces);
             newLayout = createLayout(chartTitle, "", chartSubtitle, dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, AIB_HISTORIC_CHART);
             break;
-        default: // SINGLE_VARIABLE_CHART or other cases
-            newTraces = createObservedAndClimatologicalTraces(variableChartParams, dates, dataFetched, unitPrecipitazione);
-            newLayout = createLayout(chartTitle, variableChartParams.yaxis, chartSubtitle, dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, SINGLE_VARIABLE_CHART);
+        default:
+            newTraces = createMultiTraces([variableChartParams], dates, dataFetched);
+            newLayout = createLayout(chartTitle, "", chartSubtitle, dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, SINGLE_VARIABLE_CHART);
             break;
         }
         // Merge the new traces with the previously set ones to preserve the visibility state
