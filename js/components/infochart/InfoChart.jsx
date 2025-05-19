@@ -308,7 +308,7 @@ class InfoChart extends React.Component {
         } else {
             chartParams = {
                 ...variableParams,
-                chartType: tabSelected.chartType,
+                // chartType: tabSelected.chartType,
                 backgroundBands: variableParams.backgroundBands
             };
         }

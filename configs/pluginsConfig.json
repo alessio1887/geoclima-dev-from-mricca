@@ -850,6 +850,7 @@
                 "id": "tmed",
                 "name": "Temperatura Media",
                 "unit": "°C",
+                "chartType": "clima",
                 "yaxis": "Temperatura (°C)",
                 "chartStyle1": { "color": "rgba(0, 0, 255, 1)", "width": 1 },
                 "chartStyle2": { "color": "rgba(255, 0, 0, 1)", "width": 1 }
@@ -866,6 +867,7 @@
                 "id": "tmin",
                 "name": "Temperatura Minima",
                 "unit": "°C",
+                "chartType": "clima",
                 "yaxis": "Temperatura (°C)",
                     "chartStyle1": { "color": "rgba(0, 0, 255, 1)", "width": 1 },
                     "chartStyle2": { "color": "rgba(255, 0, 0, 1)", "width": 1 }
@@ -874,6 +876,7 @@
                 "id": "ret",
                 "name": "Evapotraspirazione Potenziale",
                 "unit": "mm",
+                "chartType": "clima",
                 "yaxis": "Valore (mm)",
                     "chartStyle1": { "color": "rgba(0, 0, 255, 1)", "width": 1 },
                     "chartStyle2": { "color": "rgba(255, 0, 0, 1)", "width": 1 }
@@ -882,6 +885,7 @@
                 "id": "bis",
                 "name": "Bilancio Idrico Semplificato",
                 "unit": "mm",
+                "chartType": "clima",
                 "yaxis": "Valore (mm)",
                     "chartStyle1": { "color": "rgba(0, 0, 255, 1)", "width": 1 },
                     "chartStyle2": { "color": "rgba(255, 0, 0, 1)", "width": 1 }
@@ -1046,7 +1050,6 @@
             "id": "aib",
             "name": "AIB indici previsione",
             "menuType": "single_select",
-            "chartType": "aib_historic_chart",
             "chartList": [
                   {
                     "id": "aib1",

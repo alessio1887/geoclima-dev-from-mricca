@@ -117,6 +117,7 @@ Plugin configuration
                 "id": "tmed",
                 "name": "Temperatura Media",
                 "unit": "°C",
+                "chartType": "clima",
                 "yaxis": "Temperatura (°C)",
                 "chartStyle1": { "color": "rgba(0, 0, 255, 1)", "width": 1 },
                 "chartStyle2": { "color": "rgba(255, 0, 0, 1)", "width": 1 }
@@ -125,6 +126,7 @@ Plugin configuration
                 "id": "tmax",
                 "name": "Temperatura Massima",
                 "unit": "°C",
+                "chartType": "clima",
                 "yaxis": "Temperatura (°C)",
                 "chartStyle1": { "color": "rgba(0, 0, 255, 1)", "width": 1 },
                 "chartStyle2": { "color": "rgba(255, 0, 0, 1)", "width": 1 }
@@ -133,6 +135,7 @@ Plugin configuration
                 "id": "tmin",
                 "name": "Temperatura Minima",
                 "unit": "°C",
+                "chartType": "clima",
                 "yaxis": "Temperatura (°C)",
                     "chartStyle1": { "color": "rgba(0, 0, 255, 1)", "width": 1 },
                     "chartStyle2": { "color": "rgba(255, 0, 0, 1)", "width": 1 }
@@ -141,17 +144,19 @@ Plugin configuration
                 "id": "ret",
                 "name": "Evapotraspirazione Potenziale",
                 "unit": "mm",
+                "chartType": "clima",
                 "yaxis": "Valore (mm)",
-                    "chartStyle1": { "color": "rgba(0, 0, 255, 1)", "width": 1 },
-                    "chartStyle2": { "color": "rgba(255, 0, 0, 1)", "width": 1 }
+                "chartStyle1": { "color": "rgba(0, 0, 255, 1)", "width": 1 },
+                "chartStyle2": { "color": "rgba(255, 0, 0, 1)", "width": 1 }
               },
               {
                 "id": "bis",
                 "name": "Bilancio Idrico Semplificato",
                 "unit": "mm",
+                "chartType": "clima",
                 "yaxis": "Valore (mm)",
-                    "chartStyle1": { "color": "rgba(0, 0, 255, 1)", "width": 1 },
-                    "chartStyle2": { "color": "rgba(255, 0, 0, 1)", "width": 1 }
+                "chartStyle1": { "color": "rgba(0, 0, 255, 1)", "width": 1 },
+                "chartStyle2": { "color": "rgba(255, 0, 0, 1)", "width": 1 }
               }
             ],
             "menuType": "single_select",
