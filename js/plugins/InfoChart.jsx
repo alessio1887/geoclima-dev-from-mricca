@@ -159,8 +159,7 @@ Plugin configuration
                 "chartStyle2": { "color": "rgba(255, 0, 0, 1)", "width": 1 }
               }
             ],
-            "menuType": "single_select",
-            "chartType": "single_variable"
+            "menuType": "single_select"
           },
           {
             "id": "spiList",

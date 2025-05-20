@@ -10,7 +10,7 @@ import { DATE_FORMAT } from './ManageDateUtils';
 // type of range picher
 export const FIXED_RANGE = "fixed_range_picker";
 export const FREE_RANGE = "free_range_picker";
-export const SINGLE_VARIABLE_CHART = "single_variable";
+// export const SINGLE_VARIABLE_CHART = "single_variable";
 export const MULTI_VARIABLE_CHART = "multi_variable";
 export const AIB_HISTORIC_CHART = "aib_historic_chart";
 export const AIB_PREVISIONALE = "aib_previsionale";
@@ -346,9 +346,10 @@ export const createMultiTraces = (dataSetDefinitions, dates, dataFetched) => {
         });
 };
 
-export const createObservedAndClimatologicalTraces = (variable, dates, dataFetched, unitPrecipitazione) => {
-    const chartVariable = variable.id;
-    const unit = variable.unit;
+export const createObservedAndClimatologicalTraces = (traceParams, dates, dataFetched, unitPrecipitazione) => {
+    const chartParams = traceParams.chartActive ?? traceParams.variables[0];
+    const chartVariable = traceParams.variables[0].id;
+    const unit = chartParams.unit;
     const propVariable = "st_value_" + chartVariable;
 
     const chartData =  unit === unitPrecipitazione
@@ -360,14 +361,14 @@ export const createObservedAndClimatologicalTraces = (variable, dates, dataFetch
 
     const observedData = chartData.map(item => item[propVariable]);
     const climatologicalData = chartData.map(item => item.st_value_clima);
-    const fillTraces = fillAreas(dates, observedData, climatologicalData, variable, unitPrecipitazione);
+    const fillTraces = fillAreas(dates, observedData, climatologicalData, chartParams, unitPrecipitazione);
 
     const trace1 = {
         x: dates,
         y: climatologicalData,
         mode: 'lines',
         name: climaLabel,
-        line: variable.chartStyle1
+        line: chartParams.chartStyle1
     };
 
     const trace2 = {
@@ -375,28 +376,29 @@ export const createObservedAndClimatologicalTraces = (variable, dates, dataFetch
         y: observedData,
         mode: 'lines',
         name: currentYearLabel,
-        line: variable.chartStyle2
+        line: chartParams.chartStyle2
     };
 
     return [trace1, trace2].concat(fillTraces);
 };
 
-export const createCumulataBarTraces = (variables, times, dataFetched) => {
-    const chartVariable = variables.id;
+export const createCumulataBarTraces = (traceParams, times, dataFetched) => {
+    const chartParams = traceParams.chartActive ?? traceParams;
+    const chartVariable = traceParams.variables[0].id;
     const propVariable = ST_VALUE + chartVariable;
 
     // Estrae le precipitazioni e le converte in numeri
     const precipitations = dataFetched.map(item => parseFloat(parseFloat(item[propVariable]).toFixed(1)));
     const cumulativePrecip = formatDataCum(dataFetched, propVariable).map(item => item[propVariable]);
 
-    const barStyle = variables.chartStyle1 ? { ...variables.chartStyle1 } : { color: '#FFAF1F', opacity: 0.6 };
+    const barStyle = chartParams.chartStyle1 ? { ...chartParams.chartStyle1 } : { color: '#FFAF1F', opacity: 0.6 };
 
     // Traccia a barre per la precipitazione istantanea
     const trace1 = {
         x: times,
         y: precipitations,
         type: 'bar',
-        name: variables.yaxis,
+        name: chartParams.yaxis,
         marker: barStyle
         // marker: { color: '#ff821f', opacity: 0.6 }
     };
@@ -407,8 +409,8 @@ export const createCumulataBarTraces = (variables, times, dataFetched) => {
         y: cumulativePrecip,
         type: 'scatter',
         mode: 'lines',
-        name: variables.yaxis2,
-        line: variables.chartStyle2,
+        name: chartParams.yaxis2,
+        line: chartParams.chartStyle2,
         yaxis: 'y2'
     };
 
@@ -416,7 +418,8 @@ export const createCumulataBarTraces = (variables, times, dataFetched) => {
 };
 
 
-export const createCumulataBarLayout = (variables, chartTitle, traces, dates, format, chartRelayout, infoChartSize, isCollapsedFormGroup) => {
+export const createCumulataBarLayout = (traceParams, chartTitle, traces, dates, format, chartRelayout, infoChartSize, isCollapsedFormGroup) => {
+    const chartParams = traceParams.chartActive ?? traceParams;
     const barTrace = traces[0].y;
     const maxPrecip = Math.max(...barTrace);
     const y1max = Math.max(maxPrecip, 6);
@@ -457,7 +460,7 @@ export const createCumulataBarLayout = (variables, chartTitle, traces, dates, fo
             tickcolor: '#000'
         },
         yaxis: {
-            title: variables.yaxis,
+            title: chartParams.yaxis,
             range: yaxisRange,
             tick0: 0,
             dtick: dtick1,
@@ -466,7 +469,7 @@ export const createCumulataBarLayout = (variables, chartTitle, traces, dates, fo
             rangemode: 'tozero'
         },
         yaxis2: {
-            title: variables.yaxis2,
+            title: chartParams.yaxis2,
             overlaying: 'y',
             side: 'right',
             range: yaxis2Range,

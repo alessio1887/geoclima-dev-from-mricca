@@ -8,7 +8,6 @@
 import React, { useState, useEffect } from 'react';
 import Plot from '@mapstore/components/charts/PlotlyChart.jsx';
 import {
-    SINGLE_VARIABLE_CHART,
     MULTI_VARIABLE_CHART,
     CUMULATA_CHART,
     AIB_HISTORIC_CHART,
@@ -42,34 +41,35 @@ const InfoChartRender = ({
         const dates = Array.isArray(dataFetched) ? dataFetched.map(item => moment(item.data).toDate())
             : dataFetched.data.map(item => moment(item.data).toDate());
         let newTraces = [];
-        const chartTitle = variableChartParams.name || "";
+        const chartTitle = variableChartParams.variables.name || "";
         const chartSubtitle = dataFetched.comune || "";
+        const chartType = variableChartParams.chartType ||  variableChartParams.chartActive.chartType;
         let newLayout = {};
 
         // Calculate the traces and layout based on the chart type
-        switch (variableChartParams.chartType) {
+        switch (chartType) {
         case MULTI_VARIABLE_CHART:
-            newTraces = createMultiTraces(variableChartParams.tabVariableParams, dates, dataFetched);
+            newTraces = createMultiTraces(variableChartParams.variables, dates, dataFetched);
             newTraces = createBackgroundBands(dates, variableChartParams.backgroundBands).concat(newTraces);
-            newLayout = createLayout(chartTitle, "", chartSubtitle, dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, MULTI_VARIABLE_CHART);
+            newLayout = createLayout( variableChartParams.name || "", "", chartSubtitle, dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, MULTI_VARIABLE_CHART);
             break;
         case CLIMA_CHART:
             newTraces = createObservedAndClimatologicalTraces(variableChartParams, dates, dataFetched, unitPrecipitazione);
-            newLayout = createLayout(chartTitle, variableChartParams.yaxis, chartSubtitle, dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, SINGLE_VARIABLE_CHART);
+            newLayout = createLayout(variableChartParams.variables[0].name || "", variableChartParams.chartActive?.yaxis || variableChartParams.variables[0].yaxis, chartSubtitle, dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, CLIMA_CHART);
             break;
         case CUMULATA_CHART:
             newTraces = createCumulataBarTraces(variableChartParams, dates, dataFetched);
-            newLayout = createCumulataBarLayout(variableChartParams, chartTitle, newTraces, dates, format, chartRelayout, infoChartSize, isCollapsedFormGroup);
+            newLayout = createCumulataBarLayout(variableChartParams, variableChartParams.variables[0].name, newTraces, dates, format, chartRelayout, infoChartSize, isCollapsedFormGroup);
             break;
         case AIB_HISTORIC_CHART:
         case AIB_PREVISIONALE:
-            newTraces = createMultiTraces([variableChartParams], dates, dataFetched.data);
-            newTraces = createBackgroundBands(dates, variableChartParams.backgroundBands).concat(newTraces);
-            newLayout = createLayout(chartTitle, "", chartSubtitle, dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, AIB_HISTORIC_CHART);
+            newTraces = createMultiTraces(variableChartParams.variables, dates, dataFetched.data);
+            newTraces = createBackgroundBands(dates, variableChartParams.variables[0].backgroundBands).concat(newTraces);
+            newLayout = createLayout(variableChartParams.variables[0].name, "", chartSubtitle, dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, AIB_HISTORIC_CHART);
             break;
         default:
-            newTraces = createMultiTraces([variableChartParams], dates, dataFetched);
-            newLayout = createLayout(chartTitle, "", chartSubtitle, dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, SINGLE_VARIABLE_CHART);
+            newTraces = createMultiTraces(variableChartParams.variables, dates, dataFetched);
+            newLayout = createLayout(chartTitle, "", chartSubtitle, dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, MULTI_VARIABLE_CHART);
             break;
         }
         // Merge the new traces with the previously set ones to preserve the visibility state
