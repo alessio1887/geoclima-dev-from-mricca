@@ -10,6 +10,8 @@
             "https://geoportale.lamma.rete.toscana.it/cgi-bin/geoclima_app/selectDateAIB.py?",
             "https://geoportale.lamma.rete.toscana.it/geoclima_api/download-image?",
             "https://geoportale.lamma.rete.toscana.it/geoclima_api/gdownload_image/download-image?",
+            "https://geoportale.lamma.rete.toscana.it/geoclima_api/ggenerate_aib_chart/fwi-stats?",
+            "https://geoportale.lamma.rete.toscana.it/geoclima_api/ggenerate_aib_chart/fwi-stats-prev?",
             "https://nominatim.openstreetmap.org",
             "http://spatialreference.org/ref/epsg/3003/proj4/",
             "https://geoportale.lamma.rete.toscana.it/rischiojson/rischiojson.php?"
