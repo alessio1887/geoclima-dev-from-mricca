@@ -21,6 +21,7 @@ export const CLOSE_ALERT = 'INFOCHART:CLOSE_ALERT';
 export const SET_CHART_RELAYOUT = 'INFOCHART:SET_CHART_RELAYOUT';
 export const RESET_CHART_RELAYOUT = 'INFOCHART:RESET_CHART_RELAYOUT';
 export const RESIZE_INFOCHART = 'RESIZE_INFOCHART';
+export const SET_DEFAULT_SIZE = 'INOFCHART:SET_DEFAULT_SIZE';
 export const SET_IDVARIABILI_LAYERS = 'SET_ID_VARIABILI_LAYERS';
 export const SET_DEFAULT_URL = 'INFOCHART:SET_DEFULT_URL';
 export const SET_DEFAULT_DATES = 'INFOCHART:SET_DEFULT_DATES';
@@ -166,6 +167,15 @@ export function resizeInfoChart(widthResizable, heightResizable) {
         type: RESIZE_INFOCHART,
         widthResizable,
         heightResizable
+    };
+}
+
+
+export function setDefaultPanelSize(width, height) {
+    return {
+        type: SET_DEFAULT_SIZE,
+        width,
+        height
     };
 }
 

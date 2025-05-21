@@ -25,19 +25,10 @@
     margin-top: 5px;
 }
 
-  @media (max-width: 768px) {
-    .ms-dailydatepicker {
-      flex-direction: column; /* Cambia layout a colonna su schermi stretti */
-      align-items: center;
-      gap: 12px; /* Spaziatura maggiore tra gli elementi */
+@media (max-width: 1210px) {
+    .ms-dailydatepicker-container,
+    .ms-dailydatepicker-calendar  {
+        width: 270px;
     }
+}
 
-    .ms-dailydatepicker Button {
-      width: 100%; /* Pulsanti larghi su schermi stretti */
-      max-width: 200px; /* Evita che diventino troppo grandi */
-    }
-
-    .ms-dailydatepicker .react-datepicker-wrapper {
-      width: 100%;
-    }
-  }

@@ -177,17 +177,12 @@ const ExportImage = ({
             onClose={onToggleControlExportImage}
         >
             <Dialog
-                id="export-image-dialog"
-                // maskLoading={isInteractionDisabled}  // This enables the loading mask with react-spinkit animation
+                id="exportimage-dialog"
                 maskLoading={maskLoading}
                 draggable={false}  // Puoi modificare se vuoi rendere il dialog trascinabile
                 backgroundStyle={{ background: "rgba(0, 0, 0, 0.5)" }}
                 containerClassName="export-image-dialog-container"
                 onClickOut={onToggleControlExportImage}
-                style={{
-                    top: "-200px",
-                    right: "20px"
-                }}
             >
                 <ExportImageForm
                     fileNameExported={fileNameExported}

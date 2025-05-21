@@ -191,19 +191,85 @@ export function formatDataTemp(values, propVariable) {
             : 0
     }));
 }
-/**
- * Calculates the horizontal position (xPosition) of the panel based on the screen width,
- * maintaining a proportion relative to a reference width and rounding up.
- * @returns {number} The negative X position to correctly position the panel.
- */
-export function getXPositionPanel()  {
+export function getDefaultPanelSize() {
     const screenWidth = window.innerWidth;
-    const referenceWidth = 2390;
-    const basePercentage = 0.30;
-    let xPositionPercentage = (screenWidth / referenceWidth) * basePercentage;
-    xPositionPercentage = (Math.ceil(xPositionPercentage * 100) / 100) + 0.01;
-    return -(screenWidth * xPositionPercentage);
+    const screenHeight = window.innerHeight;
+    let width = 880;
+    let height = 880;
+
+    if (screenWidth < 710 || screenHeight < 710) {
+        width = screenWidth;
+        height = screenHeight - 60;
+    } else {
+        width = Math.min(screenWidth * 0.9, 880);
+        height = Math.min(screenHeight * 0.9, 880);
+    }
+    return {
+        width: width,
+        height: height
+    };
 }
+
+/**
+ * Calculates the X position of the panel based on screen dimensions.
+ *
+ * This function calculates an offset and a scale factor based on the screen's width and height,
+ * and then uses these values to determine the final X coordinate of the panel.
+ *
+ * @param {number} screenWidth - The width of the screen.
+ * @param {number} screenHeight - The height of the screen.
+ * @returns {number} The calculated X position of the panel.
+ */
+function getXPositionFromScreen(screenWidth, screenHeight) {
+    // calculate offsetX: Calculates a horizontal offset based on screen width and height.
+    // The base offset is linearly interpolated between two reference screen widths (x1, x2)
+    // with corresponding offsets (y1, y2). An additional adjustment is applied based on the
+    // screen's aspect ratio to prevent the panel from appearing too centered on shorter screens.
+    const x1 = 2390; const y1 = 0;
+    const x2 = 1510; const  y2 = 130;
+    const m = (y2 - y1) / (x2 - x1);
+    const b = y1 - m * x1;
+    const baseOffset = m * screenWidth + b;
+    const aspectRatio = screenWidth / screenHeight;
+    const aspectAdjustment = (aspectRatio - 16 / 9); // tuning: 16/9 è "standard"
+    const offsetX =  baseOffset + aspectAdjustment;
+
+    // calculate scale between diagonals: Calculates a scaling factor based on the screen's diagonal.
+    // This scale factor is used to adjust the panel's position proportionally to the screen size.
+    const currentDiagonal = Math.sqrt(screenWidth ** 2 + screenHeight ** 2);
+    const referenceDiagonal = Math.sqrt(2390 ** 2 + 1190 ** 2);
+    const scale = currentDiagonal / referenceDiagonal;
+
+    return  -850 * scale + offsetX;
+}
+
+/**
+ * Calculates and returns the starting position (x, y coordinates) of the panel.
+ *
+ * This function determines the panel's position based on the screen's width and height.
+ * It uses different calculation methods depending on the screen size.
+ *
+ * @returns {{x: number, y: number}} An object containing the x and y coordinates of the panel's starting position.
+ */
+export function getStartPositionPanel() {
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+    // When screen is too small, panel is positioned at the top-left corner (0, 0)
+    let y = 0; // Default Y position (top)
+    let x = 0; // Default X position (left)
+    if ( (screenWidth >= 1400 || screenHeight >= 1400) && (screenWidth > screenHeight)) {
+        x = getXPositionFromScreen(screenWidth, screenHeight);
+        const offsetY = Math.min(screenHeight * 0.1, 80);
+        y = Math.max(-offsetY, -screenHeight + 100);
+    } else if (screenWidth >= 450 && screenHeight >= 450 && screenWidth > screenHeight) {
+        y = -80;
+        const xPositionA = -180;
+        const xPositionB = - (Math.max(screenWidth, screenHeight) / 10 + 100);
+        x = Math.max(xPositionA, xPositionB);
+    }
+    return { x, y };
+}
+
 
 // Function to calculate the dynamic dtick for the y-axis
 export function  getDtick(maxValue) {

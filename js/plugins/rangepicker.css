@@ -3,14 +3,19 @@
   background-color: #FFFFFF;
   /* overflow: hidden; */
   display: flex;
-  left: 4px;
   /* height: 200px; */
   flex-direction: column;
   margin: 0;
   border: none;
   z-index: 10;
-  top: 4px;
-  width: 280px;
+  top: 5px;
+  left: 45px;
+  width: 280px
+}
+
+.ms-fixedrangepicker-action > button,
+.ms-freerangepicker-action > button {
+    width: 280px;
 }
 
 .labels-fixedrangepicker,
@@ -59,46 +64,16 @@
     margin-bottom: 5px; /* Spazio a destra del testo in grassetto */
 }
 
-@media (max-width: 1310px) {
-    .ms-fixedrangemanager-action  {
-        background-color: #FFFFFF;
-        /* overflow: hidden; */
-        display: flex;
-        left: 4px;
-        /* height: 200px; */
-        flex-direction: column;
-        margin: 0;
-        border: none;
-        z-index: 10;
-        top: 4px;
-      }
-}
+@media (max-width: 1210px) {
+    .ms-fixedrangepicker-action,
+    .ms-freerangepicker-action  {
+        top: 45px;
+        left: 5px;
+        width: 270px;
+    }
 
-
-@media (min-width: 769px) {
-    div#mapstore-freerangepicker-map,
-    div#mapstore-fixedrangepicker-map {
-        /*width: 300px;*/
-        margin-left: auto;
-        margin-bottom: 40px;
-        /* visibility: hidden; */
+    .ms-fixedrangepicker-action > button,
+    .ms-freerangepicker-action > button {
+        width: 270px;
     }
 }
-
-@media (max-width: 768px) {
-    div#mapstore-freerangepicker,
-    div#mapstore-fixedrangepicker {
-        width: 100%;
-        /* visibility: hidden; */
-    }
-}
-
-@media (max-width: 1310px) {
-    .daterangelabel {
-      color: white;
-      bottom: 20px;   /* Sposta l'elemento a 20px dal fondo */
-      left: 50%;      /* Mantieni centrato orizzontalmente */
-      transform: translateX(-50%);  /* Mantieni la traduzione per centrarlo */
-      top: auto;      /* Assicurati che 'top' non sovrascriva il 'bottom' */
-    }
-  }

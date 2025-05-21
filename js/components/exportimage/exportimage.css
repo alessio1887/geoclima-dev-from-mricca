@@ -1,6 +1,11 @@
-.exportimage-from {
+.exportimage-form {
     padding: 0px 20px 20px;
-    width: 450px
+    width: 100%;
+}
+
+#exportimage-dialog {
+    top: -200px;
+    width: 100%;
 }
 
 .labels-exportimage {
@@ -48,7 +53,7 @@
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
+    height: 97.4%;
     pointer-events: none; /* Importante per evitare che il portal blocchi gli eventi del mouse */
     z-index: 1000; /* Assicurati che il portal sia sopra gli altri elementi */
   }
@@ -67,4 +72,25 @@
 .exportimage-tabbar-item {
     padding: 10px 20px;
     transition: color 0.3s, border-bottom 0.3s;
+}
+
+@media (max-width: 760px) {
+    .exportimage-form {
+        padding: 0px;
+        width: 100%;
+        position: relative;
+        top: 10px;
+        background-color: white;
+    }
+
+    #exportimage-dialog {
+        top: -70px;
+        width: 100%;
+    }
+}
+
+@media (max-height: 900px) {
+    #exportimage-portal-root {
+        height: 96%;
+    }
 }
