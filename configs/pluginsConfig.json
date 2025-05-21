@@ -920,7 +920,7 @@
             ],
             "chartTitle": "Indice SPI - Standardized Precipitation Index",
             "menuType": "multi_select",
-            "chartType": "multi_variable",
+            "chartType": "spi_spei_chart",
             "backgroundBands": [
               {
                 "min": -3,
@@ -996,7 +996,7 @@
             ],
             "chartTitle": "Indice SPEI - Standardized Precipitation-Evapotranspiration Index",
             "menuType": "multi_select",
-            "chartType": "multi_variable",
+            "chartType": "spi_spei_chart",
             "backgroundBands": [
               {
                 "min": -3,

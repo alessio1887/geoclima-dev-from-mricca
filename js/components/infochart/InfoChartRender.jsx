@@ -8,12 +8,12 @@
 import React, { useState, useEffect } from 'react';
 import Plot from '@mapstore/components/charts/PlotlyChart.jsx';
 import {
-    MULTI_VARIABLE_CHART,
+    SPI_SPEI_CHART,
     CUMULATA_CHART,
     AIB_HISTORIC_CHART,
     AIB_PREVISIONALE,
     CLIMA_CHART,
-    createMultiTraces,
+    createVariableLineTraces,
     createBackgroundBands,
     createCumulataBarTraces,
     createObservedAndClimatologicalTraces,
@@ -48,10 +48,10 @@ const InfoChartRender = ({
 
         // Calculate the traces and layout based on the chart type
         switch (chartType) {
-        case MULTI_VARIABLE_CHART:
-            newTraces = createMultiTraces(variableChartParams.variables, dates, dataFetched);
+        case SPI_SPEI_CHART:
+            newTraces = createVariableLineTraces(variableChartParams.variables, dates, dataFetched);
             newTraces = createBackgroundBands(dates, variableChartParams.backgroundBands).concat(newTraces);
-            newLayout = createLayout( variableChartParams.name || "", "", chartSubtitle, dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, MULTI_VARIABLE_CHART);
+            newLayout = createLayout( variableChartParams.name || "", "", chartSubtitle, dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, SPI_SPEI_CHART);
             break;
         case CLIMA_CHART:
             newTraces = createObservedAndClimatologicalTraces(variableChartParams, dates, dataFetched, unitPrecipitazione);
@@ -63,13 +63,13 @@ const InfoChartRender = ({
             break;
         case AIB_HISTORIC_CHART:
         case AIB_PREVISIONALE:
-            newTraces = createMultiTraces(variableChartParams.variables, dates, dataFetched.data);
+            newTraces = createVariableLineTraces(variableChartParams.variables, dates, dataFetched.data);
             newTraces = createBackgroundBands(dates, variableChartParams.variables[0].backgroundBands).concat(newTraces);
             newLayout = createLayout(variableChartParams.variables[0].name, "", chartSubtitle, dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, AIB_HISTORIC_CHART);
             break;
         default:
-            newTraces = createMultiTraces(variableChartParams.variables, dates, dataFetched);
-            newLayout = createLayout(chartTitle, "", chartSubtitle, dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, MULTI_VARIABLE_CHART);
+            newTraces = createVariableLineTraces(variableChartParams.variables, dates, dataFetched);
+            newLayout = createLayout(chartTitle, "", chartSubtitle, dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, SPI_SPEI_CHART);
             break;
         }
         // Merge the new traces with the previously set ones to preserve the visibility state

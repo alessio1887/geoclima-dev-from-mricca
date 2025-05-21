@@ -11,7 +11,8 @@ import { DATE_FORMAT } from './ManageDateUtils';
 export const FIXED_RANGE = "fixed_range_picker";
 export const FREE_RANGE = "free_range_picker";
 // export const SINGLE_VARIABLE_CHART = "single_variable";
-export const MULTI_VARIABLE_CHART = "multi_variable";
+// export const MULTI_VARIABLE_CHART = "multi_variable";
+export const SPI_SPEI_CHART = "spi_spei_chart";
 export const AIB_HISTORIC_CHART = "aib_historic_chart";
 export const AIB_PREVISIONALE = "aib_previsionale";
 export const CUMULATA_CHART = "cumulata";
@@ -312,7 +313,7 @@ export const createBackgroundBands = (dates, bands) => {
  * @param {Array} dataFetched - Array of data records, each containing keys like `st_value_<id>`.
  * @returns {Array} Array of Plotly trace objects for visualizing the data.
  */
-export const createMultiTraces = (dataSetDefinitions, dates, dataFetched) => {
+export const createVariableLineTraces = (dataSetDefinitions, dates, dataFetched) => {
     return dataSetDefinitions
         .filter(function(variable) {
             var valueKey = ST_VALUE + variable.id;
@@ -490,8 +491,8 @@ export const createCumulataBarLayout = (traceParams, chartTitle, traces, dates, 
 
 
 export const createLayout = (chartTitle, yaxisTitle, chartSubtitle, dates, format, dataTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, chartType) => {
-    const isMultiVariable = chartType === MULTI_VARIABLE_CHART;
-    const yaxisRange = isMultiVariable
+    const isSpiSpeiChart = chartType === SPI_SPEI_CHART;
+    const yaxisRange = isSpiSpeiChart
         ? [chartRelayout?.yaxisStart || MIN_Y_INDEX, chartRelayout?.yaxisEnd || MAX_Y_INDEX]
         : [chartRelayout?.yaxisStart || Math.min([dataTraces[0], dataTraces[1]]), chartRelayout?.yaxisEnd || Math.max([dataTraces[0], dataTraces[1]])];
 
@@ -514,10 +515,10 @@ export const createLayout = (chartTitle, yaxisTitle, chartSubtitle, dates, forma
         },
         yaxis: {
             range: yaxisRange,
-            ...(isMultiVariable && { // Aggiunge tickvals solo per multi-variable
+            ...(isSpiSpeiChart && { // Aggiunge tickvals solo per multi-variable
                 tickvals: [MIN_Y_INDEX, -2, -1.5, -0.5, 0.5, 1.0, 1.5, 2.0, MAX_Y_INDEX]
             }),
-            ...(!isMultiVariable && { // Aggiunge il title solo se non e multi-variable
+            ...(!isSpiSpeiChart && { // Aggiunge il title solo se non e multi-variable
                 title: yaxisTitle
             }),
             tickformat: '.1f',
