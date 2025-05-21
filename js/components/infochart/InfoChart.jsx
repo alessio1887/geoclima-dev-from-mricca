@@ -43,7 +43,7 @@ class InfoChart extends React.Component {
         onSetChartRelayout: PropTypes.func,
         onResetChartZoom: PropTypes.func,
         onResizeInfoChart: PropTypes.func,
-        onSetDafaultPanelSize: PropTypes.func,
+        onSetDefaultPanelSize: PropTypes.func,
         onSetRangeManager: PropTypes.func,
         onChangeChartType: PropTypes.func,
         onSetTabList: PropTypes.func,
@@ -107,7 +107,7 @@ class InfoChart extends React.Component {
         onSetChartRelayout: () => {},
         onResetChartZoom: () => {},
         onResizeInfoChart: () => {},
-        onSetDafaultPanelSize: () => {},
+        onSetDefaultPanelSize: () => {},
         onInitializeVariableTabs: () => {},
         unitPrecipitazione: "mm",
         unitTemperatura: "°C",
@@ -223,7 +223,7 @@ class InfoChart extends React.Component {
             }
             // Set panel size
             const { width: newWidth, height: newHeight } = getDefaultPanelSize();
-            this.props.onSetDafaultPanelSize(newWidth, newHeight);
+            this.props.onSetDefaultPanelSize(newWidth, newHeight);
             this.props.onMarkPluginAsLoaded();
         }
     }
