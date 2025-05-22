@@ -24,7 +24,7 @@ import {
     markInfoChartAsNotLoaded,
     changeTab, changeChartVariable,
     closeAlert, resetChartRelayout,
-    setDafaultPanelSize, resizeInfoChart } from '../actions/infochart';
+    setDefaultPanelSize, resizeInfoChart } from '../actions/infochart';
 import { CLICK_ON_MAP } from '@mapstore/actions/map';
 import { LOADING } from '@mapstore/actions/maps';
 import { getMarkerLayer } from '../../MapStore2/web/client/utils/MapInfoUtils';
@@ -403,7 +403,7 @@ const clickedPointCheckEpic = (action$, store) =>
                     actions.push(changePeriod(periodType));
                 }
                 if ( infoChartSize.defaultWidth !== newWidth || infoChartSize.defaultHeight !== newHeight) {
-                    actions.push(setDafaultPanelSize(newWidth, newHeight));
+                    actions.push(setDefaultPanelSize(newWidth, newHeight));
                 } else if ( infoChartSize.defaultWidth !== infoChartSize.widthResizable || infoChartSize.defaultHeight !== infoChartSize.heightResizable) {
                     actions.push(resizeInfoChart(infoChartSize.defaultWidth, infoChartSize.defaultHeight));
                 }

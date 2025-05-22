@@ -12,7 +12,7 @@ import { createStructuredSelector } from 'reselect';
 import {setInfoChartVisibility, changeFixedRangeToData, fetchInfoChartData, fetchedInfoChartData, toggleInfoChart,
     changeChartVariable, changePeriod, changeFromData, changeToData, setDefaultDates, collapseRangePicker,
     openAlert, closeAlert, setChartRelayout, resetChartRelayout, resizeInfoChart, setIdVariabiliLayers,
-    setRangeManager, setDefaultUrlGeoclimaChart, setTimeUnit, changeChartType, setDafaultPanelSize,
+    setRangeManager, setDefaultUrlGeoclimaChart, setTimeUnit, changeChartType, setDefaultPanelSize,
     markInfoChartAsLoaded, changeTab, setTabList, initializeVariableTabs } from '../actions/infochart';
 import { removeAdditionalLayer  } from '@mapstore/actions/additionallayers';
 import InfoChartButton from '../components/buttons/InfoChartButton';
@@ -548,7 +548,7 @@ const InfoChartPanel = connect(
         onChangeFromData: compose(changeFromData, (event) => event),
         onChangeFixedRangeTodata: compose(changeFixedRangeToData, (event) => event),
         onChangePeriod: changePeriod,
-        onSetDafaultPanelSize: setDafaultPanelSize,
+        onSetDefaultPanelSize: setDefaultPanelSize,
         onSetInfoChartDates: setDefaultDates,
         onSetInfoChartVisibility: setInfoChartVisibility,
         onSetTimeUnit: setTimeUnit,

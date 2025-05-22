@@ -171,7 +171,7 @@ export function resizeInfoChart(widthResizable, heightResizable) {
 }
 
 
-export function setDafaultPanelSize(width, height) {
+export function setDefaultPanelSize(width, height) {
     return {
         type: SET_DEFAULT_SIZE,
         width,
