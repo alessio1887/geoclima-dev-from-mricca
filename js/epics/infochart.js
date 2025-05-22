@@ -205,19 +205,10 @@ const setVisVariable = (visibleLayer, idVariabiliLayers) => {
 const getVisibleLayerValues = (visibleLayer, appState) => {
     const idVariabiliLayers = appState.infochart.idVariabiliLayers;
     const variable = setVisVariable(visibleLayer.name, idVariabiliLayers);
-    // const fromData = visibleLayer.params?.fromData || getDefaultValues(idVariabiliLayers, appState).fromData;
-    // const toData = visibleLayer.params?.toData || getDefaultValues(idVariabiliLayers, appState).toData;
-    // const periodType = appState.fixedrangepicker?.showFixedRangePicker
-    // ? appState.fixedrangepicker?.periodType
-    // : getDefaultValues(idVariabiliLayers, appState).periodType;
-    // Dynamically determine idTab based on the variable using the tabList from appState
     const idTab = getIdTabFromVariable(variable, appState.infochart.tabList); // Use the function to get idTab
     return {
         variable,
-        // fromData,
-        // toData,
-        // periodType,
-        idTab // Added idTab
+        idTab
     };
 };
 

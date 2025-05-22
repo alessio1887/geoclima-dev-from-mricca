@@ -32,6 +32,24 @@ const Api = {
         });
         return axios.get(url); // TODO the jsonp method returns .promise and .cancel method,the last can be called when user cancel the query
     },
+    getAibChartStorico: function(data, urlGenerateAibChartStorico, options) {
+        var params = assign({lat: data.latlng.lat, lng: data.latlng.lng, toData: data.toData, fromData: data.fromData, fwi_index_type: data.variables}, options || {});
+        var url = urlUtil.format({
+            protocol: window.location.hostname === 'localhost' ? 'https:' : window.location.protocol,
+            host: urlGenerateAibChartStorico,
+            query: params
+        });
+        return axios.get(url);
+    },
+    getAibChartPrev: function(data, defaultUrlGenerateAibChartPrev, options) {
+        var params = assign({lat: data.latlng.lat, lng: data.latlng.lng, toData: data.toData, fonte: "arw_ecm_3km"}, options || {});
+        var url = urlUtil.format({
+            protocol: window.location.hostname === 'localhost' ? 'https:' : window.location.protocol,
+            host: defaultUrlGenerateAibChartPrev,
+            query: params
+        });
+        return axios.get(url);
+    },
     getAvailableDates: function(variable, defaultUrlSelectDate, options) {
         var params = assign({ variable: variable}, options || {});
         var url = urlUtil.format({

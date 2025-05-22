@@ -12,7 +12,7 @@ import { createStructuredSelector } from 'reselect';
 import {setInfoChartVisibility, changeFixedRangeToData, fetchInfoChartData, fetchedInfoChartData, toggleInfoChart,
     changeChartVariable, changePeriod, changeFromData, changeToData, setDefaultDates, collapseRangePicker,
     openAlert, closeAlert, setChartRelayout, resetChartRelayout, resizeInfoChart, setIdVariabiliLayers,
-    setRangeManager, setDefaultUrlGeoclimaChart, setTimeUnit, changeChartType, setDefaultPanelSize,
+    setRangeManager, setDefaultUrls, setTimeUnit, changeChartType, setDefaultPanelSize,
     markInfoChartAsLoaded, changeTab, setTabList, initializeVariableTabs } from '../actions/infochart';
 import { removeAdditionalLayer  } from '@mapstore/actions/additionallayers';
 import InfoChartButton from '../components/buttons/InfoChartButton';
@@ -562,7 +562,7 @@ const InfoChartPanel = connect(
         onResetChartZoom: resetChartRelayout,
         onResizeInfoChart: resizeInfoChart,
         onSetIdVariabiliLayers: setIdVariabiliLayers,
-        onSetDefaultUrlGeoclimaChart: setDefaultUrlGeoclimaChart,
+        onSetDefaultUrls: setDefaultUrls,
         onMarkPluginAsLoaded: markInfoChartAsLoaded,
         onHideMapinfoMarker: removeAdditionalLayer
     })(InfoChart);

@@ -23,7 +23,7 @@ export const RESET_CHART_RELAYOUT = 'INFOCHART:RESET_CHART_RELAYOUT';
 export const RESIZE_INFOCHART = 'RESIZE_INFOCHART';
 export const SET_DEFAULT_SIZE = 'INOFCHART:SET_DEFAULT_SIZE';
 export const SET_IDVARIABILI_LAYERS = 'SET_ID_VARIABILI_LAYERS';
-export const SET_DEFAULT_URL = 'INFOCHART:SET_DEFULT_URL';
+export const SET_DEFAULT_URLS = 'INFOCHART:SET_DEFULT_URLS';
 export const SET_DEFAULT_DATES = 'INFOCHART:SET_DEFULT_DATES';
 export const SET_TABLIST = 'INFOCHART:SET_TABLIST';
 export const INITIALIZE_TABS = 'INFOCHART:INITIALIZE_TABS';
@@ -186,10 +186,14 @@ export function setIdVariabiliLayers(idVariabiliLayers) {
     };
 }
 
-export function setDefaultUrlGeoclimaChart(defaultUrlGeoclimaChart) {
+export function setDefaultUrls(urls) {
     return {
-        type: SET_DEFAULT_URL,
-        defaultUrlGeoclimaChart
+        type: SET_DEFAULT_URLS,
+        urls: {
+            defaultUrlGeoclimaChart: urls.defaultUrlGeoclimaChart,
+            defaultUrlGenerateAibChartStorico: urls.defaultUrlGenerateAibChartStorico,
+            defaultUrlGenerateAibChartPrev: urls.defaultUrlGenerateAibChartPrev
+        }
     };
 }
 
