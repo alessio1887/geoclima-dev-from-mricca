@@ -9,19 +9,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Resizable } from 'react-resizable';
 
-import { Collapse, Button, ButtonGroup, Glyphicon, Panel, Grid, FormGroup, Label} from 'react-bootstrap';
+import { Collapse, Button, Glyphicon} from 'react-bootstrap';
 import Message from '@mapstore/components/I18N/Message';
 
 import Dialog from '@mapstore/components/misc/Dialog';
 import BorderLayout from '@mapstore/components/layout/BorderLayout';
+import InfoChartForm from './InfoChartForm';
 import InfoChartRender from './InfoChartRender';
-import SelectVariableTab from '../buttons/SelectVariableTab';
-import TabBar from '../buttons/TabBar';
-import FixedRangeManager from '../../components/datepickers/FixedRangeManager';
-import FreeRangeManager from '../../components/datepickers/FreeRangeManager';
 import DateAPI, { DATE_FORMAT, DEFAULT_DATA_INIZIO, DEFAULT_DATA_FINE } from '../../utils/ManageDateUtils';
-import { FIXED_RANGE, FREE_RANGE, MARKER_ID, MULTI_VARIABLE_CHART, getStartPositionPanel,
-    getDefaultPanelSize }  from '../../utils/VariabiliMeteoUtils';
+import { FIXED_RANGE, MARKER_ID, MULTI_VARIABLE_CHART, getStartPositionPanel, getDefaultPanelSize }  from '../../utils/VariabiliMeteoUtils';
 import { get, isEqual } from 'lodash';
 import moment from 'moment';
 import momentLocaliser from 'react-widgets/lib/localizers/moment';
@@ -200,7 +196,6 @@ class InfoChart extends React.Component {
     initializeTabs = () => {
         const variableTabs = this.props.tabList.map((tab, index) => ({
             id: tab.id,
-            // TODO aggiungi tutte le variabile con un flag active true\false
             variables: [tab.groupList[0]],
             active: index === 0,
             chartType: tab.chartType,
@@ -247,10 +242,6 @@ class InfoChart extends React.Component {
         // Aggiorna le dimensioni del pannello
         this.props.onResizeInfoChart(size.width, size.height);
     };
-    switchRangeManager = () => {
-        const newRangeManager = this.props.activeRangeManager === FIXED_RANGE ? FREE_RANGE : FIXED_RANGE;
-        this.props.onSetRangeManager(newRangeManager);
-    }
     handleRelayout = (eventData) => {
         // Autoscale case: reset zoom data to default values
         if (eventData['xaxis.autorange'] || eventData['yaxis.autorange'] || eventData['yaxis2.autorange']) {
@@ -318,35 +309,23 @@ class InfoChart extends React.Component {
     showChart = () => {
         if (!this.props.maskLoading) {
             const activeTab = this.getActiveTab();
-            let isTabBarVisible = false;
             let chartTypeSelected = {};
             if (activeTab.chartType === MULTI_VARIABLE_CHART) {
                 chartTypeSelected = this.getMultiVariableChartParams();
-            } else { // get chart type of single variable and check if chart choice tab bar is visible
+            } else {
                 chartTypeSelected = this.getSingleVariableChartParams(activeTab);
-                isTabBarVisible = activeTab.variables[0].chartList && activeTab.variables[0].chartList.length > 1;
             }
             return (
-                <div id="infochart-rendering">
-                    { isTabBarVisible && !this.props.isCollapsedFormGroup && this.props.infoChartSize.widthResizable >= 550 &&
-                        !this.props.alertMessage &&
-                        <TabBar tabList={activeTab.variables[0].chartList}
-                            activeTab={activeTab.variables[0].chartList.find(chart =>
-                                chart.active)}
-                            onChangeTab={this.handleChangeChartType}
-                            classAttribute={"chart-type"} />
-                    }
-                    <InfoChartRender
-                        dataFetched = {this.props.data}
-                        handleRelayout= { this.handleRelayout }
-                        chartRelayout= { this.props.chartRelayout}
-                        infoChartSize={ this.props.infoChartSize}
-                        isCollapsedFormGroup={this.props.isCollapsedFormGroup}
-                        variableChartParams={ chartTypeSelected }
-                        unitPrecipitazione = { this.props.unitPrecipitazione }
-                        format={ this.props.timeUnit }
-                    />
-                </div>);
+                <InfoChartRender
+                    dataFetched = {this.props.data}
+                    handleRelayout= { this.handleRelayout }
+                    chartRelayout= { this.props.chartRelayout}
+                    infoChartSize={ this.props.infoChartSize}
+                    isCollapsedFormGroup={this.props.isCollapsedFormGroup}
+                    variableChartParams={ chartTypeSelected }
+                    unitPrecipitazione = { this.props.unitPrecipitazione }
+                    format={ this.props.timeUnit }
+                />);
         }
         return null;
     }
@@ -357,77 +336,40 @@ class InfoChart extends React.Component {
         </span>
         );
     }
+
     getPanelFormGroup = () => {
+        const tabSelected = this.getActiveTab();
         return (
-            <Panel className="infochart-panel">
-                <Grid fluid style={{padding: 0}}>
-                    <FormGroup>
-                        <Label className="labels-infochart"><Message msgId="infochart.selectMeteoVariable"/></Label>
-                        <SelectVariableTab
-                            idContainer="infochart-dropdown-container"
-                            tabList={this.props.tabList}
-                            onChangeSingleVariable={this.updateSingleVariable}
-                            onChangeMultiVariable={this.props.onChangeChartVariable}
-                            activeTab={this.getActiveTab()}
-                            onChangeTab={this.handleChangeTab}
-                            isInteractionDisabled={false}
-                        />
-                        {/* Toggle between FixedRangeManager and FreeRangeManager based on activeRangeManager*/}
-                        {this.props.activeRangeManager === FIXED_RANGE ? (
-                            <FixedRangeManager
-                                minDate={this.props.firstAvailableDate}
-                                maxDate={this.props.lastAvailableDate}
-                                toData={this.props.toData}
-                                periodType={this.props.periodType}
-                                periodTypes={this.props.periodTypes}
-                                onChangeToData={this.props.onChangeFixedRangeTodata}
-                                onChangePeriod={this.handleChangePeriod}
-                                isInteractionDisabled={false}
-                                styleLabels="labels-infochart"
-                                classAttribute="infochart-fixedrangemanager-action"
-                                widthPanel = {this.props.infoChartSize.widthResizable}
-                                format={this.props.timeUnit}
-                            />
-                        ) : (
-                            <FreeRangeManager
-                                minDate={this.props.firstAvailableDate}
-                                maxDate={this.props.lastAvailableDate}
-                                fromData={this.props.fromData}
-                                toData={this.props.toData}
-                                onChangeFromData={this.props.onChangeFromData}
-                                onChangeToData={this.props.onChangeToData}
-                                isInteractionDisabled={false}
-                                styleLabels="labels-infochart"
-                                lablesType="gcapp.freeRangePicker"
-                                classAttribute="infochart-freerangemanager-action"
-                                widthPanel = {this.props.infoChartSize.widthResizable}
-                                format={this.props.timeUnit}
-                            />
-                        )}
-                        <ButtonGroup className="button-group-wrapper">
-                            <Button className="rangepicker-button" onClick={() => this.handleApplyPeriod(this.props.variable)} disabled={this.props.isInteractionDisabled}>
-                                <Glyphicon glyph="calendar" /><Message msgId="gcapp.applyPeriodButton"/>
-                            </Button>
-                            <Button className="rangepicker-button" onClick={ this.switchRangeManager } disabled={this.props.isInteractionDisabled}>
-                                <Message msgId={this.props.activeRangeManager === FIXED_RANGE
-                                    ? "gcapp.fixedRangePicker.dateRangeButton"
-                                    : "gcapp.freeRangePicker.dateRangeButton"}  />
-                            </Button>
-                        </ButtonGroup>
-                    </FormGroup>
-                    {this.props.alertMessage && (
-                        <div className="alert-date" >
-                            <strong><Message msgId="warning"/></strong>
-                            <span ><Message msgId={this.props.alertMessage}
-                                msgParams={{toData: this.state.toDataSelected,
-                                    fromData: this.state.fromDataSelected,
-                                    minDate: moment(this.props.firstAvailableDate).format(this.props.timeUnit),
-                                    maxDate: moment(this.props.lastAvailableDate).format(this.props.timeUnit)
-                                }}/></span>
-                        </div>
-                    )}
-                </Grid>
-            </Panel>
+            <div id="collapse-form-group">
+                <InfoChartForm
+                    tabList={this.props.tabList}
+                    tabVariables={this.props.tabVariables}
+                    onChangeChartVariable={this.props.onChangeChartVariable}
+                    activeTab={tabSelected}
+                    onChangeTab={this.props.onChangeTab}
+                    activeRangeManager={this.props.activeRangeManager}
+                    firstAvailableDate={this.props.firstAvailableDate}
+                    lastAvailableDate={this.props.lastAvailableDate}
+                    toData={this.props.toData}
+                    periodType={this.props.periodType}
+                    periodTypes={this.props.periodTypes}
+                    onChangeFixedRangeTodata={this.props.onChangeFixedRangeTodata}
+                    onChangePeriod={this.props.onChangePeriod}
+                    infoChartSize={this.props.infoChartSize}
+                    timeUnit={this.props.timeUnit}
+                    fromData={this.props.fromData}
+                    onChangeFromData={this.props.onChangeFromData}
+                    onChangeToData={this.props.onChangeToData}
+                    handleApplyPeriod={this.handleApplyPeriod}
+                    variable={this.props.variable}
+                    isInteractionDisabled={this.props.isInteractionDisabled}
+                    onSetRangeManager={this.props.onSetRangeManager}
+                    alertMessage={this.props.alertMessage}
+                    toDataSelected={this.state.toDataSelected}
+                    fromDataSelected={this.state.fromDataSelected}
+                    handleChangeChartType={this.handleChangeChartType}
+                />
+            </div>
         );
     }
     getBody = () => {
@@ -459,7 +401,6 @@ class InfoChart extends React.Component {
                         minConstraints={[400, 600]}
                         style={{
                             flexDirection: "column",
-                            // top: -15,
                             right: 17,
                             padding: "5px",
                             margin: "-15px 0px -10px 0px"
@@ -503,18 +444,6 @@ class InfoChart extends React.Component {
         if (this.props.alertMessage) {
             this.props.onCloseAlert();
         }
-    }
-    handleChangePeriod = (periodType) => {
-        this.props.onChangePeriod(periodType);
-        this.handleApplyPeriod(null, null, periodType);
-    }
-    handleChangeTab = (idTab) => {
-        this.props.onChangeTab(idTab);
-        this.handleApplyPeriod(this.props.tabVariables.find(tab => tab.id === idTab).variables, idTab, null);
-    }
-    updateSingleVariable = (selectedVariable, tabVariable) => {
-        this.props.onChangeChartVariable(tabVariable, [selectedVariable]);
-        this.handleApplyPeriod([selectedVariable], tabVariable);
     }
     resetChartData = () => {
         if ( this.props.activeRangeManager === FIXED_RANGE) {
