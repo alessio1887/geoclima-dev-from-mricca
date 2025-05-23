@@ -62,6 +62,10 @@ const InfoChartRender = ({
             newLayout = createCumulataBarLayout(variableChartParams, variableChartParams.variables[0].name, newTraces, dates, format, chartRelayout, infoChartSize, isCollapsedFormGroup);
             break;
         case AIB_HISTORIC_CHART:
+            newTraces = createVariableLineTraces(variableChartParams.variables, dates, dataFetched);
+            newTraces = createBackgroundBands(dates, variableChartParams.variables[0].backgroundBands).concat(newTraces);
+            newLayout = createLayout(variableChartParams.variables[0].name, "", chartSubtitle, dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, AIB_HISTORIC_CHART);
+            break;
         case AIB_PREVISIONALE:
             newTraces = createVariableLineTraces(variableChartParams.variables, dates, dataFetched);
             newTraces = createBackgroundBands(dates, variableChartParams.variables[0].backgroundBands).concat(newTraces);
