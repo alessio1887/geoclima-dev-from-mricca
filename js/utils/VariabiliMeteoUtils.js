@@ -51,6 +51,15 @@ export function isVariabiliMeteoLayer(layerName, variabiliMeteo) {
     return false;
 }
 
+export const getChartActive = (tabSelected) => {
+    const chartList = tabSelected.chartList || tabSelected.variables[0]?.chartList || [];
+    if (Array.isArray(chartList) && chartList.length > 0) {
+        return chartList.find(chart => chart.active) || chartList[0];
+    }
+    return null;
+};
+
+
 export const getVisibleLayers = (layers, idVariabiliLayers) => {
     return layers
         .filter(layer => layer.visibility && isVariabiliMeteoLayer(layer.name, idVariabiliLayers));

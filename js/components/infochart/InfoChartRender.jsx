@@ -63,7 +63,7 @@ const InfoChartRender = ({
             break;
         case AIB_HISTORIC_CHART:
         case AIB_PREVISIONALE:
-            newTraces = createVariableLineTraces(variableChartParams.variables, dates, dataFetched.data);
+            newTraces = createVariableLineTraces(variableChartParams.variables, dates, dataFetched);
             newTraces = createBackgroundBands(dates, variableChartParams.variables[0].backgroundBands).concat(newTraces);
             newLayout = createLayout(variableChartParams.variables[0].name, "", chartSubtitle, dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, AIB_HISTORIC_CHART);
             break;

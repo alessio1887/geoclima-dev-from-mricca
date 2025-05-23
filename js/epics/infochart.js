@@ -29,7 +29,7 @@ import { CLICK_ON_MAP } from '@mapstore/actions/map';
 import { LOADING } from '@mapstore/actions/maps';
 import { getMarkerLayer } from '../../MapStore2/web/client/utils/MapInfoUtils';
 import API from '../api/GeoClimaApi';
-import { FIXED_RANGE, FREE_RANGE, MARKER_ID, getVisibleLayers, getDefaultPanelSize } from '../utils/VariabiliMeteoUtils';
+import { FIXED_RANGE, FREE_RANGE, MARKER_ID, AIB_HISTORIC_CHART, getVisibleLayers, getDefaultPanelSize, getChartActive } from '../utils/VariabiliMeteoUtils';
 import DateAPI from '../utils/ManageDateUtils';
 import { showFixedRangePickerSelector, periodTypeSelector, isPluginLoadedSelector as isFixedRangeLoaded,
     fromDataFormSelector as fromDataFixedRangeForm, toDataFormSelector as toDataFixedRangeForm  } from '../selectors/fixedRangePicker';
@@ -422,26 +422,45 @@ const clickedPointCheckEpic = (action$, store) =>
             return Observable.of(...actions);
         });
 
-
 /**
- * Epic that listens for the "FETCH_INFOCHART_DATA" action to fetch infochart data from an API
- * and dispatches the resulting data.
+ * Epic that handles loading data for the InfoChart component.
  *
- * When the "FETCH_INFOCHART_DATA" action is triggered, this Epic retrieves data
- * from the API and, once received, emits the `fetchedInfoChartData` action with the obtained data.
+ * When the FETCH_INFOCHART_DATA action is dispatched, it identifies the active tab
+ * and, based on its type (standard or AIB), selects the appropriate API call:
  *
- * @param  {external:Observable} action$ - Stream of actions that emits the "FETCH_INFOCHART_DATA" action.
- * @param  {object} store - The Redux store to access the current state, including `infochart.infoChartData`.
- * @memberof epics.infochart
- * @return {external:Observable} - Stream of actions that emits the `fetchedInfoChartData` action with the infochart data.
+ * - By default, it uses the geoclima chart service.
+ * - If the active tab is of type 'aib', it chooses between the "historic" or
+ *   "forecast" AIB service depending on the current chartType (either globally or from the active chart).
+ *
+ * After the API call, it dispatches the fetchedInfoChartData action with the retrieved data.
  */
 const loadInfoChartDataEpic = (action$, store) =>
     action$.ofType(FETCH_INFOCHART_DATA)
-        .switchMap(() => Observable.fromPromise(
-            API.geoclimachart(store.getState().infochart.infoChartData, store.getState().infochart.defaultUrlGeoclimaChart)
-                .then(res => res.data)
-        ))
-        .switchMap(data => Observable.of(fetchedInfoChartData(data, false)));
+        .switchMap(() => {
+            const state = store.getState().infochart;
+
+            let apiCall = API.geoclimachart;
+            let apiUrl = state.defaultUrlGeoclimaChart;
+
+            const activeTab = state.tabVariables.find(tab => tab.active);
+
+            if (activeTab && activeTab.id === 'aib') {
+                if (activeTab.chartType === AIB_HISTORIC_CHART || getChartActive(activeTab)?.chartType === AIB_HISTORIC_CHART ) {
+                    apiCall = API.getAibChartStorico;
+                    apiUrl = state.defaultUrlGenerateAibChartStorico;
+                } else {
+                    apiCall = API.getAibChartPrev;
+                    apiUrl = state.defaultUrlGenerateAibChartPrev;
+                }
+            }
+
+            return Observable.fromPromise(
+                apiCall(state.infoChartData, apiUrl)
+                    .then(res => res.data)
+            )
+                .switchMap(data => Observable.of(fetchedInfoChartData(data, false)));
+        });
+
 
 export {
     toggleMapInfoEpic,

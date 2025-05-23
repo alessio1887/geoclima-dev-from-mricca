@@ -17,7 +17,7 @@ import BorderLayout from '@mapstore/components/layout/BorderLayout';
 import InfoChartForm from './InfoChartForm';
 import InfoChartRender from './InfoChartRender';
 import DateAPI, { DATE_FORMAT, DEFAULT_DATA_INIZIO, DEFAULT_DATA_FINE } from '../../utils/ManageDateUtils';
-import { FIXED_RANGE, MARKER_ID, getStartPositionPanel, getDefaultPanelSize }  from '../../utils/VariabiliMeteoUtils';
+import { FIXED_RANGE, MARKER_ID, getStartPositionPanel, getDefaultPanelSize, getChartActive }  from '../../utils/VariabiliMeteoUtils';
 import { get, isEqual } from 'lodash';
 import moment from 'moment';
 import momentLocaliser from 'react-widgets/lib/localizers/moment';
@@ -287,23 +287,20 @@ class InfoChart extends React.Component {
     }
     // Get the selected tab's parameters (chart title, chart list, etc.) based on the traces applied to the chart.
     getVariableChartParams = (tabSelected) => {
-        let chartParams;
-        const chartList = tabSelected.chartList || tabSelected.variables[0].chartList ||  [];
-        if (Array.isArray(chartList) && chartList.length > 0) {
-            const chartActive = chartList.find(chart => chart.active) || chartList[0];
-            chartParams = {
+        const chartActive = getChartActive(tabSelected);
+        if (chartActive) {
+            return {
                 chartActive: { ...chartActive },
                 variables: tabSelected.variables
             };
-        } else {
-            chartParams = {
-                variables: tabSelected.variables,
-                name: tabSelected.chartTitle,
-                chartType: tabSelected.chartType || tabSelected.variables[0].chartType,
-                backgroundBands: tabSelected.backgroundBands
-            };
         }
-        return chartParams;
+
+        return {
+            variables: tabSelected.variables,
+            name: tabSelected.chartTitle,
+            chartType: tabSelected.chartType || tabSelected.variables[0].chartType,
+            backgroundBands: tabSelected.backgroundBands
+        };
     };
 
     showChart = (chartTypeSelected) => {
