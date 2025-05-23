@@ -445,7 +445,7 @@ const loadInfoChartDataEpic = (action$, store) =>
             const activeTab = state.tabVariables.find(tab => tab.active);
 
             if (activeTab && activeTab.id === 'aib') {
-                if (activeTab.chartType === AIB_HISTORIC_CHART || getChartActive(activeTab)?.chartType === AIB_HISTORIC_CHART ) {
+                if (activeTab.chartType === AIB_HISTORIC_CHART || getChartActive(activeTab)?.chartType === AIB_HISTORIC_CHART) {
                     apiCall = API.getAibChartStorico;
                     apiUrl = state.defaultUrlGenerateAibChartStorico;
                 } else {
@@ -454,11 +454,17 @@ const loadInfoChartDataEpic = (action$, store) =>
                 }
             }
 
-            return Observable.fromPromise(
-                apiCall(state.infoChartData, apiUrl)
-                    .then(res => res.data)
-            )
-                .switchMap(data => Observable.of(fetchedInfoChartData(data, false)));
+            return Observable.defer(() => apiCall(state.infoChartData, apiUrl).then(res => res.data)
+            ).switchMap(data =>
+                Observable.of(fetchedInfoChartData(data, false))
+            ).catch(error => {
+                const code = error?.data?.code;
+                const status = error?.response?.status || error?.status;
+                if (status === 400 && code === 'OUT_OF_REGION') {
+                    return Observable.of(fetchedInfoChartData([], false));
+                }
+                return Observable.throw(error);
+            });
         });
 
 
