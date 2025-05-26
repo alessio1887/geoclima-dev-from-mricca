@@ -1055,7 +1055,8 @@
                   {
                     "id": "aib1",
                     "name": "Storico",
-                    "chartType": "aib_historic_chart"
+                    "chartType": "aib_historic_chart",
+                    "hideClimatologicalTrace": true
                   },
                   {
                     "id": "aib2",

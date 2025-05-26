@@ -172,7 +172,10 @@ export function fillAreas(dateObjects, observed, climatological, variable, unitP
     return fillTraces;
 }
 
-
+/**
+ * Returns an array of objects with cumulative values calculated
+ * for a specified variable and its corresponding climate value.
+ */
 export function formatDataCum(values, propVariable) {
     let data = [];
     let cum = 0;
@@ -191,7 +194,12 @@ export function formatDataCum(values, propVariable) {
     return data;
 }
 
-export function formatDataTemp(values, propVariable) {
+/**
+ * Formats an array of data objects by normalizing the date and rounding values.
+ * Returns a new array with formatted dates and numeric values for a given variable
+ * and its corresponding climate value.
+ */
+export function formatVariableData(values, propVariable) {
     return values.map(o => ({
         data: o.data.substring(0, 10),
         [propVariable]: (o[propVariable] !== null && o[propVariable] !== undefined)
@@ -202,6 +210,7 @@ export function formatDataTemp(values, propVariable) {
             : 0
     }));
 }
+
 export function getDefaultPanelSize() {
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
@@ -356,31 +365,36 @@ export const createVariableLineTraces = (dataSetDefinitions, dates, dataFetched)
         });
 };
 
-export const createObservedAndClimatologicalTraces = (traceParams, dates, dataFetched, unitPrecipitazione) => {
+export const createObservedAndClimatologicalTraces = (traceParams, dates, dataFetched, unitPrecipitazione, hideClimatologicalTrace = false
+) => {
     const chartParams = traceParams.chartActive ?? traceParams.variables[0];
     const chartVariable = traceParams.variables[0].id;
     const unit = chartParams.unit;
     const propVariable = "st_value_" + chartVariable;
 
-    const chartData =  unit === unitPrecipitazione
+    const chartData = unit === unitPrecipitazione
         ? formatDataCum(dataFetched, propVariable)
-        : formatDataTemp(dataFetched, propVariable);
+        : formatVariableData(dataFetched, propVariable);
 
-    const climaLabel = "Climatologia " + ( unit || "");
-    const currentYearLabel = "Anno in corso " + ( unit || "");
+    const currentYearLabel = hideClimatologicalTrace ?  traceParams.variables[0].name : "Anno in corso " + (unit || "");
 
     const observedData = chartData.map(item => item[propVariable]);
     const climatologicalData = chartData.map(item => item.st_value_clima);
-    const fillTraces = fillAreas(dates, observedData, climatologicalData, chartParams, unitPrecipitazione);
 
-    const trace1 = {
-        x: dates,
-        y: climatologicalData,
-        mode: 'lines',
-        name: climaLabel,
-        line: chartParams.chartStyle1
-    };
+    const traces = [];
 
+    if (!hideClimatologicalTrace) {
+        const climaLabel = "Climatologia " + (unit || "");
+        const fillTraces = fillAreas(dates, observedData, climatologicalData, chartParams, unitPrecipitazione);
+        const trace1 = {
+            x: dates,
+            y: climatologicalData,
+            mode: 'lines',
+            name: climaLabel,
+            line: chartParams.chartStyle1
+        };
+        traces.push(trace1, ...fillTraces);
+    }
     const trace2 = {
         x: dates,
         y: observedData,
@@ -388,8 +402,9 @@ export const createObservedAndClimatologicalTraces = (traceParams, dates, dataFe
         name: currentYearLabel,
         line: chartParams.chartStyle2
     };
+    traces.push(trace2);
 
-    return [trace1, trace2].concat(fillTraces);
+    return traces;
 };
 
 export const createCumulataBarTraces = (traceParams, times, dataFetched) => {

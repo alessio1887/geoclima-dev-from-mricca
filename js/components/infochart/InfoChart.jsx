@@ -311,7 +311,7 @@ class InfoChart extends React.Component {
                 chartRelayout= { this.props.chartRelayout}
                 infoChartSize={ this.props.infoChartSize}
                 isCollapsedFormGroup={this.props.isCollapsedFormGroup}
-                variableChartParams={ chartTypeSelected }
+                chartParams={ chartTypeSelected }
                 unitPrecipitazione = { this.props.unitPrecipitazione }
                 format={ this.props.timeUnit }
             />);
