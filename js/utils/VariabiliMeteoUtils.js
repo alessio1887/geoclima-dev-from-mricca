@@ -400,7 +400,7 @@ export const createObservedAndClimatologicalTraces = (traceParams, dates, dataFe
         y: observedData,
         mode: 'lines',
         name: currentYearLabel,
-        line: chartParams.chartStyle2
+        line: chartParams.chartStyle2 || chartParams.chartStyle
     };
     traces.push(trace2);
 
