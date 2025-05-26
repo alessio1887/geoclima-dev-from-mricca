@@ -457,14 +457,10 @@ const loadInfoChartDataEpic = (action$, store) =>
             return Observable.defer(() => apiCall(state.infoChartData, apiUrl).then(res => res.data)
             ).switchMap(data =>
                 Observable.of(fetchedInfoChartData(data, false))
-            ).catch(error => {
-                const code = error?.data?.code;
-                const status = error?.response?.status || error?.status;
-                if (status === 400 && code === 'OUT_OF_REGION') {
-                    return Observable.of(fetchedInfoChartData([], false));
-                }
-                return Observable.throw(error);
-            });
+            ).catch(error => Observable.concat(
+                Observable.of(fetchedInfoChartData([], false)),
+                Observable.throw(error)
+            ));
         });
 
 
