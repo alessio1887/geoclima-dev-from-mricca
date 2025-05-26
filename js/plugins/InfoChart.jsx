@@ -32,10 +32,13 @@ momentLocaliser(moment);
 
 /*
 Plugin configuration
-"name": "InfoChart",
-    "defaultConfig": {
+{
+      "name": "InfoChart",
+      "defaultConfig": {
         "defaultUrlGeoclimaChart": "geoportale.lamma.rete.toscana.it/cgi-bin/geoclima_app/geoclima_chart_test.py",
         "defaultUrlSelectDate": "geoportale.lamma.rete.toscana.it/cgi-bin/geoclima_app/selectDate.py",
+        "defaultUrlGenerateAibChartStorico": "geoportale.lamma.rete.toscana.it/geoclima_api/ggenerate_aib_chart/fwi-stats",
+        "defaultUrlGenerateAibChartPrev": "geoportale.lamma.rete.toscana.it/geoclima_api/ggenerate_aib_chart/fwi-stats-prev",
         "variabileSelectDate": "prec",
         "isFetchAvailableDates": false,
         "periodTypes": [
@@ -126,7 +129,6 @@ Plugin configuration
                 "id": "tmax",
                 "name": "Temperatura Massima",
                 "unit": "°C",
-                "chartType": "clima",
                 "yaxis": "Temperatura (°C)",
                 "chartStyle1": { "color": "rgba(0, 0, 255, 1)", "width": 1 },
                 "chartStyle2": { "color": "rgba(255, 0, 0, 1)", "width": 1 }
@@ -137,8 +139,8 @@ Plugin configuration
                 "unit": "°C",
                 "chartType": "clima",
                 "yaxis": "Temperatura (°C)",
-                    "chartStyle1": { "color": "rgba(0, 0, 255, 1)", "width": 1 },
-                    "chartStyle2": { "color": "rgba(255, 0, 0, 1)", "width": 1 }
+                "chartStyle1": { "color": "rgba(0, 0, 255, 1)", "width": 1 },
+                "chartStyle2": { "color": "rgba(255, 0, 0, 1)", "width": 1 }
               },
               {
                 "id": "ret",
@@ -188,7 +190,7 @@ Plugin configuration
             ],
             "chartTitle": "Indice SPI - Standardized Precipitation Index",
             "menuType": "multi_select",
-            "chartType": "multi_variable",
+            "chartType": "spi_spei_chart",
             "backgroundBands": [
               {
                 "min": -3,
@@ -264,7 +266,7 @@ Plugin configuration
             ],
             "chartTitle": "Indice SPEI - Standardized Precipitation-Evapotranspiration Index",
             "menuType": "multi_select",
-            "chartType": "multi_variable",
+            "chartType": "spi_spei_chart",
             "backgroundBands": [
               {
                 "min": -3,
@@ -317,12 +319,12 @@ Plugin configuration
             "id": "aib",
             "name": "AIB indici previsione",
             "menuType": "single_select",
-            "chartType": "aib_historic_chart",
             "chartList": [
                   {
                     "id": "aib1",
                     "name": "Storico",
-                    "chartType": "aib_historic_chart"
+                    "chartType": "aib_historic_chart",
+                    "hideClimatologicalTrace": true
                   },
                   {
                     "id": "aib2",
@@ -502,6 +504,7 @@ Plugin configuration
         "Toolbar",
         "Expander"
       ]
+    }
 */
 const mapStateToProps = (state) => ({
     active: state && state.controls && state.controls.chartinfo && state.controls.chartinfo.enabled
