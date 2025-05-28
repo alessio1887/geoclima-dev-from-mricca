@@ -18,8 +18,9 @@ import {
     createCumulataBarTraces,
     createObservedAndClimatologicalTraces,
     createLayout,
-    createCumulataBarLayout
+    createCumulataBarLayout, createAIBPrevTraces
 } from '../../utils/VariabiliMeteoUtils';
+import DateAPI from '../../utils/ManageDateUtils';
 import moment from 'moment';
 import momentLocaliser from 'react-widgets/lib/localizers/moment';
 momentLocaliser(moment);
@@ -38,8 +39,6 @@ const InfoChartRender = ({
     const [layout, setLayout] = useState({});
 
     useEffect(() => {
-        const dates = Array.isArray(dataFetched) ? dataFetched.map(item => moment(item.data).toDate())
-            : dataFetched.data.map(item => moment(item.data).toDate());
         let newTraces = [];
         const chartTitle = chartParams.variables.name || "";
         const chartSubtitle = dataFetched?.[0]?.comune || "";
@@ -49,31 +48,34 @@ const InfoChartRender = ({
         // Calculate the traces and layout based on the chart type
         switch (chartType) {
         case SPI_SPEI_CHART:
-            newTraces = createVariableLineTraces(chartParams.variables, dates, dataFetched);
-            newTraces = createBackgroundBands(dates, chartParams.backgroundBands).concat(newTraces);
-            newLayout = createLayout( chartParams.name || "", "", chartSubtitle, dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, SPI_SPEI_CHART);
+            newTraces = createVariableLineTraces(chartParams.variables, DateAPI.extractDates(dataFetched), dataFetched);
+            newTraces = createBackgroundBands(DateAPI.extractDates(dataFetched), chartParams.backgroundBands).concat(newTraces);
+            newLayout = createLayout( chartParams.name || "", "", chartSubtitle, DateAPI.extractDates(dataFetched), format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, SPI_SPEI_CHART);
             break;
         case CLIMA_CHART:
-            newTraces = createObservedAndClimatologicalTraces(chartParams, dates, dataFetched, unitPrecipitazione, chartParams.chartActive?.hideClimatologicalTrace);
-            newLayout = createLayout(chartParams.variables[0].name || "", chartParams.chartActive?.yaxis || chartParams.variables[0].yaxis, chartSubtitle, dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, CLIMA_CHART);
+            newTraces = createObservedAndClimatologicalTraces(chartParams, DateAPI.extractDates(dataFetched), dataFetched, unitPrecipitazione,
+                chartParams.chartActive?.hideClimatologicalTrace);
+            newLayout = createLayout(chartParams.variables[0].name || "", chartParams.chartActive?.yaxis || chartParams.variables[0].yaxis, chartSubtitle, DateAPI.extractDates(dataFetched), format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, CLIMA_CHART);
             break;
         case CUMULATA_CHART:
-            newTraces = createCumulataBarTraces(chartParams, dates, dataFetched);
-            newLayout = createCumulataBarLayout(chartParams, chartParams.variables[0].name, newTraces, dates, format, chartRelayout, infoChartSize, isCollapsedFormGroup);
+            newTraces = createCumulataBarTraces(chartParams, DateAPI.extractDates(dataFetched), dataFetched);
+            newLayout = createCumulataBarLayout(chartParams, chartParams.variables[0].name, newTraces, DateAPI.extractDates(dataFetched), format, chartRelayout, infoChartSize, isCollapsedFormGroup);
             break;
         case AIB_HISTORIC_CHART:
-            newTraces = createObservedAndClimatologicalTraces(chartParams, dates, dataFetched, unitPrecipitazione,  chartParams.chartActive?.hideClimatologicalTrace);
-            newTraces = createBackgroundBands(dates, chartParams.variables[0].backgroundBands).concat(newTraces);
-            newLayout = createLayout(chartParams.variables[0].name, "", chartSubtitle, dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, AIB_HISTORIC_CHART);
+            newTraces = createObservedAndClimatologicalTraces(chartParams, DateAPI.extractDates(dataFetched[0]?.osservato || []), dataFetched[0]?.osservato || [],
+                unitPrecipitazione,  chartParams.chartActive?.hideClimatologicalTrace);
+            newTraces = createBackgroundBands(DateAPI.extractDates(dataFetched[0]?.osservato || []), chartParams.variables[0].backgroundBands).concat(newTraces);
+            newLayout = createLayout(chartParams.variables[0].name, "", chartSubtitle, DateAPI.extractDates(dataFetched[0]?.osservato || []), format, newTraces, chartRelayout,
+                infoChartSize, isCollapsedFormGroup, AIB_HISTORIC_CHART);
             break;
         case AIB_PREVISIONALE:
-            newTraces = createVariableLineTraces(chartParams.variables, dates, dataFetched);
-            newTraces = createBackgroundBands(dates, chartParams.variables[0].backgroundBands).concat(newTraces);
-            newLayout = createLayout(chartParams.variables[0].name, "", chartSubtitle, dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, AIB_HISTORIC_CHART);
+            newTraces = createAIBPrevTraces(chartParams.variables, dataFetched, format);
+            newTraces = createBackgroundBands(DateAPI.extractPrevDates(dataFetched, format), chartParams.variables[0].backgroundBands).concat(newTraces);
+            newLayout = createLayout(chartParams.variables[0].name, "", chartSubtitle, [], format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, AIB_HISTORIC_CHART);
             break;
         default:
-            newTraces = createVariableLineTraces(chartParams.variables, dates, dataFetched);
-            newLayout = createLayout(chartTitle, "", chartSubtitle, dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, SPI_SPEI_CHART);
+            newTraces = createVariableLineTraces(chartParams.variables, DateAPI.extractDates(dataFetched), dataFetched);
+            newLayout = createLayout(chartTitle, "", chartSubtitle, DateAPI.extractDates(dataFetched), format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, SPI_SPEI_CHART);
             break;
         }
         // Merge the new traces with the previously set ones to preserve the visibility state

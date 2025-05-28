@@ -156,8 +156,7 @@ class InfoChart extends React.Component {
             "type": "multi_select"
             }
         ],
-        defaultUrlGenerateAibChartStorico: "geoportale.lamma.rete.toscana.it/geoclima_api/ggenerate_aib_chart/fwi-stats",
-        defaultUrlGenerateAibChartPrev: "geoportale.lamma.rete.toscana.it/geoclima_api/ggenerate_aib_chart/fwi-stats-prev",
+        defaultUrlAibChart: "geoportale.lamma.rete.toscana.it/geoclima_api/ggenerate_aib_chart/fwi-stats-completo",
         defaultUrlGeoclimaChart: 'geoportale.lamma.rete.toscana.it/cgi-bin/geoclima_app/geoclima_chart.py',
         defaultUrlSelectDate: "geoportale.lamma.rete.toscana.it/cgi-bin/geoclima_app/selectDate.py",
         variabileSelectDate: "prec",
@@ -220,8 +219,7 @@ class InfoChart extends React.Component {
             this.initializeTabs();
             this.props.onSetDefaultUrls({
                 defaultUrlGeoclimaChart: this.props.defaultUrlGeoclimaChart,
-                defaultUrlGenerateAibChartStorico: this.props.defaultUrlGenerateAibChartStorico,
-                defaultUrlGenerateAibChartPrev: this.props.defaultUrlGenerateAibChartPrev
+                defaultUrlAibChart: this.props.defaultUrlAibChart
             });
             const defaultPeriod = DateAPI.getDefaultPeriod(this.props.periodTypes);
             this.props.onChangePeriod(defaultPeriod);

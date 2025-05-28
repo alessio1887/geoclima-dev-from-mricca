@@ -119,6 +119,32 @@ const Api = {
             return formattedOldToData !== action.toData  ? null : state.alertMessage;
         }
         return formattedOldFromData !== action.fromData || formattedOldToData !== action.toData ? null : state.alertMessage;
+    },
+    /**
+     * Returns an array of Date objects extracted from dataFetched.
+     * Handles both array and object formats.
+     *
+     * @param {Array|Object} dataFetched - The data fetched from the API.
+     * @returns {Array<Date>} - Array of JavaScript Date objects.
+     */
+    extractDates(dataFetched) {
+        if (!dataFetched) return [];
+
+        const source = Array.isArray(dataFetched)
+            ? dataFetched
+            : dataFetched.data;
+
+        return Array.isArray(source)
+            ? source.map(item => moment(item.data).toDate())
+            : [];
+    },
+    extractPrevDates(dataFetched, dateFormat) {
+        if (!dataFetched?.length || !dataFetched[0]?.previsioni?.length) return [];
+
+        const startDate = moment(dataFetched[0].data, dateFormat);
+        return dataFetched[0].previsioni.map((_, i) =>
+            startDate.clone().add(i, 'days').toDate()
+        );
     }
 };
 

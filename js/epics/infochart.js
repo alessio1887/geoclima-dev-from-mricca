@@ -29,7 +29,7 @@ import { CLICK_ON_MAP } from '@mapstore/actions/map';
 import { LOADING } from '@mapstore/actions/maps';
 import { getMarkerLayer } from '../../MapStore2/web/client/utils/MapInfoUtils';
 import API from '../api/GeoClimaApi';
-import { FIXED_RANGE, FREE_RANGE, MARKER_ID, AIB_HISTORIC_CHART, getVisibleLayers, getDefaultPanelSize, getChartActive } from '../utils/VariabiliMeteoUtils';
+import { FIXED_RANGE, FREE_RANGE, MARKER_ID, getVisibleLayers, getDefaultPanelSize } from '../utils/VariabiliMeteoUtils';
 import DateAPI from '../utils/ManageDateUtils';
 import { showFixedRangePickerSelector, periodTypeSelector, isPluginLoadedSelector as isFixedRangeLoaded,
     fromDataFormSelector as fromDataFixedRangeForm, toDataFormSelector as toDataFixedRangeForm  } from '../selectors/fixedRangePicker';
@@ -421,37 +421,34 @@ const clickedPointCheckEpic = (action$, store) =>
             actions.push(markerAction);
             return Observable.of(...actions);
         });
-
 /**
- * Epic that handles loading data for the InfoChart component.
+* Epic that loads data for the InfoChart component.
  *
- * When the FETCH_INFOCHART_DATA action is dispatched, it identifies the active tab
- * and, based on its type (standard or AIB), selects the appropriate API call:
+ * Triggered when the FETCH_INFOCHART_DATA action is dispatched.
+ * It identifies the active tab and selects the appropriate API call based on its type:
  *
- * - By default, it uses the geoclima chart service.
- * - If the active tab is of type 'aib', it chooses between the "historic" or
- *   "forecast" AIB service depending on the current chartType (either globally or from the active chart).
+ * - For standard tabs, it uses the Geoclima chart API.
+ * - For the "aib" tab, it uses the dedicated AIB chart API.
  *
- * After the API call, it dispatches the fetchedInfoChartData action with the retrieved data.
+ * On success, it dispatches the fetchedInfoChartData action with the retrieved data.
+ * On failure (e.g., 400 errors), it still dispatches fetchedInfoChartData with an empty array,
+ * and rethrows the original error for logging or further handling.
  */
 const loadInfoChartDataEpic = (action$, store) =>
     action$.ofType(FETCH_INFOCHART_DATA)
         .switchMap(() => {
             const state = store.getState().infochart;
-
-            let apiCall = API.geoclimachart;
-            let apiUrl = state.defaultUrlGeoclimaChart;
+            let apiCall;
+            let apiUrl;
 
             const activeTab = state.tabVariables.find(tab => tab.active);
 
             if (activeTab && activeTab.id === 'aib') {
-                if (activeTab.chartType === AIB_HISTORIC_CHART || getChartActive(activeTab)?.chartType === AIB_HISTORIC_CHART) {
-                    apiCall = API.getAibChartStorico;
-                    apiUrl = state.defaultUrlGenerateAibChartStorico;
-                } else {
-                    apiCall = API.getAibChartPrev;
-                    apiUrl = state.defaultUrlGenerateAibChartPrev;
-                }
+                apiCall = API.getAibChart;
+                apiUrl = state.defaultUrlAibChart;
+            } else {
+                apiCall = API.geoclimachart;
+                apiUrl = state.defaultUrlGeoclimaChart;
             }
 
             return Observable.defer(() => apiCall(state.infoChartData, apiUrl).then(res => res.data)

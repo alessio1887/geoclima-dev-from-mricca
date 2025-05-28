@@ -769,8 +769,7 @@
       "defaultConfig": {
         "defaultUrlGeoclimaChart": "geoportale.lamma.rete.toscana.it/cgi-bin/geoclima_app/geoclima_chart_test.py",
         "defaultUrlSelectDate": "geoportale.lamma.rete.toscana.it/cgi-bin/geoclima_app/selectDate.py",
-        "defaultUrlGenerateAibChartStorico": "geoportale.lamma.rete.toscana.it/geoclima_api/ggenerate_aib_chart/fwi-stats",
-        "defaultUrlGenerateAibChartPrev": "geoportale.lamma.rete.toscana.it/geoclima_api/ggenerate_aib_chart/fwi-stats-prev",
+        "defaultUrlAibChart": "geoportale.lamma.rete.toscana.it/geoclima_api/ggenerate_aib_chart/fwi-stats-completo",
         "variabileSelectDate": "prec",
         "isFetchAvailableDates": false,
         "periodTypes": [
@@ -974,6 +973,7 @@
           {
             "id": "speiList",
             "name": "SPEI",
+            "default": true,
             "groupList": [
               {
                 "id": "spei1",

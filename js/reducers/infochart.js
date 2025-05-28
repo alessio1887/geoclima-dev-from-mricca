@@ -210,8 +210,7 @@ function infochart(state = infoChartDefaultState, action) {
         return {
             ...state,
             defaultUrlGeoclimaChart: action.urls.defaultUrlGeoclimaChart,
-            defaultUrlGenerateAibChartStorico: action.urls.defaultUrlGenerateAibChartStorico,
-            defaultUrlGenerateAibChartPrev: action.urls.defaultUrlGenerateAibChartPrev
+            defaultUrlAibChart: action.urls.defaultUrlAibChart
         };
     case SET_TABLIST:
         return {

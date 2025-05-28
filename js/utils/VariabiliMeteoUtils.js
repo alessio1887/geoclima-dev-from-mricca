@@ -5,13 +5,14 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { DATE_FORMAT } from './ManageDateUtils';
+import DateAPI, { DATE_FORMAT } from './ManageDateUtils';
+import moment from 'moment';
+import momentLocaliser from 'react-widgets/lib/localizers/moment';
+momentLocaliser(moment);
 
 // type of range picher
 export const FIXED_RANGE = "fixed_range_picker";
 export const FREE_RANGE = "free_range_picker";
-// export const SINGLE_VARIABLE_CHART = "single_variable";
-// export const MULTI_VARIABLE_CHART = "multi_variable";
 export const SPI_SPEI_CHART = "spi_spei_chart";
 export const AIB_HISTORIC_CHART = "aib_historic_chart";
 export const AIB_PREVISIONALE = "aib_previsionale";
@@ -442,6 +443,53 @@ export const createCumulataBarTraces = (traceParams, times, dataFetched) => {
     return [trace1, trace2];
 };
 
+/**
+ * Generates Plotly line chart traces for forecast data based on variable definitions.
+ *
+ * @param {Array} dataSetDefinitions - List of variable definitions with `id`, `name`, and optional `chartStyle`.
+ * @param {Array} dataFetched - Array with forecast data, each item containing a `previsioni` array.
+ * @param {string} dateFormat - Format string for the output dates (e.g., 'YYYY-MM-DD').
+ * @returns {Array} Array of Plotly-compatible trace objects.
+ */
+export const createAIBPrevTraces = (dataSetDefinitions, dataFetched, dateFormat) => {
+    if (!dataFetched?.length || !dataFetched[0]?.previsioni?.length) {
+        return [];
+    }
+
+    const forecastList = dataFetched[0].previsioni;
+    const dates = DateAPI.extractPrevDates(dataFetched, dateFormat);
+
+    return dataSetDefinitions
+        .filter(variable => {
+            return forecastList.some(entry => entry[variable.id] !== null && entry[variable.id] !== undefined);
+        })
+        .map((variable, index) => {
+            const values = forecastList.map(entry =>
+                entry[variable.id] !== null && entry[variable.id] !== undefined
+                    ? parseFloat(Number(entry[variable.id]).toFixed(5))
+                    : null
+            );
+
+            const lineStyle = variable.chartStyle && Object.keys(variable.chartStyle).length
+                ? variable.chartStyle
+                : {
+                    color: defaultColors[index % defaultColors.length],
+                    width: 2
+                };
+
+            return {
+                x: dates,
+                y: values,
+                mode: 'lines',
+                name: variable.name,
+                line: lineStyle,
+                marker: { size: 6 },
+                type: 'scatter',
+                connectgaps: true
+            };
+        });
+};
+
 
 export const createCumulataBarLayout = (traceParams, chartTitle, traces, dates, format, chartRelayout, infoChartSize, isCollapsedFormGroup) => {
     const chartParams = traceParams.chartActive ?? traceParams;
@@ -551,7 +599,7 @@ export const createLayout = (chartTitle, yaxisTitle, chartSubtitle, dates, forma
             tickwidth: 1,
             tickcolor: '#000'
         },
-        margin: { t: 80, r: 40, l: 60, b: (format === DATE_FORMAT ? 40 : 60 )},
+        margin: { t: (isCollapsedFormGroup ? 110 : 80 ), r: 40, l: 60, b: (format === DATE_FORMAT ? 40 : 60 )},
         showlegend: true,
         hovermode: 'x unified',
         legend: { orientation: 'h', x: 0.5, y: 1.05 },

@@ -191,8 +191,7 @@ export function setDefaultUrls(urls) {
         type: SET_DEFAULT_URLS,
         urls: {
             defaultUrlGeoclimaChart: urls.defaultUrlGeoclimaChart,
-            defaultUrlGenerateAibChartStorico: urls.defaultUrlGenerateAibChartStorico,
-            defaultUrlGenerateAibChartPrev: urls.defaultUrlGenerateAibChartPrev
+            defaultUrlAibChart: urls.defaultUrlAibChart
         }
     };
 }
