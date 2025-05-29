@@ -17,7 +17,7 @@ import BorderLayout from '@mapstore/components/layout/BorderLayout';
 import InfoChartForm from './InfoChartForm';
 import InfoChartRender from './InfoChartRender';
 import DateAPI, { DATE_FORMAT, DEFAULT_DATA_INIZIO, DEFAULT_DATA_FINE } from '../../utils/ManageDateUtils';
-import { FIXED_RANGE, MARKER_ID, getStartPositionPanel, getDefaultPanelSize, getChartActive }  from '../../utils/VariabiliMeteoUtils';
+import { FIXED_RANGE, MARKER_ID, getStartPositionPanel, getDefaultPanelSize, getChartActive, getBackgroundBands }  from '../../utils/VariabiliMeteoUtils';
 import { get, isEqual } from 'lodash';
 import moment from 'moment';
 import momentLocaliser from 'react-widgets/lib/localizers/moment';
@@ -286,18 +286,12 @@ class InfoChart extends React.Component {
     // Get the selected tab's parameters (chart title, chart list, etc.) based on the traces applied to the chart.
     getVariableChartParams = (tabSelected) => {
         const chartActive = getChartActive(tabSelected);
-        if (chartActive) {
-            return {
-                chartActive: { ...chartActive },
-                variables: tabSelected.variables
-            };
-        }
-
         return {
             variables: tabSelected.variables,
+            chartActive: { ...chartActive },
             name: tabSelected.chartTitle,
             chartType: tabSelected.chartType || tabSelected.variables[0].chartType,
-            backgroundBands: tabSelected.backgroundBands
+            backgroundBands: getBackgroundBands(chartActive, tabSelected)
         };
     };
 

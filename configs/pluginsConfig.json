@@ -1056,7 +1056,8 @@
                     "id": "aib1",
                     "name": "Previsonale",
                     "chartType": "aib_previsionale",
-                    "showOneDatePicker": true
+                    "showOneDatePicker": true,
+                    "skipApplyPeriodOnChange": true
                   },
                   {
                     "id": "aib2",

@@ -54,10 +54,25 @@ export function isVariabiliMeteoLayer(layerName, variabiliMeteo) {
 
 export const getChartActive = (tabSelected) => {
     const chartList = tabSelected.chartList || tabSelected.variables[0]?.chartList || [];
-    if (Array.isArray(chartList) && chartList.length > 0) {
+    if (chartList.length > 0) {
         return chartList.find(chart => chart.active) || chartList[0];
     }
-    return null;
+    return tabSelected.variables[0];
+};
+
+// backgroundBands may be defined either on the chart or on the tab level.
+// We pass both chartActive and tabSelected to handle both cases.
+export const getBackgroundBands = (chartActive, tabSelected) => {
+    if (Array.isArray(chartActive?.backgroundBands) && chartActive.backgroundBands.length > 0) {
+        return chartActive.backgroundBands;
+    }
+    if (Array.isArray(chartActive?.variables) && chartActive.variables.length > 0) {
+        return chartActive.variables[0]?.backgroundBands || [];
+    }
+    if (Array.isArray(tabSelected?.backgroundBands) && tabSelected.backgroundBands.length > 0) {
+        return tabSelected.backgroundBands;
+    }
+    return [];
 };
 
 

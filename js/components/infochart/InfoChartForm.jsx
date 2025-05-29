@@ -15,7 +15,7 @@ import Message from '@mapstore/components/I18N/Message';
 import moment from 'moment';
 import momentLocaliser from 'react-widgets/lib/localizers/moment';
 momentLocaliser(moment);
-import { FIXED_RANGE, FREE_RANGE }  from '../../utils/VariabiliMeteoUtils';
+import { getChartActive, FIXED_RANGE, FREE_RANGE }  from '../../utils/VariabiliMeteoUtils';
 
 const InfoChartForm = ({
     tabList,
@@ -60,7 +60,10 @@ const InfoChartForm = ({
     };
     const updateSingleVariable = (selectedVariable, newIdTab) => {
         onChangeChartVariable(newIdTab, [selectedVariable]);
-        handleApplyPeriod([selectedVariable], newIdTab);
+        const chartActive = getChartActive(activeTab);
+        if (!chartActive.skipApplyPeriodOnChange ) {
+            handleApplyPeriod([selectedVariable], newIdTab);
+        }
     };
     const isTabBarVisible = () => {
         const isChartListOnActiveTab = activeTab.chartList && activeTab.chartList.length > 1;
