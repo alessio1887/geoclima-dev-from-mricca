@@ -1072,11 +1072,11 @@
                 "name": "Fire Weather Index",
                 "chartStyle": { "color": "#000", "width": 2, "shape": "linear" },
                 "backgroundBands": [
-                  { "class": "Low", "min": 0, "max": 5, "color": "rgba(191,252,207,0.5)" },
-                  { "class": "Moderate", "min": 5, "max": 10, "color": "rgba(241,232,105,0.5)" },
-                  { "class": "High", "min": 10, "max": 20, "color": "rgba(252,163,17,0.5" },
-                  { "class": "Very High", "min": 20, "max": 30, "color": "rgba(230,57,70,0.5)" },
-                  { "class": "Extreme", "min": 30, "max": 50, "color": "rgba(157,2,8,0.5)" }
+                  { "class": "Basso", "min": 0, "max": 5, "color": "rgba(191,252,207,0.5)" },
+                  { "class": "Moderato", "min": 5, "max": 10, "color": "rgba(241,232,105,0.5)" },
+                  { "class": "Alto", "min": 10, "max": 20, "color": "rgba(252,163,17,0.5" },
+                  { "class": "Molto Alto", "min": 20, "max": 30, "color": "rgba(230,57,70,0.5)" },
+                  { "class": "Estremo", "min": 30, "max": 50, "color": "rgba(157,2,8,0.5)" }
                 ]
               },
               {
@@ -1084,11 +1084,11 @@
                 "name": "Fine Fuel Moisture Code",
                 "chartStyle": { "color": "#000", "width": 2, "shape": "linear" },
                 "backgroundBands": [
-                  { "class": "Low", "min": 0, "max": 63, "color": "rgba(191,252,207,0.5)" },
-                  { "class": "Moderate", "min": 63, "max": 84, "color": "rgba(241,232,105,0.5)" },
-                  { "class": "High", "min": 84, "max": 88, "color": "rgba(252,163,17,0.5" },
-                  { "class": "Very High", "min": 88, "max": 91, "color": "rgba(230,57,70,0.5)" },
-                  { "class": "Extreme", "min": 91, "max": 100, "color":"rgba(157,2,8,0.5)" }
+                  { "class": "Basso", "min": 0, "max": 63, "color": "rgba(191,252,207,0.5)" },
+                  { "class": "Moderato", "min": 63, "max": 84, "color": "rgba(241,232,105,0.5)" },
+                  { "class": "Alto", "min": 84, "max": 88, "color": "rgba(252,163,17,0.5" },
+                  { "class": "Molto Alto", "min": 88, "max": 91, "color": "rgba(230,57,70,0.5)" },
+                  { "class": "Estremo", "min": 91, "max": 100, "color":"rgba(157,2,8,0.5)" }
                 ]
               },
               {
@@ -1096,11 +1096,11 @@
                 "name": "Duff Moisture Code",
                 "chartStyle": { "color": "#000", "width": 2, "shape": "linear" },
                 "backgroundBands": [
-                  { "class": "Low", "min": 0, "max": 21, "color": "rgba(191,252,207,0.5)" },
-                  { "class": "Moderate", "min": 21, "max": 27, "color": "rgba(241,232,105,0.5)" },
-                  { "class": "High", "min": 27, "max": 40, "color": "rgba(252,163,17,0.5" },
-                  { "class": "Very High", "min": 40, "max": 60, "color": "rgba(230,57,70,0.5)" },
-                  { "class": "Extreme", "min": 60, "max": 90, "color": "rgba(157,2,8,0.5)" }
+                  { "class": "Basso", "min": 0, "max": 21, "color": "rgba(191,252,207,0.5)" },
+                  { "class": "Moderato", "min": 21, "max": 27, "color": "rgba(241,232,105,0.5)" },
+                  { "class": "Alto", "min": 27, "max": 40, "color": "rgba(252,163,17,0.5" },
+                  { "class": "Molto Alto", "min": 40, "max": 60, "color": "rgba(230,57,70,0.5)" },
+                  { "class": "Estremo", "min": 60, "max": 90, "color": "rgba(157,2,8,0.5)" }
                 ]
               },
               {
@@ -1108,13 +1108,13 @@
                 "name": "Drought Code",
                 "chartStyle": { "color": "#000", "width": 2, "shape": "linear" },
                 "backgroundBands": [
-                  { "class": "Low", "min": 0, "max": 80, "color": "rgba(0, 0, 255, 0.5)" },
-                  { "class": "Moderate", "min": 80, "max": 190, "color": "rgba(191,252,207,0.5)" },
-                  { "class": "High", "min": 190, "max": 300, "color": "rgba(241,232,105,0.5)" },
-                  { "class": "Very High", "min": 300, "max": 425, "color": "rgba(252,163,17,0.5)" },
-                  { "class": "Extreme", "min": 425, "max": 600, "color": "rgba(230,57,70,0.5)" },
-                  { "class": "Very Extreme", "min": 600, "max": 800, "color": "rgba(157,2,8,0.5)" },
-                  { "class": "Very Very Extreme", "min": 800, "max": 1000, "color": "rgba(106,4,15,0.5)" }
+                  { "class": "Basso", "min": 0, "max": 80, "color": "rgba(0, 0, 255, 0.5)" },
+                  { "class": "Moderato", "min": 80, "max": 190, "color": "rgba(191,252,207,0.5)" },
+                  { "class": "Alto", "min": 190, "max": 300, "color": "rgba(241,232,105,0.5)" },
+                  { "class": "Molto Alto", "min": 300, "max": 425, "color": "rgba(252,163,17,0.5)" },
+                  { "class": "Estremo", "min": 425, "max": 600, "color": "rgba(230,57,70,0.5)" },
+                  { "class": "Molto Estremo", "min": 600, "max": 800, "color": "rgba(157,2,8,0.5)" },
+                  { "class": "Molto Molto Estremo", "min": 800, "max": 1000, "color": "rgba(106,4,15,0.5)" }
                 ]
               },
               {
@@ -1122,11 +1122,11 @@
                 "name": "Initial Spread Index",
                 "chartStyle": { "color": "#000", "width": 2, "shape": "linear" },
                 "backgroundBands": [
-                  { "class": "Low", "min": 0, "max": 3, "color": "rgba(191,252,207,0.5)" },
-                  { "class": "Moderate", "min": 3, "max": 5.0, "color": "rgba(241,232,105,0.5)" },
-                  { "class": "High", "min": 5.0, "max": 7, "color": "rgba(252,163,17,0.5" },
-                  { "class": "Very High", "min": 7, "max": 13, "color": "rgba(230,57,70,0.5)" },
-                  { "class": "Extreme", "min": 13, "max": 20, "color": "rgba(157,2,8,0.5)" }
+                  { "class": "Basso", "min": 0, "max": 3, "color": "rgba(191,252,207,0.5)" },
+                  { "class": "Moderato", "min": 3, "max": 5.0, "color": "rgba(241,232,105,0.5)" },
+                  { "class": "Alto", "min": 5.0, "max": 7, "color": "rgba(252,163,17,0.5" },
+                  { "class": "Molto Alto", "min": 7, "max": 13, "color": "rgba(230,57,70,0.5)" },
+                  { "class": "Estremo", "min": 13, "max": 20, "color": "rgba(157,2,8,0.5)" }
                 ]
               },
               {
@@ -1134,12 +1134,12 @@
                 "name": "Build Up Index",
                 "chartStyle": { "color": "#000", "width": 2, "shape": "linear" },
                 "backgroundBands": [
-                  { "class": "Low", "min": 0, "max": 24.2, "color": "rgba(191,252,207,0.5)" },
-                  { "class": "Moderate", "min": 24.2, "max": 40.7, "color": "rgba(241,232,105,0.5)" },
-                  { "class": "High", "min": 40.7, "max": 73.3, "color": "rgba(252,163,17,0.5" },
-                  { "class": "Very High", "min": 73.3, "max": 133.1, "color": "rgba(230,57,70,0.5)" },
-                  { "class": "Extreme", "min": 133.1, "max": 193.1, "color": "rgba(157,2,8,0.5)" },
-                  { "class": "Very Extreme", "min": 193.1, "max": 250, "color": "rgba(106,4,15,0.5)" }
+                  { "class": "Basso", "min": 0, "max": 24.2, "color": "rgba(191,252,207,0.5)" },
+                  { "class": "Moderato", "min": 24.2, "max": 40.7, "color": "rgba(241,232,105,0.5)" },
+                  { "class": "Alto", "min": 40.7, "max": 73.3, "color": "rgba(252,163,17,0.5" },
+                  { "class": "Molto Alto", "min": 73.3, "max": 133.1, "color": "rgba(230,57,70,0.5)" },
+                  { "class": "Estremo", "min": 133.1, "max": 193.1, "color": "rgba(157,2,8,0.5)" },
+                  { "class": "Molto Estremo", "min": 193.1, "max": 250, "color": "rgba(106,4,15,0.5)" }
                 ]
               }
             ]

@@ -66,11 +66,11 @@ export const getBackgroundBands = (chartActive, tabSelected) => {
     if (Array.isArray(chartActive?.backgroundBands) && chartActive.backgroundBands.length > 0) {
         return chartActive.backgroundBands;
     }
-    if (Array.isArray(chartActive?.variables) && chartActive.variables.length > 0) {
-        return chartActive.variables[0]?.backgroundBands || [];
-    }
     if (Array.isArray(tabSelected?.backgroundBands) && tabSelected.backgroundBands.length > 0) {
         return tabSelected.backgroundBands;
+    }
+    if (Array.isArray(tabSelected?.variables) && tabSelected.variables.length > 0) {
+        return tabSelected.variables[0]?.backgroundBands || [];
     }
     return [];
 };
@@ -577,11 +577,27 @@ export const createCumulataBarLayout = (traceParams, chartTitle, traces, dates, 
 };
 
 
-export const createLayout = (chartTitle, yaxisTitle, locationLabel, dates, format, dataTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, chartType) => {
+export const createLayout = (chartTitle, yaxisTitle, locationLabel, dates, format, dataTraces, chartRelayout, infoChartSize,
+    isCollapsedFormGroup, chartType, backgroundBands = []) => {
     const isSpiSpeiChart = chartType === SPI_SPEI_CHART;
     const yaxisRange = isSpiSpeiChart
         ? [chartRelayout?.yaxisStart || MIN_Y_INDEX, chartRelayout?.yaxisEnd || MAX_Y_INDEX]
         : [chartRelayout?.yaxisStart || Math.min([dataTraces[0], dataTraces[1]]), chartRelayout?.yaxisEnd || Math.max([dataTraces[0], dataTraces[1]])];
+
+    const bandAnnotations = Array.isArray(backgroundBands)
+        ? backgroundBands
+            .filter(b => b.min !== undefined && b.max !== undefined && b.class)
+            .map(b => ({
+                x: 0.02,
+                xref: 'paper',
+                y: (b.min + b.max) / 2,
+                yref: 'y',
+                text: b.class,
+                showarrow: false,
+                font: { size: 10, color: 'black' },
+                align: 'left'
+            }))
+        : [];
 
     const layout =  {
         width: infoChartSize.widthResizable - 10,
@@ -618,20 +634,8 @@ export const createLayout = (chartTitle, yaxisTitle, locationLabel, dates, forma
         showlegend: true,
         hovermode: 'x unified',
         legend: { orientation: 'h', x: 0.5, y: 1.05 },
-        dragmode: chartRelayout?.dragmode
-        // annotations: [{
-        //     x: - 0.02, // Stessa posizione x del titolo principale
-        //     y: 1.08, // Posizione y leggermente sopra il titolo principale
-        //     xref: 'paper',
-        //     yref: 'paper',
-        //     text: locationLabel,
-        //     showarrow: false,
-        //     align: 'left',
-        //     font: {
-        //         size: 12,  // Dimensione del sottotitolo
-        //         color: 'gray'
-        //     }
-        // }]
+        dragmode: chartRelayout?.dragmode,
+        annotations: bandAnnotations
     };
     return layout;
 };
