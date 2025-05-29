@@ -41,7 +41,7 @@ const InfoChartRender = ({
     useEffect(() => {
         let newTraces = [];
         const chartTitle = chartParams.variables.name || "";
-        const chartSubtitle = dataFetched?.[0]?.comune || "";
+        const locationLabel  = dataFetched?.[0]?.comune || "";
         const chartType = chartParams.chartType ||  chartParams.chartActive.chartType;
         let newLayout = {};
 
@@ -50,12 +50,12 @@ const InfoChartRender = ({
         case SPI_SPEI_CHART:
             newTraces = createVariableLineTraces(chartParams.variables, DateAPI.extractDates(dataFetched), dataFetched);
             newTraces = createBackgroundBands(DateAPI.extractDates(dataFetched), chartParams.backgroundBands).concat(newTraces);
-            newLayout = createLayout( chartParams.name || "", "", chartSubtitle, DateAPI.extractDates(dataFetched), format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, SPI_SPEI_CHART);
+            newLayout = createLayout( chartParams.name || "", "", locationLabel, DateAPI.extractDates(dataFetched), format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, SPI_SPEI_CHART);
             break;
         case CLIMA_CHART:
             newTraces = createObservedAndClimatologicalTraces(chartParams, DateAPI.extractDates(dataFetched), dataFetched, unitPrecipitazione,
                 chartParams.chartActive?.hideClimatologicalTrace);
-            newLayout = createLayout(chartParams.variables[0].name || "", chartParams.chartActive?.yaxis || chartParams.variables[0].yaxis, chartSubtitle, DateAPI.extractDates(dataFetched), format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, CLIMA_CHART);
+            newLayout = createLayout(chartParams.variables[0].name || "", chartParams.chartActive?.yaxis || chartParams.variables[0].yaxis, locationLabel , DateAPI.extractDates(dataFetched), format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, CLIMA_CHART);
             break;
         case CUMULATA_CHART:
             newTraces = createCumulataBarTraces(chartParams, DateAPI.extractDates(dataFetched), dataFetched);
@@ -65,17 +65,17 @@ const InfoChartRender = ({
             newTraces = createObservedAndClimatologicalTraces(chartParams, DateAPI.extractDates(dataFetched[0]?.osservato || []), dataFetched[0]?.osservato || [],
                 unitPrecipitazione,  chartParams.chartActive?.hideClimatologicalTrace);
             newTraces = createBackgroundBands(DateAPI.extractDates(dataFetched[0]?.osservato || []), chartParams.variables[0].backgroundBands).concat(newTraces);
-            newLayout = createLayout(chartParams.variables[0].name, "", chartSubtitle, DateAPI.extractDates(dataFetched[0]?.osservato || []), format, newTraces, chartRelayout,
+            newLayout = createLayout(chartParams.variables[0].name, "", locationLabel , DateAPI.extractDates(dataFetched[0]?.osservato || []), format, newTraces, chartRelayout,
                 infoChartSize, isCollapsedFormGroup, AIB_HISTORIC_CHART);
             break;
         case AIB_PREVISIONALE:
             newTraces = createAIBPrevTraces(chartParams.variables, dataFetched, format);
             newTraces = createBackgroundBands(DateAPI.extractPrevDates(dataFetched, format), chartParams.variables[0].backgroundBands).concat(newTraces);
-            newLayout = createLayout(chartParams.variables[0].name, "", chartSubtitle, [], format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, AIB_HISTORIC_CHART);
+            newLayout = createLayout(chartParams.variables[0].name, "", locationLabel , [], format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, AIB_HISTORIC_CHART);
             break;
         default:
             newTraces = createVariableLineTraces(chartParams.variables, DateAPI.extractDates(dataFetched), dataFetched);
-            newLayout = createLayout(chartTitle, "", chartSubtitle, DateAPI.extractDates(dataFetched), format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, SPI_SPEI_CHART);
+            newLayout = createLayout(chartTitle, "", locationLabel , DateAPI.extractDates(dataFetched), format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, SPI_SPEI_CHART);
             break;
         }
         // Merge the new traces with the previously set ones to preserve the visibility state

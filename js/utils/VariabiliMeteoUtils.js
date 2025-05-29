@@ -577,7 +577,7 @@ export const createCumulataBarLayout = (traceParams, chartTitle, traces, dates, 
 };
 
 
-export const createLayout = (chartTitle, yaxisTitle, chartSubtitle, dates, format, dataTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, chartType) => {
+export const createLayout = (chartTitle, yaxisTitle, locationLabel, dates, format, dataTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, chartType) => {
     const isSpiSpeiChart = chartType === SPI_SPEI_CHART;
     const yaxisRange = isSpiSpeiChart
         ? [chartRelayout?.yaxisStart || MIN_Y_INDEX, chartRelayout?.yaxisEnd || MAX_Y_INDEX]
@@ -587,7 +587,7 @@ export const createLayout = (chartTitle, yaxisTitle, chartSubtitle, dates, forma
         width: infoChartSize.widthResizable - 10,
         height: infoChartSize.heightResizable - (isCollapsedFormGroup ? 140 : 400),
         title: {
-            text: chartTitle,
+            text: chartTitle + (locationLabel === "" ? "" : " - " + locationLabel),
             x: 0.05, // Posiziona il titolo a sinistra
             xanchor: 'left' // Ancora il titolo a sinistra
         },
@@ -618,20 +618,20 @@ export const createLayout = (chartTitle, yaxisTitle, chartSubtitle, dates, forma
         showlegend: true,
         hovermode: 'x unified',
         legend: { orientation: 'h', x: 0.5, y: 1.05 },
-        dragmode: chartRelayout?.dragmode,
-        annotations: [{
-            x: - 0.02, // Stessa posizione x del titolo principale
-            y: 1.08, // Posizione y leggermente sopra il titolo principale
-            xref: 'paper',
-            yref: 'paper',
-            text: chartSubtitle,
-            showarrow: false,
-            align: 'left',
-            font: {
-                size: 12,  // Dimensione del sottotitolo
-                color: 'gray'
-            }
-        }]
+        dragmode: chartRelayout?.dragmode
+        // annotations: [{
+        //     x: - 0.02, // Stessa posizione x del titolo principale
+        //     y: 1.08, // Posizione y leggermente sopra il titolo principale
+        //     xref: 'paper',
+        //     yref: 'paper',
+        //     text: locationLabel,
+        //     showarrow: false,
+        //     align: 'left',
+        //     font: {
+        //         size: 12,  // Dimensione del sottotitolo
+        //         color: 'gray'
+        //     }
+        // }]
     };
     return layout;
 };
