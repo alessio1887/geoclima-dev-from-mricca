@@ -576,15 +576,8 @@ export const createCumulataBarLayout = (traceParams, chartTitle, traces, dates, 
     };
 };
 
-
-export const createLayout = (chartTitle, yaxisTitle, locationLabel, dates, format, dataTraces, chartRelayout, infoChartSize,
-    isCollapsedFormGroup, chartType, backgroundBands = []) => {
-    const isSpiSpeiChart = chartType === SPI_SPEI_CHART;
-    const yaxisRange = isSpiSpeiChart
-        ? [chartRelayout?.yaxisStart || MIN_Y_INDEX, chartRelayout?.yaxisEnd || MAX_Y_INDEX]
-        : [chartRelayout?.yaxisStart || Math.min([dataTraces[0], dataTraces[1]]), chartRelayout?.yaxisEnd || Math.max([dataTraces[0], dataTraces[1]])];
-
-    const bandAnnotations = Array.isArray(backgroundBands)
+export const getBandAnnotations = (backgroundBands) => {
+    return Array.isArray(backgroundBands)
         ? backgroundBands
             .filter(b => b.min !== undefined && b.max !== undefined && b.class)
             .map(b => ({
@@ -598,19 +591,53 @@ export const createLayout = (chartTitle, yaxisTitle, locationLabel, dates, forma
                 align: 'left'
             }))
         : [];
+};
 
-    const layout =  {
+export const getBandTickvals = (backgroundBands) => {
+    return Array.isArray(backgroundBands)
+        ? [...new Set(
+            backgroundBands
+                .flatMap(b => [b.min, b.max])
+                .filter(v => typeof v === 'number')
+        )].sort((a, b) => a - b)
+        : [];
+};
+
+export const createLayout = (
+    chartTitle,
+    yaxisTitle,
+    locationLabel,
+    dates,
+    format,
+    dataTraces,
+    chartRelayout,
+    infoChartSize,
+    isCollapsedFormGroup,
+    backgroundBands = []
+) => {
+    const yaxisRange = [
+        chartRelayout?.yaxisStart || Math.min(...dataTraces.flatMap(t => t.y).filter(Number.isFinite)),
+        chartRelayout?.yaxisEnd || Math.max(...dataTraces.flatMap(t => t.y).filter(Number.isFinite))
+    ];
+
+    const bandAnnotations = getBandAnnotations(backgroundBands);
+    const tickvals = getBandTickvals(backgroundBands);
+
+    return {
         width: infoChartSize.widthResizable - 10,
         height: infoChartSize.heightResizable - (isCollapsedFormGroup ? 140 : 400),
         title: {
-            text: chartTitle + (locationLabel === "" ? "" : " - " + locationLabel),
-            x: 0.05, // Posiziona il titolo a sinistra
-            xanchor: 'left' // Ancora il titolo a sinistra
+            text: chartTitle + (locationLabel ? ` - ${locationLabel}` : ''),
+            x: 0.05,
+            xanchor: 'left'
         },
         xaxis: {
             tickformat: format !== DATE_FORMAT ? '%Y-%m-%d %H:%M:%S' : '%Y-%m-%d',
             tickangle: -20,
-            range: [chartRelayout?.startDate || Math.min(...dates), chartRelayout?.endDate || Math.max(...dates)],
+            range: [
+                chartRelayout?.startDate || Math.min(...dates),
+                chartRelayout?.endDate || Math.max(...dates)
+            ],
             ticks: 'inside',
             ticklen: 5,
             tickwidth: 1,
@@ -618,25 +645,29 @@ export const createLayout = (chartTitle, yaxisTitle, locationLabel, dates, forma
         },
         yaxis: {
             range: yaxisRange,
-            ...(isSpiSpeiChart && { // Aggiunge tickvals solo per multi-variable
-                tickvals: [MIN_Y_INDEX, -2, -1.5, -0.5, 0.5, 1.0, 1.5, 2.0, MAX_Y_INDEX]
-            }),
-            ...(!isSpiSpeiChart && { // Aggiunge il title solo se non e multi-variable
-                title: yaxisTitle
-            }),
+            tickvals,
+            title: yaxisTitle,
             tickformat: '.1f',
             ticks: 'inside',
             ticklen: 5,
             tickwidth: 1,
             tickcolor: '#000'
         },
-        margin: { t: (isCollapsedFormGroup ? 110 : 80 ), r: 40, l: 60, b: (format === DATE_FORMAT ? 40 : 60 )},
+        margin: {
+            t: isCollapsedFormGroup ? 110 : 80,
+            r: 40,
+            l: 60,
+            b: format === DATE_FORMAT ? 40 : 60
+        },
         showlegend: true,
         hovermode: 'x unified',
-        legend: { orientation: 'h', x: 0.5, y: 1.05 },
+        legend: {
+            orientation: 'h',
+            x: 0.5,
+            y: 1.05
+        },
         dragmode: chartRelayout?.dragmode,
         annotations: bandAnnotations
     };
-    return layout;
 };
 
