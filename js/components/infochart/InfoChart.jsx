@@ -197,17 +197,25 @@ class InfoChart extends React.Component {
     }
 
     initializeTabs = () => {
-        const variableTabs = this.props.tabList.map((tab, index) => ({
+        const variableTabs = this.props.tabList.map((tab) => ({
             id: tab.id,
             variables: [tab.groupList[0]],
-            active: index === 0,
+            active: false, // inizialmente tutti disattivi
             chartType: tab.chartType,
             chartTitle: tab.chartTitle,
+            isDefault: tab.isDefaultTab || false,
             backgroundBands: Array.isArray(tab.backgroundBands) && tab.backgroundBands.length > 0
                 ? tab.backgroundBands
                 : [],
             ...(tab.chartList && { chartList: tab.chartList })
         }));
+
+        // Trova l'indice del tab con isDefault === true, altrimenti usa il primo tab come attivo
+        const defaultIndex = variableTabs.findIndex(tab => tab.isDefault);
+        const activeIndex = defaultIndex !== -1 ? defaultIndex : 0;
+
+        variableTabs[activeIndex].active = true;
+
         this.props.onInitializeVariableTabs(variableTabs);
     }
     // Set some props to the plugin's state

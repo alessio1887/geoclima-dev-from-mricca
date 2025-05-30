@@ -26,8 +26,6 @@ export const DEFAULT_FILENAME = 'exported_image.png';
 
 const ST_VALUE = "st_value_";
 const defaultColors = ['green', 'black', 'teal', 'gray'];
-const MIN_Y_INDEX = -3.0;
-const MAX_Y_INDEX = 3.0;
 
 export function isVariabiliMeteoLayer(layerName, variabiliMeteo) {
     if (typeof layerName !== "string" || !variabiliMeteo) {

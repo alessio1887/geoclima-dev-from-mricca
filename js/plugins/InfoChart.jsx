@@ -318,6 +318,7 @@ Plugin configuration
           {
             "id": "aib",
             "name": "AIB indici previsione",
+            "isDefaultTab": true,
             "menuType": "single_select",
             "chartList": [
                   {

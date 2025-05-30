@@ -222,13 +222,21 @@ const getVisibleLayerValues = (visibleLayer, appState) => {
  *   - `variable` (string): The selected variable.
  *   - 'idTab' (string): chart's type
  */
-const getVariableFromLayer = (appState, idVariabiliLayers) => {
-    // If there is a visible layer, use the layer's values
+const getInitialChartConfig = (appState, idVariabiliLayers) => {
+    // 1. Check for tab with isDefaultTab === true
+    const defaultTab = appState.infochart.tabList.find(tab => tab.isDefaultTab);
+    if (defaultTab && defaultTab.groupList?.length > 0) {
+        return {
+            variable: defaultTab.groupList[0].id,
+            idTab: defaultTab.id
+        };
+    }
+    // 2. If no default tab, check for a visible layer
     const visibleLayer = getFirstVisibleLayer(getVisibleLayers(appState.layers.flat, idVariabiliLayers), getVisibleGroups(appState.layers.groups));
     if (visibleLayer) {
         return getVisibleLayerValues(visibleLayer, appState);
     }
-    // Otherwise, return the default values
+    // 3. Fallback
     return getDefaultValues(idVariabiliLayers, appState);
 };
 
@@ -374,7 +382,7 @@ const clickedPointCheckEpic = (action$, store) =>
             let markerAction;
             if (!appState.infochart.showInfoChartPanel) {
                 const { fromData: fromDataTmp, toData: toDataTmp, periodType: periodTypeTmp, rangeManager } = getDateFromRangePicker(appState, timeUnit);
-                const { variable: variableTmp, idTab: idTabTmp } = getVariableFromLayer(appState, appState.infochart.idVariabiliLayers);
+                const { variable: variableTmp, idTab: idTabTmp } = getInitialChartConfig(appState, appState.infochart.idVariabiliLayers);
                 const infoChartSize = appState.infochart.infoChartSize;
                 const { width: newWidth, height: newHeight } = getDefaultPanelSize();
                 fromData = fromDataTmp;

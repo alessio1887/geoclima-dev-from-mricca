@@ -1051,6 +1051,7 @@
             "id": "aib",
             "name": "AIB indici previsione",
             "menuType": "single_select",
+            "isDefaultTab": true,
             "chartList": [
                   {
                     "id": "aib1",
