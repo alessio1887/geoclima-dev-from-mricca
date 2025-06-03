@@ -74,7 +74,7 @@ const InfoChartRender = ({
         case AIB_PREVISIONALE:
             newTraces = createAIBPrevTraces(chartParams.variables, dataFetched, format);
             newTraces = createBackgroundBands(DateAPI.extractPrevDates(dataFetched, format), chartParams.variables[0].backgroundBands).concat(newTraces);
-            newLayout = createLayout(chartParams.variables[0].name, "", locationLabel, [], format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup,
+            newLayout = createLayout(chartParams.variables[0].name, "", locationLabel, DateAPI.extractPrevDates(dataFetched, format), format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup,
                 chartParams.backgroundBands);
             break;
         default:

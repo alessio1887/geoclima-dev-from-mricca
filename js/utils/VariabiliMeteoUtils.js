@@ -619,7 +619,27 @@ export const createLayout = (
     ];
 
     const bandAnnotations = getBandAnnotations(backgroundBands);
-    const tickvals = getBandTickvals(backgroundBands);
+    const yTickvals = getBandTickvals(backgroundBands);
+
+    let xAxis = {
+        tickformat: format !== DATE_FORMAT ? '%Y-%m-%d %H:%M:%S' : '%Y-%m-%d',
+        tickangle: -20,
+        range: [
+            chartRelayout?.startDate || Math.min(...dates),
+            chartRelayout?.endDate || Math.max(...dates)
+        ],
+        ticks: 'inside',
+        ticklen: 5,
+        tickwidth: 1,
+        tickcolor: '#000',
+        automargin: true
+    };
+    const shouldAddTickvals = dates.length <= 4 || // Condizione 1: meno o uguale a 4 giorni
+        (dates.length > 4 && dates.length <= 10 && infoChartSize?.widthResizable > 880); // Condizione 2: tra 5 e 10 giorni E larghezza > 880
+    // Add tickvals only if the number of days is 4 or less
+    if (shouldAddTickvals) {
+        xAxis.tickvals = dates;
+    }
 
     return {
         width: infoChartSize.widthResizable - 10,
@@ -629,21 +649,10 @@ export const createLayout = (
             x: 0.05,
             xanchor: 'left'
         },
-        xaxis: {
-            tickformat: format !== DATE_FORMAT ? '%Y-%m-%d %H:%M:%S' : '%Y-%m-%d',
-            tickangle: -20,
-            range: [
-                chartRelayout?.startDate || Math.min(...dates),
-                chartRelayout?.endDate || Math.max(...dates)
-            ],
-            ticks: 'inside',
-            ticklen: 5,
-            tickwidth: 1,
-            tickcolor: '#000'
-        },
+        xaxis: xAxis,
         yaxis: {
             range: yaxisRange,
-            tickvals,
+            yTickvals,
             title: yaxisTitle,
             tickformat: '.1f',
             ticks: 'inside',
