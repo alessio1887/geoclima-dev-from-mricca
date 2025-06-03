@@ -298,7 +298,7 @@ class InfoChart extends React.Component {
             variables: tabSelected.variables,
             chartActive: { ...chartActive },
             name: tabSelected.chartTitle,
-            chartType: chartActive.chartType || tabSelected.variables[0].chartType,
+            chartType: chartActive.chartType || tabSelected.chartType || tabSelected.variables[0].chartType,
             backgroundBands: getBackgroundBands(chartActive, tabSelected)
         };
     };
