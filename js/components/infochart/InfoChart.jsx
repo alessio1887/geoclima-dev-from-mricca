@@ -343,7 +343,6 @@ class InfoChart extends React.Component {
                     onChangeFixedRangeTodata={this.props.onChangeFixedRangeTodata}
                     onChangePeriod={this.props.onChangePeriod}
                     infoChartSize={this.props.infoChartSize}
-                    isOneDatePicker={false}
                     timeUnit={this.props.timeUnit}
                     fromData={this.props.fromData}
                     onChangeFromData={this.props.onChangeFromData}
