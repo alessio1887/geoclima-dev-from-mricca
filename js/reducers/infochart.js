@@ -133,14 +133,14 @@ function infochart(state = infoChartDefaultState, action) {
             infoChartData: action.params,
             data: [],
             maskLoading: action.maskLoading,
-            isInteractionDisabled: !state.isInteractionDisabled
+            isInteractionDisabled: true
         });
     }
     case FETCHED_INFOCHART_DATA: {
         return assign({}, state, {
             data: action.data,
             maskLoading: action.maskLoading,
-            isInteractionDisabled: !state.isInteractionDisabled
+            isInteractionDisabled: false
         });
     }
     case COLLAPSE_RANGE_PICKER: {

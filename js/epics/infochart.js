@@ -430,7 +430,7 @@ const clickedPointCheckEpic = (action$, store) =>
             return Observable.of(...actions);
         });
 /**
-* Epic that loads data for the InfoChart component.
+ * Epic that loads data for the InfoChart component.
  *
  * Triggered when the FETCH_INFOCHART_DATA action is dispatched.
  * It identifies the active tab and selects the appropriate API call based on its type:
