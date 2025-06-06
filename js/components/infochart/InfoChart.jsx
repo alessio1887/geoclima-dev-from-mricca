@@ -456,19 +456,26 @@ class InfoChart extends React.Component {
         }
         if ( this.props.activeRangeManager === FIXED_RANGE) {
             fromDateToValidate = moment(toDate).clone().subtract(periodApplied.max, 'days').toDate();
-            // this.setState({ periodTypeSelected: periodApplied });
         }
         this.setState({ fromDataSelected: moment(fromDateToValidate).clone().format(this.props.timeUnit) });
         this.setState({ toDataSelected: moment(toDate).clone().format(this.props.timeUnit)  });
-        const validation = DateAPI.validateDateRange(
-            fromDateToValidate,
-            toDate,
-            this.props.firstAvailableDate,
-            this.props.lastAvailableDate,
-            this.props.timeUnit
-        );
+
+        const chartTypeSelected = this.getVariableChartParams(this.getActiveTab());
+        const showOneDatePicker = chartTypeSelected.chartActive?.showOneDatePicker || chartTypeSelected.variables[0]?.showOneDatePicker;
+        let validation = true;
+        if (showOneDatePicker) {
+            validation = DateAPI.validateOneDate(toDate, this.props.firstAvailableDate, this.props.lastAvailableDate, this.props.timeUnit);
+        } else {
+            validation = DateAPI.validateDateRange(
+                fromDateToValidate,
+                toDate,
+                this.props.firstAvailableDate,
+                this.props.lastAvailableDate,
+                this.props.timeUnit
+            );
+        }
         if (!validation.isValid) {
-            this.props.onOpenAlert("gcapp.infochart.errorMessages." + validation.errorMessage);
+            this.props.onOpenAlert("gcapp.infochart.errorMessages." + validation.errorMessage + ( showOneDatePicker ? "OneDate" : ""));
             this.resetChartData();
             return false;
         }

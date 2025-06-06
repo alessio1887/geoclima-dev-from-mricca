@@ -46,7 +46,7 @@ const DailyManager = ({
         onChangePeriodToData(newToData.toDate());
         const validation = DateAPI.validateOneDate(toData, minDate, maxDate, format);
         if (!validation.isValid) {
-            onOpenAlert(validation.errorMessage);
+            onOpenAlert("gcapp.errorMessages." + validation.errorMessage);
             return;
         }
         if (alertMessage !== null) {
@@ -65,7 +65,7 @@ const DailyManager = ({
         }
         const validation = DateAPI.validateOneDate(toData, minDate, maxDate, format);
         if (!validation.isValid) {
-            onOpenAlert(validation.errorMessage);
+            onOpenAlert("gcapp.errorMessages." + validation.errorMessage);
             return;
         }
         if (alertMessage !== null) {

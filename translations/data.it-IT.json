@@ -30,7 +30,7 @@
               "endDateBefore": "La data fine non può essere minore della data inizio.",
               "rangeTooLarge": "L'intervallo di date non può superare un anno.",
               "dateTooEarly": "La data selezionata non può essere precedente al {minDate}",
-              "rangeExceedsBoundary": "La data selezionata non può superare il {maxDate}"
+              "dateTooLate": "La data selezionata non può superare il {maxDate}"
             },
             "applyPeriodButton": " Applica periodo",
             "dailyDatePicker": "Seleziona una data",
@@ -40,9 +40,11 @@
               "expand": "Espandi",
               "errorMessages": {
                 "endDateBefore": "La data fine {toData} non può essere minore della data inizio {fromData}.",
-              "rangeTooLarge": "L'intervallo di date ({fromData} - {toData}) non può superare un anno.",
-              "dateTooEarly": "La data selezionata ({fromData} - {toData}) non può essere precedente al {minDate}",
-              "rangeExceedsBoundary": "La data selezionata ({fromData} - {toData}) non può superare il {maxDate}"
+                "rangeTooLarge": "L'intervallo di date ({fromData} - {toData}) non può superare un anno.",
+                "dateTooEarly": "La data selezionata ({fromData} - {toData}) non può essere precedente al {minDate}",
+                "dateTooLate": "La data selezionata ({fromData} - {toData}) non può superare il {maxDate}",
+                "dateTooEarlyOneDate": "La data selezionata ({toData}) non può essere precedente al {minDate}",
+                "dateTooLateOneDate": "La data selezionata ({toData}) non può superare il {maxDate}"
               }
             }
         },

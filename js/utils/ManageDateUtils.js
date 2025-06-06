@@ -80,7 +80,7 @@ const Api = {
             return { isValid: false, errorMessage: "dateTooEarly" };
         }
         if (fromDataMoment.isAfter(lastDate) || toDataMoment.isAfter(lastDate)) {
-            return { isValid: false, errorMessage: "rangeExceedsBoundary"};
+            return { isValid: false, errorMessage: "dateTooLate"};
         }
         if (toDataMoment.isBefore(fromDataMoment)) {
             return { isValid: false, errorMessage: "endDateBefore" };
@@ -103,10 +103,10 @@ const Api = {
             lastDate = lastDate.startOf('day');
         }
         if (normalizedDate.isBefore(firstDate)) {
-            return { isValid: false, errorMessage: "gcapp.errorMessages.dateTooEarly" };
+            return { isValid: false, errorMessage: "dateTooEarly" };
         }
         if (normalizedDate.isAfter(lastDate)) {
-            return { isValid: false, errorMessage: "gcapp.errorMessages.rangeExceedsBoundary" };
+            return { isValid: false, errorMessage: "dateTooLate" };
         }
         // Se tutte le verifiche passano
         return { isValid: true, errorMessage: null };
