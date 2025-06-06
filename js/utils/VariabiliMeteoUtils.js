@@ -300,6 +300,11 @@ export function getStartPositionPanel() {
         const xPositionA = -180;
         const xPositionB = - (Math.max(screenWidth, screenHeight) / 10 + 100);
         x = Math.max(xPositionA, xPositionB);
+    } else if (screenWidth >= 450 && screenHeight >= 450 && screenWidth <= screenHeight) {
+        y = -80;
+        const xPositionA = -55;
+        const xPositionB = - (Math.max(screenWidth, screenHeight) / 20);
+        x = Math.max(xPositionA, xPositionB);
     }
     return { x, y };
 }
