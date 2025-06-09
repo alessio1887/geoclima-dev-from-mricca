@@ -30,7 +30,8 @@
               "endDateBefore": "La data fine non può essere minore della data inizio.",
               "rangeTooLarge": "L'intervallo di date non può superare un anno.",
               "dateTooEarly": "La data selezionata non può essere precedente al {minDate}",
-              "dateTooLate": "La data selezionata non può superare il {maxDate}"
+              "dateTooLate": "La data selezionata non può superare il {maxDate}",
+              "outsideRegion": "Hai cliccato fuori dalla regione"
             },
             "applyPeriodButton": " Applica periodo",
             "dailyDatePicker": "Seleziona una data",

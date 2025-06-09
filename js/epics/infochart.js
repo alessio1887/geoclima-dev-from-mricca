@@ -17,12 +17,11 @@ import {
     setInfoChartVisibility,
     fetchInfoChartData,
     setRangeManager,
-    changePeriod,
-    changeFromData,
-    changeToData,
+    changePeriod, changeFromData,
+    changeTab, changeToData,
     changeFixedRangeToData,
     markInfoChartAsNotLoaded,
-    changeTab, changeChartVariable,
+    openAlert, changeChartVariable,
     closeAlert, resetChartRelayout,
     setDefaultPanelSize, resizeInfoChart } from '../actions/infochart';
 import { CLICK_ON_MAP } from '@mapstore/actions/map';
@@ -123,6 +122,18 @@ const getDisableInfoChartActions = (appState) => {
     return disableInfoChartActions;
 };
 
+const getErrorHandlingActions = (error) => {
+    const actions = [
+        fetchedInfoChartData([], false)
+    ];
+    const code = error?.data?.code;
+    const status = error?.response?.status || error?.status;
+    if (status === 400 && code === 'OUT_OF_REGION') {
+        actions.push(openAlert("gcapp.errorMessages.outsideRegion"));
+    }
+    return actions;
+};
+
 /**
  * This method returns the first visible layer from an array of layers,
  * considering visibility defined either as an independent layer ID
@@ -216,13 +227,11 @@ const getVisibleLayerValues = (visibleLayer, appState) => {
  * Calculates and returns the variables needed for configuring the InfoChart panel.
  *
  * @param {Object} appState - The global state of the application.
- * @param {Object|null} visibleLayer - The currently selected visible layer, or `null` if none are available.
- * @param {Object} idVariabiliLayers - An object mapping layer IDs to their respective variables.
  * @returns {Object} - An object containing:
  *   - `variable` (string): The selected variable.
  *   - 'idTab' (string): chart's type
  */
-const getInitialChartConfig = (appState, idVariabiliLayers) => {
+const getInitialChartConfig = (appState) => {
     // 1. Check for tab with isDefaultTab === true
     const defaultTab = appState.infochart.tabList.find(tab => tab.isDefaultTab);
     if (defaultTab && defaultTab.groupList?.length > 0) {
@@ -232,6 +241,7 @@ const getInitialChartConfig = (appState, idVariabiliLayers) => {
         };
     }
     // 2. If no default tab, check for a visible layer
+    const idVariabiliLayers = appState.infochart.idVariabiliLayers;
     const visibleLayer = getFirstVisibleLayer(getVisibleLayers(appState.layers.flat, idVariabiliLayers), getVisibleGroups(appState.layers.groups));
     if (visibleLayer) {
         return getVisibleLayerValues(visibleLayer, appState);
@@ -241,6 +251,7 @@ const getInitialChartConfig = (appState, idVariabiliLayers) => {
 };
 
 // Close infochart when user come back to homepage
+// TODO improve this method adding more actions to close the infochart panel ( set dates, infochart size, etc. )
 const closeInfoChartPanel = (action$, store) =>
     action$.ofType(LOADING).switchMap(() => {
         const appState = store.getState();
@@ -335,12 +346,12 @@ const toggleControlEpic = (action$, store) => {
  * If no plugin is active or the selected range is invalid, it falls back to the default date range.
  *
  * @param {Object} appState - The application state.
- * @param {string} timeUnit - The time unit format for date calculations.
  * @returns {Object} An object containing fromData, toData, and rangeManager.
  */
-const getDateFromRangePicker = (appState, timeUnit) => {
+const getDateFromRangePicker = (appState) => {
     let fromData = null; let toData = null; let periodType = null;
     let rangeManager = FIXED_RANGE;
+    console.log('showFixedRangePickerSelector(appState)', showFixedRangePickerSelector(appState));
     if (isFixedRangeLoaded(appState) && showFixedRangePickerSelector(appState)) {
         fromData = fromDataFixedRangeForm(appState);
         toData = toDataFixedRangeForm(appState);
@@ -351,11 +362,12 @@ const getDateFromRangePicker = (appState, timeUnit) => {
         toData = toDataFreeRangeForm(appState);
     }
     // Se nessun plugin è attivo o il range non è valido, usa le date di default
+    const infoChartState = appState.infochart;
     if (!fromData || !toData ||
-        !DateAPI.validateDateRange(fromData, toData, appState.infochart.firstAvailableDate, appState.infochart.lastAvailableDate, timeUnit).isValid) {
-        toData = appState.infochart.lastAvailableDate;
+        !DateAPI.validateDateRange(fromData, toData, infoChartState.firstAvailableDate, infoChartState.lastAvailableDate, infoChartState.timeUnit).isValid) {
+        toData = infoChartState.lastAvailableDate;
         // Perche in componentDidMount() viene settato il defaultPeriod
-        fromData = moment(toData).clone().subtract(appState.infochart.periodType.max, 'days').toDate();
+        fromData = moment(toData).clone().subtract(infoChartState.periodType.max, 'days').toDate();
     }
     return { fromData, toData, periodType, rangeManager };
 };
@@ -372,18 +384,22 @@ const clickedPointCheckEpic = (action$, store) =>
     action$.ofType(CLICK_ON_MAP)
         .filter(() => store.getState().controls?.chartinfo?.enabled)
         .switchMap((action) => {
-            const appState = store.getState();
-            const timeUnit = appState.infochart.timeUnit;
+            const infochartState = store.getState().infochart;
+            const timeUnit = infochartState.timeUnit;
             const latlng = action.point.latlng;
             let actions = [];
             let fromData; let toData;
             let variable; let idTab;
             let periodType = null;
             let markerAction;
-            if (!appState.infochart.showInfoChartPanel) {
-                const { fromData: fromDataTmp, toData: toDataTmp, periodType: periodTypeTmp, rangeManager } = getDateFromRangePicker(appState, timeUnit);
-                const { variable: variableTmp, idTab: idTabTmp } = getInitialChartConfig(appState, appState.infochart.idVariabiliLayers);
-                const infoChartSize = appState.infochart.infoChartSize;
+            // Clear alert message if validations pass
+            if (infochartState.alertMessage) {
+                actions.push(closeAlert());
+            }
+            if (!infochartState.showInfoChartPanel) {
+                const { fromData: fromDataTmp, toData: toDataTmp, periodType: periodTypeTmp, rangeManager } = getDateFromRangePicker(store.getState());
+                const { variable: variableTmp, idTab: idTabTmp } = getInitialChartConfig(store.getState());
+                const infoChartSize = infochartState.infoChartSize;
                 const { width: newWidth, height: newHeight } = getDefaultPanelSize();
                 fromData = fromDataTmp;
                 toData = toDataTmp;
@@ -396,7 +412,7 @@ const clickedPointCheckEpic = (action$, store) =>
                 actions.push(changeToData(new Date(toData)));
                 actions.push(changeTab(idTab));
                 actions.push(changeChartVariable(idTab,
-                    [getVariableParamsFromTab(idTab, variable, appState.infochart.tabList)]));
+                    [getVariableParamsFromTab(idTab, variable, infochartState.tabList)]));
                 markerAction = getNewMarker(latlng);
                 if (periodType) {
                     actions.push(changePeriod(periodType));
@@ -408,11 +424,11 @@ const clickedPointCheckEpic = (action$, store) =>
                 }
             } else {
                 // Se InfoChart è già aperto, le date e la variabile non cambiano.
-                fromData = appState.infochart.infoChartData.fromData;
-                toData = appState.infochart.infoChartData.toData;
-                variable = appState.infochart.infoChartData.variables;
-                idTab = appState.infochart.infoChartData.idTab;
-                periodType = appState.infochart.periodType;
+                fromData = infochartState.infoChartData.fromData;
+                toData = infochartState.infoChartData.toData;
+                variable = infochartState.infoChartData.variables;
+                idTab = infochartState.infoChartData.idTab;
+                periodType = infochartState.periodType;
                 markerAction = updateMarkerPosition(latlng);
                 actions.push(resetChartRelayout());
             }
@@ -423,7 +439,7 @@ const clickedPointCheckEpic = (action$, store) =>
                 toData: moment(toData).format(timeUnit),
                 fromData: moment(fromData).format(timeUnit),
                 variables: variable,
-                periodType: periodType || appState.infochart.periodType,
+                periodType: periodType || infochartState.periodType,
                 idTab: idTab
             }));
             actions.push(markerAction);
@@ -462,10 +478,13 @@ const loadInfoChartDataEpic = (action$, store) =>
             return Observable.defer(() => apiCall(state.infoChartData, apiUrl).then(res => res.data)
             ).switchMap(data =>
                 Observable.of(fetchedInfoChartData(data, false))
-            ).catch(error => Observable.concat(
-                Observable.of(fetchedInfoChartData([], false)),
-                Observable.throw(error)
-            ));
+            ).catch(error => {
+                const errorHandlingActions = getErrorHandlingActions(error);
+                return Observable.concat(
+                    ...errorHandlingActions.map(action => Observable.of(action)),
+                    Observable.throw(error)
+                );
+            });
         });
 
 

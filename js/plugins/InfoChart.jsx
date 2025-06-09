@@ -318,7 +318,7 @@ Plugin configuration
           {
             "id": "aib",
             "name": "AIB indici previsione",
-            "isDefaultTab": true,
+            "isDefaultTab": true, // if true, this tab will be loaded upon click on map when panel is not open
             "menuType": "single_select",
             "chartList": [
                   {
