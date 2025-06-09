@@ -351,7 +351,6 @@ const toggleControlEpic = (action$, store) => {
 const getDateFromRangePicker = (appState) => {
     let fromData = null; let toData = null; let periodType = null;
     let rangeManager = FIXED_RANGE;
-    console.log('showFixedRangePickerSelector(appState)', showFixedRangePickerSelector(appState));
     if (isFixedRangeLoaded(appState) && showFixedRangePickerSelector(appState)) {
         fromData = fromDataFixedRangeForm(appState);
         toData = toDataFixedRangeForm(appState);
