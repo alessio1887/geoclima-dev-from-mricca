@@ -13,6 +13,7 @@ export const SET_INFOCHART_VISIBILITY = 'SET_INFOCHART_VISIBILITY';
 export const CHART_PERIOD_CHANGED = 'INFOCHART:CHART_PERIOD_CHANGED';
 export const FETCH_INFOCHART_DATA = 'FETCH_INFOCHART_DATA';
 export const FETCHED_INFOCHART_DATA = 'FETCHED_INFOCHART_DATA';
+export const NOT_FETCHED_INFOCHART_DATA = 'NOT_FETCHED_INFOCHART_DATA';
 export const TOGGLE_INFOCHART = 'TOGGLE_INFOCHART';
 export const COLLAPSE_RANGE_PICKER = 'INFOCHART:COLLAPSE_RANGE_PICKER';
 export const SET_RANGE_MANAGER = 'INFOCHART:SET_RANGE_MANAGER';
@@ -106,6 +107,12 @@ export function fetchedInfoChartData(data, maskLoading) {
         type: FETCHED_INFOCHART_DATA,
         data,
         maskLoading
+    };
+}
+
+export function notFetchedInfoChartData() {
+    return {
+        type: NOT_FETCHED_INFOCHART_DATA
     };
 }
 
@@ -211,29 +218,6 @@ export function setTabList(tabList) {
         tabList
     };
 }
-
-// export function setAvailableDatesInfoChart(dataInizio, dataFine) {
-//     return {
-//         type: INFOCHART_SET_AVAILABLE_DATES,
-//         dataInizio,
-//         dataFine
-//     };
-// }
-
-// export function fetchSelectDate(variabileLastAvailableData, urlGetLastAvailableData) {
-//     return (dispatch) => {
-//         GeoClimaAPI.getAvailableDates(variabileLastAvailableData, urlGetLastAvailableData)
-//             .then(response => {
-//                 const dataFine = new Date(response.data[0].data_fine);
-//                 const dataInizio = new Date(response.data[0].data_inizio);
-//                 dispatch(setAvailableDatesInfoChart(dataInizio, dataFine));
-//                 dispatch(updateParamsInfoChart(dataInizio, dataFine));
-//             })
-//             .catch(error => {
-//                 dispatch(apiError(error));
-//             });
-//     };
-// }
 
 export const checkLaunchSelectDateQuery = (variableSelectDate, urlSelectDate, timeUnit) => {
     return {

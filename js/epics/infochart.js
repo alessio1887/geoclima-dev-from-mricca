@@ -16,6 +16,7 @@ import {
     fetchedInfoChartData,
     setInfoChartVisibility,
     fetchInfoChartData,
+    notFetchedInfoChartData,
     setRangeManager,
     changePeriod, changeFromData,
     changeTab, changeToData,
@@ -444,19 +445,7 @@ const clickedPointCheckEpic = (action$, store) =>
             actions.push(markerAction);
             return Observable.of(...actions);
         });
-/**
- * Epic that loads data for the InfoChart component.
- *
- * Triggered when the FETCH_INFOCHART_DATA action is dispatched.
- * It identifies the active tab and selects the appropriate API call based on its type:
- *
- * - For standard tabs, it uses the Geoclima chart API.
- * - For the "aib" tab, it uses the dedicated AIB chart API.
- *
- * On success, it dispatches the fetchedInfoChartData action with the retrieved data.
- * On failure (e.g., 400 errors), it still dispatches fetchedInfoChartData with an empty array,
- * and rethrows the original error for logging or further handling.
- */
+
 const loadInfoChartDataEpic = (action$, store) =>
     action$.ofType(FETCH_INFOCHART_DATA)
         .switchMap(() => {
@@ -475,9 +464,18 @@ const loadInfoChartDataEpic = (action$, store) =>
             }
 
             return Observable.defer(() => apiCall(state.infoChartData, apiUrl).then(res => res.data)
-            ).switchMap(data =>
-                Observable.of(fetchedInfoChartData(data, false))
-            ).catch(error => {
+            ).switchMap(data => {
+                let actions = [];
+                const isEmpty = !Array.isArray(data) || data.length === 0;
+                if (isEmpty) {
+                    actions.push(notFetchedInfoChartData());
+                    actions.push(openAlert("gcapp.errorMessages.noData"));
+                } else {
+                    actions.push(fetchedInfoChartData(data, false));
+                }
+                // const actions = checkResponseData(data, state);
+                return Observable.of(...actions);
+            }).catch(error => {
                 const errorHandlingActions = getErrorHandlingActions(error);
                 return Observable.concat(
                     ...errorHandlingActions.map(action => Observable.of(action)),

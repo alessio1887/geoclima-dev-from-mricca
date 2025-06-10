@@ -389,7 +389,7 @@ export const createObservedAndClimatologicalTraces = (traceParams, dates, dataFe
     const chartParams = traceParams.chartActive ?? traceParams.variables[0];
     const chartVariable = traceParams.variables[0].id;
     const unit = chartParams.unit;
-    const propVariable = "st_value_" + chartVariable;
+    const propVariable = ST_VALUE + chartVariable;
 
     const chartData = unit === unitPrecipitazione
         ? formatDataCum(dataFetched, propVariable)

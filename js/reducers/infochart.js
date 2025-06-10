@@ -8,9 +8,10 @@
 import { FETCHED_AVAILABLE_DATES } from '../actions/updateDatesParams';
 import {CHARTVARIABLE_CHANGED, TAB_CHANGED, TODATA_FIXEDRANGE_CHANGED, FROMDATA_CHANGED,
     TODATA_CHANGED, CHART_PERIOD_CHANGED, SET_INFOCHART_VISIBILITY, FETCH_INFOCHART_DATA,
-    FETCHED_INFOCHART_DATA, COLLAPSE_RANGE_PICKER,  OPEN_ALERT, CLOSE_ALERT, SET_CHART_RELAYOUT, RESET_CHART_RELAYOUT,
-    RESIZE_INFOCHART, SET_DEFAULT_SIZE, SET_RANGE_MANAGER, SET_IDVARIABILI_LAYERS, SET_DEFAULT_URLS, SET_DEFAULT_DATES,
-    INITIALIZE_TABS, PLUGIN_LOADED, PLUGIN_NOT_LOADED, SET_TABLIST, SET_TIMEUNIT, CHART_TYPE_CHANGED } from '../actions/infochart';
+    FETCHED_INFOCHART_DATA, NOT_FETCHED_INFOCHART_DATA, COLLAPSE_RANGE_PICKER,  OPEN_ALERT,
+    CLOSE_ALERT, SET_CHART_RELAYOUT, RESET_CHART_RELAYOUT, RESIZE_INFOCHART, SET_DEFAULT_SIZE,
+    SET_RANGE_MANAGER, SET_IDVARIABILI_LAYERS, SET_DEFAULT_URLS, SET_DEFAULT_DATES, INITIALIZE_TABS,
+    PLUGIN_LOADED, PLUGIN_NOT_LOADED, SET_TABLIST, SET_TIMEUNIT, CHART_TYPE_CHANGED } from '../actions/infochart';
 import { DEFAULT_DATA_FINE, DEFAULT_DATA_INIZIO } from '../utils/ManageDateUtils';
 import assign from 'object-assign';
 import moment from 'moment';
@@ -140,6 +141,13 @@ function infochart(state = infoChartDefaultState, action) {
         return assign({}, state, {
             data: action.data,
             maskLoading: action.maskLoading,
+            isInteractionDisabled: false
+        });
+    }
+    case NOT_FETCHED_INFOCHART_DATA: {
+        return assign({}, state, {
+            data: [],
+            maskLoading: false,
             isInteractionDisabled: false
         });
     }

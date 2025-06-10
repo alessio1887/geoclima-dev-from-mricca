@@ -31,7 +31,9 @@
               "rangeTooLarge": "L'intervallo di date non può superare un anno.",
               "dateTooEarly": "La data selezionata non può essere precedente al {minDate}",
               "dateTooLate": "La data selezionata non può superare il {maxDate}",
-              "outsideRegion": "Hai cliccato fuori dalla regione"
+              "outsideRegion": "Hai cliccato fuori dalla regione",
+              "genericError": "Si è verificato un errore durante l'elaborazione della richiesta",
+              "noData": "Non ci sono dati disponibili per il periodo selezionato."
             },
             "applyPeriodButton": " Applica periodo",
             "dailyDatePicker": "Seleziona una data",
