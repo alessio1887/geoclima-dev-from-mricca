@@ -697,3 +697,99 @@ export const createLayout = (
     };
 };
 
+
+/**
+ * Checks if the provided data array contains relevant values for the requested variables,
+ * returning an object with the detailed data status.
+ *
+ * @param {Array} data The data array received from the API call.
+ * @param {object} infoChartParams The infoChartData object from the Redux state, containing 'variables'.
+ * @returns {object} An object with properties:
+ * - hasData: boolean (true if there is overall plottable data)
+ * - isAibNested: boolean (true if the response is of AIB nested type)
+ * - hasObservatoData?: boolean (only if isAibNested is true: true if 'osservato' contains valid data)
+ * - hasPrevisioniData?: boolean (only if isAibNested is true: true if 'previsioni' contains valid data)
+ */
+export const containsValidChartData  = (data, infoChartParams) => {
+    // 1. Base check
+    if (!Array.isArray(data) || data.length === 0) {
+        return { hasData: false, isAibNested: false };
+    }
+
+    // 2. Parse the requested variables from the "variables" string
+    const requestedVariables = infoChartParams.variables
+        ? infoChartParams.variables.split(',').map(v => v.trim())
+        : [];
+
+    if (requestedVariables.length === 0) {
+        return { hasData: false, isAibNested: false };
+    }
+    // Helper function
+    const isNullOrUndefined = (val) => val === null || val === undefined;
+
+    // 3. Determine the response typology based on the first element of the 'data' array.
+    const firstDataItem = data[0];
+    const hasObservatoArrayAtFirstItem = firstDataItem && Array.isArray(firstDataItem.osservato);
+    const hasPrevisioniArrayAtFirstItem = firstDataItem && Array.isArray(firstDataItem.previsioni);
+    const isAibNestedResponse = hasObservatoArrayAtFirstItem || hasPrevisioniArrayAtFirstItem;
+    // Initialize flags for AIB nested data types
+    let observatoHasValidData = false;
+    let previsioniHasValidData = false;
+    let overallHasValidData = false;
+
+    if (isAibNestedResponse) {
+        data.forEach(item => {
+            if (hasObservatoArrayAtFirstItem) {
+                const nestedObservatoArray = item.osservato || [];
+                if (nestedObservatoArray.length > 0) {
+                    const foundInObservato = nestedObservatoArray.some(subItem => {
+                        return requestedVariables.some(variable => {// For 'osservato' (historical), variables use the 'st_value_' prefix
+                            const keyName = `st_value_${variable}`;
+                            const value = subItem[keyName];
+                            return !isNullOrUndefined(value);
+                        });
+                    });
+                    if (foundInObservato) {
+                        observatoHasValidData = true; // At least one valid value found in 'osservato'
+                    }
+                }
+            }
+            if (hasPrevisioniArrayAtFirstItem) {
+                const nestedPrevisioniArray = item.previsioni || [];
+                if (nestedPrevisioniArray.length > 0) {
+                    const foundInPrevisioni = nestedPrevisioniArray.some(subItem => {
+                        return requestedVariables.some(variable => {
+                            // For 'previsioni' (forecast), variables do NOT use the 'st_value_' prefix
+                            const keyName = variable;
+                            const value = subItem[keyName];
+                            return !isNullOrUndefined(value);
+                        });
+                    });
+                    if (foundInPrevisioni) {
+                        previsioniHasValidData = true; // At least one valid value found in 'previsioni'
+                    }
+                }
+            }
+        });
+        overallHasValidData = observatoHasValidData || previsioniHasValidData;
+        return { // Returns a detailed object for AIB nested responses
+            hasData: overallHasValidData,
+            isAibNested: true,
+            hasObservatoData: observatoHasValidData,
+            hasPrevisioniData: previsioniHasValidData
+        };
+
+    }
+    // Returns a detailed object for no AIB responses
+    overallHasValidData = data.some(item => {
+        return requestedVariables.some(variable => {
+            const keyName = `st_value_${variable}`;
+            const value = item[keyName];
+            return !isNullOrUndefined(value);
+        });
+    });
+    return { // Returns a simple object for flat responses
+        hasData: overallHasValidData,
+        isAibNested: false
+    };
+};

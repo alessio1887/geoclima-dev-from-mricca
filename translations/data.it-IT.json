@@ -33,7 +33,10 @@
               "dateTooLate": "La data selezionata non può superare il {maxDate}",
               "outsideRegion": "Hai cliccato fuori dalla regione",
               "genericError": "Si è verificato un errore durante l'elaborazione della richiesta",
-              "noData": "Non ci sono dati disponibili per il periodo selezionato."
+              "noData": "Non ci sono dati per il periodo selezionato.",
+              "noPrevData": "Dati previsionali non presenti.",
+              "noObservData": "Dati osservati non presenti.",
+              "noObservPrevData": "Dati osservati o previsionali non presenti."
             },
             "applyPeriodButton": " Applica periodo",
             "dailyDatePicker": "Seleziona una data",

@@ -29,7 +29,7 @@ import { CLICK_ON_MAP } from '@mapstore/actions/map';
 import { LOADING } from '@mapstore/actions/maps';
 import { getMarkerLayer } from '../../MapStore2/web/client/utils/MapInfoUtils';
 import API from '../api/GeoClimaApi';
-import { FIXED_RANGE, FREE_RANGE, MARKER_ID, getVisibleLayers, getDefaultPanelSize } from '../utils/VariabiliMeteoUtils';
+import { FIXED_RANGE, FREE_RANGE, MARKER_ID, getVisibleLayers, getDefaultPanelSize, containsValidChartData } from '../utils/VariabiliMeteoUtils';
 import DateAPI from '../utils/ManageDateUtils';
 import { showFixedRangePickerSelector, periodTypeSelector, isPluginLoadedSelector as isFixedRangeLoaded,
     fromDataFormSelector as fromDataFixedRangeForm, toDataFormSelector as toDataFixedRangeForm  } from '../selectors/fixedRangePicker';
@@ -123,15 +123,54 @@ const getDisableInfoChartActions = (appState) => {
     return disableInfoChartActions;
 };
 
+/**
+ * Processes the API response data for chart display, determining appropriate Redux actions
+ * based on data validity and structure. It dispatches different actions and alerts
+ * depending on whether the data is present, partially present (for AIB nested responses),
+ * or entirely absent.
+ *
+ * @param {Array} data The raw data array received from the API.
+ * @param {object} infochartState The Redux state slice containing infoChartData parameters.
+ * @returns {Array} An array of Redux actions to be dispatched.
+ */
+const checkResponseData = (data, infochartState) => {
+    let actions = [];
+    const infoChartParams = infochartState.infoChartData;
+    const validationResult = containsValidChartData(data, infoChartParams);
+
+    if (!validationResult.hasData) { // Case: No overall valid data found (e.g., empty array, or all values are null)
+        actions.push(notFetchedInfoChartData());
+        if (validationResult.isAibNested) {
+            actions.push(openAlert("gcapp.errorMessages.noObservPrevData"));
+        } else {
+            actions.push(openAlert("gcapp.errorMessages.noData"));
+        }
+    } else if (validationResult.isAibNested) {  // Case: It's an AIB nested response and has at least some valid data (could be partial)
+        const { hasObservatoData, hasPrevisioniData } = validationResult;
+        if (hasObservatoData && hasPrevisioniData) {
+            actions.push(fetchedInfoChartData(data, false));
+        } else if (hasObservatoData) {
+            actions.push(fetchedInfoChartData(data, false));
+            actions.push(openAlert("gcapp.errorMessages.noPrevData"));
+        } else if (hasPrevisioniData) {
+            actions.push(fetchedInfoChartData(data, false));
+            actions.push(openAlert("gcapp.errorMessages.noObservData"));
+        }
+    } else {  // Case: It's a flat/Geoclima response and has valid data (validationResult.hasData is true here)
+        actions.push(fetchedInfoChartData(data, false));
+    }
+    return actions;
+};
+
 const getErrorHandlingActions = (error) => {
-    const actions = [
-        fetchedInfoChartData([], false)
-    ];
+    const actions = [notFetchedInfoChartData()];
     const code = error?.data?.code;
     const status = error?.response?.status || error?.status;
+    let erroreMessage = "gcapp.errorMessages.genericError";
     if (status === 400 && code === 'OUT_OF_REGION') {
-        actions.push(openAlert("gcapp.errorMessages.outsideRegion"));
+        erroreMessage = "gcapp.errorMessages.outsideRegion";
     }
+    actions.push(openAlert(erroreMessage));
     return actions;
 };
 
@@ -446,6 +485,15 @@ const clickedPointCheckEpic = (action$, store) =>
             return Observable.of(...actions);
         });
 
+/**
+ * Handles fetching chart data (AIB or Geoclima)
+ * based on the active tab. It dispatches appropriate success, failure,
+ * or alert actions after validating the API response.
+ *
+ * @param {Observable} action$ - The Redux-Observable action stream.
+ * @param {object} store - The Redux store instance, used to access the current state.
+ * @returns {Observable<Action>} An observable of Redux actions to be dispatched.
+ */
 const loadInfoChartDataEpic = (action$, store) =>
     action$.ofType(FETCH_INFOCHART_DATA)
         .switchMap(() => {
@@ -465,15 +513,7 @@ const loadInfoChartDataEpic = (action$, store) =>
 
             return Observable.defer(() => apiCall(state.infoChartData, apiUrl).then(res => res.data)
             ).switchMap(data => {
-                let actions = [];
-                const isEmpty = !Array.isArray(data) || data.length === 0;
-                if (isEmpty) {
-                    actions.push(notFetchedInfoChartData());
-                    actions.push(openAlert("gcapp.errorMessages.noData"));
-                } else {
-                    actions.push(fetchedInfoChartData(data, false));
-                }
-                // const actions = checkResponseData(data, state);
+                const actions = checkResponseData(data, state);
                 return Observable.of(...actions);
             }).catch(error => {
                 const errorHandlingActions = getErrorHandlingActions(error);
