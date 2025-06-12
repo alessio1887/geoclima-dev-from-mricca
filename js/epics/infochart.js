@@ -13,6 +13,8 @@ import { updateAdditionalLayer, addAdditionalLayers, removeAdditionalLayer  } fr
 import {
     TOGGLE_INFOCHART,
     FETCH_INFOCHART_DATA,
+    SET_INFOCHART_VISIBILITY,
+    PLUGIN_NOT_LOADED,
     fetchedInfoChartData,
     setInfoChartVisibility,
     fetchInfoChartData,
@@ -515,13 +517,21 @@ const loadInfoChartDataEpic = (action$, store) =>
             ).switchMap(data => {
                 const actions = checkResponseData(data, state);
                 return Observable.of(...actions);
-            }).catch(error => {
-                const errorHandlingActions = getErrorHandlingActions(error);
-                return Observable.concat(
-                    ...errorHandlingActions.map(action => Observable.of(action)),
-                    Observable.throw(error)
-                );
-            });
+            })
+                .takeUntil(
+                    action$.ofType(SET_INFOCHART_VISIBILITY, PLUGIN_NOT_LOADED)
+                        .filter(action =>
+                            action.type === PLUGIN_NOT_LOADED ||
+                            (action.type === SET_INFOCHART_VISIBILITY && action.status === false)
+                        )
+                )
+                .catch(error => {
+                    const errorHandlingActions = getErrorHandlingActions(error);
+                    return Observable.concat(
+                        ...errorHandlingActions.map(action => Observable.of(action)),
+                        Observable.throw(error)
+                    );
+                });
         });
 
 
