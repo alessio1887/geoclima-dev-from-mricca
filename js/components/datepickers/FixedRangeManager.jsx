@@ -20,16 +20,20 @@ const FixedRangeManager = (props) => {
     return (
         <div className={props.classAttribute}
             style={{ flexDirection }}>
-            <Label className={props.styleLabels}><Message msgId="gcapp.fixedRangePicker.selectCumulativePeriod" /></Label>
-            <DropdownList
-                id={dropDownId}
-                key={props.periodType}
-                data={props.periodTypes}
-                valueField="key"
-                textField="label"
-                value={props.periodType}
-                onChange={props.onChangePeriod}
-                disabled={props.isInteractionDisabled} />
+            {!props.showOneDatePicker && (
+                <>
+                    <Label className={props.styleLabels}><Message msgId="gcapp.fixedRangePicker.selectCumulativePeriod" /></Label>
+                    <DropdownList
+                        id={dropDownId}
+                        key={props.periodType}
+                        data={props.periodTypes}
+                        valueField="key"
+                        textField="label"
+                        value={props.periodType}
+                        onChange={props.onChangePeriod}
+                        disabled={props.isInteractionDisabled} />
+                </>
+            )}
             <Label className={props.styleLabels}><Message msgId="gcapp.fixedRangePicker.selectDateHidrologicYear" /></Label>
             <DateTimePicker
                 culture="it"

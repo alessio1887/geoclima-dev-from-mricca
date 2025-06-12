@@ -5,26 +5,27 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { DATE_FORMAT } from './ManageDateUtils';
+import DateAPI, { DATE_FORMAT } from './ManageDateUtils';
+import moment from 'moment';
+import momentLocaliser from 'react-widgets/lib/localizers/moment';
+momentLocaliser(moment);
 
 // type of range picher
 export const FIXED_RANGE = "fixed_range_picker";
 export const FREE_RANGE = "free_range_picker";
-// type of chart based on tabLyst.type of pluginsConfig
-export const SINGLE_VARIABLE_CHART = "single_variable";
-export const MULTI_VARIABLE_CHART = "multi_variable";
+export const SPI_SPEI_CHART = "spi_spei_chart";
+export const AIB_HISTORIC_CHART = "aib_historic_chart";
+export const AIB_PREVISIONALE = "aib_previsionale";
 export const CUMULATA_CHART = "cumulata";
+export const CLIMA_CHART = "clima";
 export const MARKER_ID = "InfoChartMarker";
-// type of chart based on tabLyst.type of pluginsConfig
 export const DROP_DOWN = "single_select";
 export const MULTI_SELECT = "multi_select";
 
 export const DEFAULT_FILENAME = 'exported_image.png';
 
 const ST_VALUE = "st_value_";
-const colors = ['green', 'black', 'teal', 'gray'];
-const MIN_Y_INDEX = -3.0;
-const MAX_Y_INDEX = 3.0;
+const defaultColors = ['green', 'black', 'teal', 'gray'];
 
 export function isVariabiliMeteoLayer(layerName, variabiliMeteo) {
     if (typeof layerName !== "string" || !variabiliMeteo) {
@@ -48,6 +49,30 @@ export function isVariabiliMeteoLayer(layerName, variabiliMeteo) {
 
     return false;
 }
+
+export const getChartActive = (tabSelected) => {
+    const chartList = tabSelected.chartList || tabSelected.variables[0]?.chartList || [];
+    if (chartList.length > 0) {
+        return chartList.find(chart => chart.active) || chartList[0];
+    }
+    return tabSelected.variables[0];
+};
+
+// backgroundBands may be defined either on the chart or on the tab level.
+// We pass both chartActive and tabSelected to handle both cases.
+export const getBackgroundBands = (chartActive, tabSelected) => {
+    if (Array.isArray(chartActive?.backgroundBands) && chartActive.backgroundBands.length > 0) {
+        return chartActive.backgroundBands;
+    }
+    if (Array.isArray(tabSelected?.backgroundBands) && tabSelected.backgroundBands.length > 0) {
+        return tabSelected.backgroundBands;
+    }
+    if (Array.isArray(tabSelected?.variables) && tabSelected.variables.length > 0) {
+        return tabSelected.variables[0]?.backgroundBands || [];
+    }
+    return [];
+};
+
 
 export const getVisibleLayers = (layers, idVariabiliLayers) => {
     return layers
@@ -161,7 +186,10 @@ export function fillAreas(dateObjects, observed, climatological, variable, unitP
     return fillTraces;
 }
 
-
+/**
+ * Returns an array of objects with cumulative values calculated
+ * for a specified variable and its corresponding climate value.
+ */
 export function formatDataCum(values, propVariable) {
     let data = [];
     let cum = 0;
@@ -180,7 +208,12 @@ export function formatDataCum(values, propVariable) {
     return data;
 }
 
-export function formatDataTemp(values, propVariable) {
+/**
+ * Formats an array of data objects by normalizing the date and rounding values.
+ * Returns a new array with formatted dates and numeric values for a given variable
+ * and its corresponding climate value.
+ */
+export function formatVariableData(values, propVariable) {
     return values.map(o => ({
         data: o.data.substring(0, 10),
         [propVariable]: (o[propVariable] !== null && o[propVariable] !== undefined)
@@ -191,6 +224,7 @@ export function formatDataTemp(values, propVariable) {
             : 0
     }));
 }
+
 export function getDefaultPanelSize() {
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
@@ -266,6 +300,11 @@ export function getStartPositionPanel() {
         const xPositionA = -180;
         const xPositionB = - (Math.max(screenWidth, screenHeight) / 10 + 100);
         x = Math.max(xPositionA, xPositionB);
+    } else if (screenWidth >= 450 && screenHeight >= 450 && screenWidth <= screenHeight) {
+        y = -80;
+        const xPositionA = -55;
+        const xPositionB = - (Math.max(screenWidth, screenHeight) / 20);
+        x = Math.max(xPositionA, xPositionB);
     }
     return { x, y };
 }
@@ -285,18 +324,10 @@ export function  getDtick(maxValue) {
 
 
 // for MultiTraces graph
-export const createBackgroundBands = (dates) => {
-    const bands = [
-        { min: MIN_Y_INDEX, max: -2.0, color: 'rgba(99,0,4, 0.5)' },
-        { min: -2.0, max: -1.5, color: 'rgba(198,0,16, 0.5)' },
-        { min: -1.5, max: -1.0, color: 'rgba(253,127,31, 0.5)' },
-        { min: -1.0, max: -0.5, color: 'rgba(253,254,123, 0.5)' },
-        { min: -0.5, max: 0.5, color: 'rgba(225,225,225, 0.5)' },
-        { min: 0.5, max: 1.0, color: 'rgba(210,255,192, 0.5)' },
-        { min: 1.0, max: 1.5, color: 'rgba(153,229,39, 0.5)' },
-        { min: 1.5, max: 2.0, color: 'rgba(52,150,20, 0.5)' },
-        { min: 2.0, max: MAX_Y_INDEX, color: 'rgba(39,80,6, 0.5)' }
-    ];
+export const createBackgroundBands = (dates, bands) => {
+    if (!Array.isArray(bands) || bands.length === 0) {
+        return []; // Nessuna banda da disegnare
+    }
 
     return bands.map(({ min, max, color }) => ({
         x: dates.concat(dates.slice().reverse()),
@@ -310,98 +341,176 @@ export const createBackgroundBands = (dates) => {
     }));
 };
 
-// Funzione per creare le tracce delle variabili
-export const createMultiTraces = (variables, dates, dataFetched) => {
-    return variables.map((variable, index) => {
-        const valueKey = ST_VALUE + variable.id;
-        const values = dataFetched.map(item =>
-            item[valueKey] !== null ? parseFloat(item[valueKey].toFixed(2)) : null
-        );
-        return {
-            x: dates,
-            y: values,
-            mode: 'lines',
-            name: variable.name,
-            line: { color: colors[index % colors.length], width: 2, shape: 'linear' },
-            marker: { size: 6 },
-            type: 'scatter',
-            connectgaps: true
-        };
-    });
+/**
+ * Generates Plotly-compatible trace objects from a list of variable definitions and their time series data.
+ * This method supports both single-variable and multi-variable datasets by dynamically mapping values.
+ *
+ * @param {Array} dataSetDefinitions - Array of variable objects, each containing at least an `id`, `name`, and optionally `chartStyle`.
+ * @param {Array} dates - Array of date strings or timestamps to be used as x-axis values.
+ * @param {Array} dataFetched - Array of data records, each containing keys like `st_value_<id>`.
+ * @returns {Array} Array of Plotly trace objects for visualizing the data.
+ */
+export const createVariableLineTraces = (dataSetDefinitions, dates, dataFetched) => {
+    return dataSetDefinitions
+        .filter(function(variable) {
+            var valueKey = ST_VALUE + variable.id;
+            return dataFetched.some(function(item) {
+                return item[valueKey] !== null && item[valueKey] !== undefined;
+            });
+        })
+        .map(function(variable, index) {
+            var valueKey = ST_VALUE + variable.id;
+            var values = dataFetched.map(function(item) {
+                return item[valueKey] !== null && item[valueKey] !== undefined ? parseFloat(Number(item[valueKey]).toFixed(5)) : null;
+            });
+
+            var lineStyle = variable.chartStyle && Object.keys(variable.chartStyle).length
+                ? variable.chartStyle
+                : {
+                    color: defaultColors[index % defaultColors.length],
+                    width: 2
+                };
+
+            return {
+                x: dates,
+                y: values,
+                mode: 'lines',
+                name: variable.name,
+                line: lineStyle,
+                marker: { size: 6 },
+                type: 'scatter',
+                connectgaps: true
+            };
+        });
 };
 
-export const createObservedAndClimatologicalTraces = (variable, dates, dataFetched, unitPrecipitazione) => {
-    const chartVariable = variable.id;
-    const unit = variable.unit;
-    const propVariable = "st_value_" + chartVariable;
+export const createObservedAndClimatologicalTraces = (traceParams, dates, dataFetched, unitPrecipitazione, hideClimatologicalTrace = false
+) => {
+    const chartParams = traceParams.chartActive ?? traceParams.variables[0];
+    const chartVariable = traceParams.variables[0].id;
+    const unit = chartParams.unit;
+    const propVariable = ST_VALUE + chartVariable;
 
-    const chartData =  unit === unitPrecipitazione
+    const chartData = unit === unitPrecipitazione
         ? formatDataCum(dataFetched, propVariable)
-        : formatDataTemp(dataFetched, propVariable);
+        : formatVariableData(dataFetched, propVariable);
 
-    const climaLabel = "Climatologia " + ( unit || "");
-    const currentYearLabel = "Anno in corso " + ( unit || "");
+    const currentYearLabel = hideClimatologicalTrace ?  traceParams.variables[0].name : "Anno in corso " + (unit || "");
 
     const observedData = chartData.map(item => item[propVariable]);
     const climatologicalData = chartData.map(item => item.st_value_clima);
-    const fillTraces = fillAreas(dates, observedData, climatologicalData, variable, unitPrecipitazione);
 
-    // const colorTraceObserved = unit === unitPrecipitazione ? 'rgba(0, 0, 255, 1)' : 'rgba(255, 0, 0, 1)';
-    const trace1 = {
-        x: dates,
-        y: climatologicalData,
-        mode: 'lines',
-        name: climaLabel,
-        line: { color: 'rgba(0, 0, 255, 1)', width: 1 }
-    };
+    const traces = [];
 
+    if (!hideClimatologicalTrace) {
+        const climaLabel = "Climatologia " + (unit || "");
+        const fillTraces = fillAreas(dates, observedData, climatologicalData, chartParams, unitPrecipitazione);
+        const trace1 = {
+            x: dates,
+            y: climatologicalData,
+            mode: 'lines',
+            name: climaLabel,
+            line: chartParams.chartStyle1
+        };
+        traces.push(trace1, ...fillTraces);
+    }
     const trace2 = {
         x: dates,
         y: observedData,
         mode: 'lines',
         name: currentYearLabel,
-        line: { color: 'rgba(255, 0, 0, 1)', width: 1 }
+        line: chartParams.chartStyle2 || chartParams.chartStyle
     };
+    traces.push(trace2);
 
-    return [trace1, trace2].concat(fillTraces);
+    return traces;
 };
 
-
-export const createCumulataBarTraces = (variables, times, dataFetched) => {
-    const chartVariable = variables.id;
+export const createCumulataBarTraces = (traceParams, times, dataFetched) => {
+    const chartParams = traceParams.chartActive ?? traceParams;
+    const chartVariable = traceParams.variables[0].id;
     const propVariable = ST_VALUE + chartVariable;
 
     // Estrae le precipitazioni e le converte in numeri
     const precipitations = dataFetched.map(item => parseFloat(parseFloat(item[propVariable]).toFixed(1)));
     const cumulativePrecip = formatDataCum(dataFetched, propVariable).map(item => item[propVariable]);
 
+    const barStyle = chartParams.chartStyle1 ? { ...chartParams.chartStyle1 } : { color: '#FFAF1F', opacity: 0.6 };
+
     // Traccia a barre per la precipitazione istantanea
-    const barTrace = {
+    const trace1 = {
         x: times,
         y: precipitations,
         type: 'bar',
-        name: variables.yaxis,
-        marker: { color: '#FFAF1F', opacity: 0.6 }
-        // hovertemplate: '%{y:.1f} mm<br>%{x:%d/%m/%Y}'
+        name: chartParams.yaxis,
+        marker: barStyle
+        // marker: { color: '#ff821f', opacity: 0.6 }
     };
 
     // Traccia a linea per la precipitazione cumulata (asse y secondario)
-    const lineTrace = {
+    const trace2 = {
         x: times,
         y: cumulativePrecip,
         type: 'scatter',
         mode: 'lines',
-        name: variables.yaxis2,
-        line: { color: 'rgba(0, 0, 255, 1)', width: 1 },
-        // hovertemplate: '%{y:.1f} mm<br>%{x:%d/%m/%Y}',
+        name: chartParams.yaxis2,
+        line: chartParams.chartStyle2,
         yaxis: 'y2'
     };
 
-    return [barTrace, lineTrace];
+    return [trace1, trace2];
+};
+
+/**
+ * Generates Plotly line chart traces for forecast data based on variable definitions.
+ *
+ * @param {Array} dataSetDefinitions - List of variable definitions with `id`, `name`, and optional `chartStyle`.
+ * @param {Array} dataFetched - Array with forecast data, each item containing a `previsioni` array.
+ * @param {string} dateFormat - Format string for the output dates (e.g., 'YYYY-MM-DD').
+ * @returns {Array} Array of Plotly-compatible trace objects.
+ */
+export const createAIBPrevTraces = (dataSetDefinitions, dataFetched, dateFormat) => {
+    if (!dataFetched?.length || !dataFetched[0]?.previsioni?.length) {
+        return [];
+    }
+
+    const forecastList = dataFetched[0].previsioni;
+    const dates = DateAPI.extractPrevDates(dataFetched, dateFormat);
+
+    return dataSetDefinitions
+        .filter(variable => {
+            return forecastList.some(entry => entry[variable.id] !== null && entry[variable.id] !== undefined);
+        })
+        .map((variable, index) => {
+            const values = forecastList.map(entry =>
+                entry[variable.id] !== null && entry[variable.id] !== undefined
+                    ? parseFloat(Number(entry[variable.id]).toFixed(5))
+                    : null
+            );
+
+            const lineStyle = variable.chartStyle && Object.keys(variable.chartStyle).length
+                ? variable.chartStyle
+                : {
+                    color: defaultColors[index % defaultColors.length],
+                    width: 2
+                };
+
+            return {
+                x: dates,
+                y: values,
+                mode: 'lines',
+                name: variable.name,
+                line: lineStyle,
+                marker: { size: 6 },
+                type: 'scatter',
+                connectgaps: true
+            };
+        });
 };
 
 
-export const createCumulataBarLayout = (variables, chartTitle, traces, dates, format, chartRelayout, infoChartSize, isCollapsedFormGroup) => {
+export const createCumulataBarLayout = (traceParams, chartTitle, traces, dates, format, chartRelayout, infoChartSize, isCollapsedFormGroup) => {
+    const chartParams = traceParams.chartActive ?? traceParams;
     const barTrace = traces[0].y;
     const maxPrecip = Math.max(...barTrace);
     const y1max = Math.max(maxPrecip, 6);
@@ -418,8 +527,6 @@ export const createCumulataBarLayout = (variables, chartTitle, traces, dates, fo
     const endDate = chartRelayout?.endDate
         ? new Date(chartRelayout.endDate)
         : new Date(Math.max(...dates));
-    // const startDate = new Date(Math.min(...dates));
-    // const endDate = new Date(Math.max(...dates));
 
     // Determina il range per l asse y
     const yaxisRange = [chartRelayout?.yaxisStart || 0, chartRelayout?.yaxisEnd || y1max];
@@ -444,7 +551,7 @@ export const createCumulataBarLayout = (variables, chartTitle, traces, dates, fo
             tickcolor: '#000'
         },
         yaxis: {
-            title: variables.yaxis,
+            title: chartParams.yaxis,
             range: yaxisRange,
             tick0: 0,
             dtick: dtick1,
@@ -453,7 +560,7 @@ export const createCumulataBarLayout = (variables, chartTitle, traces, dates, fo
             rangemode: 'tozero'
         },
         yaxis2: {
-            title: variables.yaxis2,
+            title: chartParams.yaxis2,
             overlaying: 'y',
             side: 'right',
             range: yaxis2Range,
@@ -472,49 +579,217 @@ export const createCumulataBarLayout = (variables, chartTitle, traces, dates, fo
     };
 };
 
+export const getBandAnnotations = (backgroundBands) => {
+    return Array.isArray(backgroundBands)
+        ? backgroundBands
+            .filter(b => b.min !== undefined && b.max !== undefined && b.class)
+            .map(b => ({
+                x: 0.02,
+                xref: 'paper',
+                y: (b.min + b.max) / 2,
+                yref: 'y',
+                text: b.class,
+                showarrow: false,
+                font: { size: 10, color: 'black' },
+                align: 'left'
+            }))
+        : [];
+};
 
-export const createLayout = (chartTitle, yaxisTitle, dates, format, dataTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, chartType) => {
-    const isMultiVariable = chartType === MULTI_VARIABLE_CHART;
-    const yaxisRange = isMultiVariable
-        ? [chartRelayout?.yaxisStart || MIN_Y_INDEX, chartRelayout?.yaxisEnd || MAX_Y_INDEX]
-        : [chartRelayout?.yaxisStart || Math.min([dataTraces[0], dataTraces[1]]), chartRelayout?.yaxisEnd || Math.max([dataTraces[0], dataTraces[1]])];
+export const getBandTickvals = (backgroundBands) => {
+    return Array.isArray(backgroundBands)
+        ? [...new Set(
+            backgroundBands
+                .flatMap(b => [b.min, b.max])
+                .filter(v => typeof v === 'number')
+        )].sort((a, b) => a - b)
+        : [];
+};
+
+export const getXaxis = (dates, format, chartRelayout, infoChartSize) => {
+    let xAxis = {
+        tickformat: format !== DATE_FORMAT ? '%Y-%m-%d %H:%M:%S' : '%Y-%m-%d',
+        tickangle: -20,
+        range: [
+            chartRelayout?.startDate || Math.min(...dates),
+            chartRelayout?.endDate || Math.max(...dates)
+        ],
+        ticks: 'inside',
+        ticklen: 5,
+        tickwidth: 1,
+        tickcolor: '#000',
+        automargin: true
+    };
+    const shouldAddXTickvals =
+        dates.length <= 4 ||
+        (dates.length > 4 && dates.length <= 10 && infoChartSize?.widthResizable > 880);
+
+    if (shouldAddXTickvals) {
+        xAxis.tickvals = dates;
+    }
+    return xAxis;
+};
+
+export const getYaxis = (yaxisTitle, yaxisRange, yTickvals) => {
+    let yAxis = {
+        range: yaxisRange,
+        title: yaxisTitle,
+        tickformat: '.1f',
+        ticks: 'inside',
+        automargin: true,
+        ticklen: 5,
+        tickwidth: 1,
+        tickcolor: '#000'
+    };
+
+    if (yTickvals && yTickvals.length > 0) {
+        yAxis.tickvals = yTickvals;
+    }
+    return yAxis;
+};
+
+export const createLayout = (
+    chartTitle,
+    yaxisTitle,
+    locationLabel,
+    dates,
+    format,
+    dataTraces,
+    chartRelayout,
+    infoChartSize,
+    isCollapsedFormGroup,
+    backgroundBands = []
+) => {
+    const yaxisRange = [
+        chartRelayout?.yaxisStart || Math.min(...dataTraces.flatMap(t => t.y).filter(Number.isFinite)),
+        chartRelayout?.yaxisEnd || Math.max(...dataTraces.flatMap(t => t.y).filter(Number.isFinite))
+    ];
+
+    const bandAnnotations = getBandAnnotations(backgroundBands);
+    const xAxis = getXaxis(dates, format, chartRelayout, infoChartSize);
+    const yAxis = getYaxis(yaxisTitle, yaxisRange, getBandTickvals(backgroundBands));
 
     return {
         width: infoChartSize.widthResizable - 10,
         height: infoChartSize.heightResizable - (isCollapsedFormGroup ? 140 : 400),
         title: {
-            text: chartTitle,
-            x: 0.05, // Posiziona il titolo a sinistra
-            xanchor: 'left' // Ancora il titolo a sinistra
+            text: chartTitle + (locationLabel ? ` - ${locationLabel}` : ''),
+            x: 0.05,
+            xanchor: 'left'
         },
-        xaxis: {
-            tickformat: format !== DATE_FORMAT ? '%Y-%m-%d %H:%M:%S' : '%Y-%m-%d',
-            tickangle: -20,
-            range: [chartRelayout?.startDate || Math.min(...dates), chartRelayout?.endDate || Math.max(...dates)],
-            ticks: 'inside',
-            ticklen: 5,
-            tickwidth: 1,
-            tickcolor: '#000'
+        xaxis: xAxis,
+        yaxis: yAxis,
+        margin: {
+            t: isCollapsedFormGroup ? 110 : 80,
+            r: 40,
+            l: 60,
+            b: format === DATE_FORMAT ? 40 : 60
         },
-        yaxis: {
-            range: yaxisRange,
-            ...(isMultiVariable && { // Aggiunge tickvals solo per multi-variable
-                tickvals: [MIN_Y_INDEX, -2, -1.5, -0.5, 0.5, 1.0, 1.5, 2.0, MAX_Y_INDEX]
-            }),
-            ...(!isMultiVariable && { // Aggiunge il title solo se non e multi-variable
-                title: yaxisTitle
-            }),
-            tickformat: '.1f',
-            ticks: 'inside',
-            ticklen: 5,
-            tickwidth: 1,
-            tickcolor: '#000'
-        },
-        margin: { t: 80, r: 40, l: 60, b: (format === DATE_FORMAT ? 40 : 60 )},
         showlegend: true,
         hovermode: 'x unified',
-        legend: { orientation: 'h', x: 0.5, y: 1.05 },
-        dragmode: chartRelayout?.dragmode
+        legend: {
+            orientation: 'h',
+            x: 0.5,
+            y: 1.05
+        },
+        dragmode: chartRelayout?.dragmode,
+        annotations: bandAnnotations
     };
 };
 
+
+/**
+ * Checks if the provided data array contains relevant values for the requested variables,
+ * returning an object with the detailed data status.
+ *
+ * @param {Array} data The data array received from the API call.
+ * @param {object} infoChartParams The infoChartData object from the Redux state, containing 'variables'.
+ * @returns {object} An object with properties:
+ * - hasData: boolean (true if there is overall plottable data)
+ * - isAibNested: boolean (true if the response is of AIB nested type)
+ * - hasObservatoData?: boolean (only if isAibNested is true: true if 'osservato' contains valid data)
+ * - hasPrevisioniData?: boolean (only if isAibNested is true: true if 'previsioni' contains valid data)
+ */
+export const containsValidChartData  = (data, infoChartParams) => {
+    // 1. Base check
+    if (!Array.isArray(data) || data.length === 0) {
+        return { hasData: false, isAibNested: false };
+    }
+
+    // 2. Parse the requested variables from the "variables" string
+    const requestedVariables = infoChartParams.variables
+        ? infoChartParams.variables.split(',').map(v => v.trim())
+        : [];
+
+    if (requestedVariables.length === 0) {
+        return { hasData: false, isAibNested: false };
+    }
+    // Helper function
+    const isNullOrUndefined = (val) => val === null || val === undefined;
+
+    // 3. Determine the response typology based on the first element of the 'data' array.
+    const firstDataItem = data[0];
+    const hasObservatoArrayAtFirstItem = firstDataItem && Array.isArray(firstDataItem.osservato);
+    const hasPrevisioniArrayAtFirstItem = firstDataItem && Array.isArray(firstDataItem.previsioni);
+    const isAibNestedResponse = hasObservatoArrayAtFirstItem || hasPrevisioniArrayAtFirstItem;
+    // Initialize flags for AIB nested data types
+    let observatoHasValidData = false;
+    let previsioniHasValidData = false;
+    let overallHasValidData = false;
+
+    if (isAibNestedResponse) {
+        data.forEach(item => {
+            if (hasObservatoArrayAtFirstItem) {
+                const nestedObservatoArray = item.osservato || [];
+                if (nestedObservatoArray.length > 0) {
+                    const foundInObservato = nestedObservatoArray.some(subItem => {
+                        return requestedVariables.some(variable => {// For 'osservato' (historical), variables use the 'st_value_' prefix
+                            const keyName = `st_value_${variable}`;
+                            const value = subItem[keyName];
+                            return !isNullOrUndefined(value);
+                        });
+                    });
+                    if (foundInObservato) {
+                        observatoHasValidData = true; // At least one valid value found in 'osservato'
+                    }
+                }
+            }
+            if (hasPrevisioniArrayAtFirstItem) {
+                const nestedPrevisioniArray = item.previsioni || [];
+                if (nestedPrevisioniArray.length > 0) {
+                    const foundInPrevisioni = nestedPrevisioniArray.some(subItem => {
+                        return requestedVariables.some(variable => {
+                            // For 'previsioni' (forecast), variables do NOT use the 'st_value_' prefix
+                            const keyName = variable;
+                            const value = subItem[keyName];
+                            return !isNullOrUndefined(value);
+                        });
+                    });
+                    if (foundInPrevisioni) {
+                        previsioniHasValidData = true; // At least one valid value found in 'previsioni'
+                    }
+                }
+            }
+        });
+        overallHasValidData = observatoHasValidData || previsioniHasValidData;
+        return { // Returns a detailed object for AIB nested responses
+            hasData: overallHasValidData,
+            isAibNested: true,
+            hasObservatoData: observatoHasValidData,
+            hasPrevisioniData: previsioniHasValidData
+        };
+
+    }
+    // Returns a detailed object for no AIB responses
+    overallHasValidData = data.some(item => {
+        return requestedVariables.some(variable => {
+            const keyName = `st_value_${variable}`;
+            const value = item[keyName];
+            return !isNullOrUndefined(value);
+        });
+    });
+    return { // Returns a simple object for flat responses
+        hasData: overallHasValidData,
+        isAibNested: false
+    };
+};

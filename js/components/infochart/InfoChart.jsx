@@ -17,7 +17,7 @@ import BorderLayout from '@mapstore/components/layout/BorderLayout';
 import InfoChartForm from './InfoChartForm';
 import InfoChartRender from './InfoChartRender';
 import DateAPI, { DATE_FORMAT, DEFAULT_DATA_INIZIO, DEFAULT_DATA_FINE } from '../../utils/ManageDateUtils';
-import { FIXED_RANGE, MARKER_ID, MULTI_VARIABLE_CHART, getStartPositionPanel, getDefaultPanelSize }  from '../../utils/VariabiliMeteoUtils';
+import { FIXED_RANGE, MARKER_ID, getStartPositionPanel, getDefaultPanelSize, getChartActive, getBackgroundBands }  from '../../utils/VariabiliMeteoUtils';
 import { get, isEqual } from 'lodash';
 import moment from 'moment';
 import momentLocaliser from 'react-widgets/lib/localizers/moment';
@@ -83,6 +83,8 @@ class InfoChart extends React.Component {
         unitTemperatura: PropTypes.string,
         tabList: PropTypes.array,
         idVariabiliLayers: PropTypes.object,
+        defaultUrlGenerateAibChartStorico: PropTypes.string,
+        defaultUrlGenerateAibChartPrev: PropTypes.string,
         defaultUrlGeoclimaChart: PropTypes.string,
         defaultUrlSelectDate: PropTypes.string,
         variabileSelectDate: PropTypes.string,
@@ -154,6 +156,7 @@ class InfoChart extends React.Component {
             "type": "multi_select"
             }
         ],
+        defaultUrlAibChart: "geoportale.lamma.rete.toscana.it/geoclima_api/ggenerate_aib_chart/fwi-stats-completo",
         defaultUrlGeoclimaChart: 'geoportale.lamma.rete.toscana.it/cgi-bin/geoclima_app/geoclima_chart.py',
         defaultUrlSelectDate: "geoportale.lamma.rete.toscana.it/cgi-bin/geoclima_app/selectDate.py",
         variabileSelectDate: "prec",
@@ -194,13 +197,25 @@ class InfoChart extends React.Component {
     }
 
     initializeTabs = () => {
-        const variableTabs = this.props.tabList.map((tab, index) => ({
+        const variableTabs = this.props.tabList.map((tab) => ({
             id: tab.id,
             variables: [tab.groupList[0]],
-            active: index === 0,
+            active: false, // inizialmente tutti disattivi
             chartType: tab.chartType,
-            chartTitle: tab.chartTitle
+            chartTitle: tab.chartTitle,
+            isDefault: tab.isDefaultTab || false,
+            backgroundBands: Array.isArray(tab.backgroundBands) && tab.backgroundBands.length > 0
+                ? tab.backgroundBands
+                : [],
+            ...(tab.chartList && { chartList: tab.chartList })
         }));
+
+        // Trova l'indice del tab con isDefault === true, altrimenti usa il primo tab come attivo
+        const defaultIndex = variableTabs.findIndex(tab => tab.isDefault);
+        const activeIndex = defaultIndex !== -1 ? defaultIndex : 0;
+
+        variableTabs[activeIndex].active = true;
+
         this.props.onInitializeVariableTabs(variableTabs);
     }
     // Set some props to the plugin's state
@@ -210,7 +225,10 @@ class InfoChart extends React.Component {
             this.props.onSetTabList(this.props.tabList);
             this.props.onSetTimeUnit(this.props.timeUnit);
             this.initializeTabs();
-            this.props.onSetDefaultUrlGeoclimaChart(this.props.defaultUrlGeoclimaChart);
+            this.props.onSetDefaultUrls({
+                defaultUrlGeoclimaChart: this.props.defaultUrlGeoclimaChart,
+                defaultUrlAibChart: this.props.defaultUrlAibChart
+            });
             const defaultPeriod = DateAPI.getDefaultPeriod(this.props.periodTypes);
             this.props.onChangePeriod(defaultPeriod);
             if ( this.props.isFetchAvailableDates && this.props.defaultUrlSelectDate && this.props.variabileSelectDate) {
@@ -266,68 +284,37 @@ class InfoChart extends React.Component {
             this.props.onSetChartRelayout(zoomData);
         }
     };
-    handleChangeChartType = (idTab) => {
-        this.props.onChangeChartType(idTab);
+    handleChangeChartType = (idChartType) => {
+        this.props.onChangeChartType(idChartType);
         this.props.onResetChartZoom();
     }
     getActiveTab = () => {
         return this.props.tabVariables.find(tab => tab.active === true);
     }
     // Get the selected tab's parameters (chart title, chart list, etc.) based on the traces applied to the chart.
-    getMultiVariableChartParams = () => {
-        const variableListParam = this.props.tabList.find(
-            tab => tab.id === this.props.infoChartData.idTab
-        );
-        // get variable ids applied to the chart
-        const variableArray = this.props.infoChartData.variables?.split(',') || [];
+    getVariableChartParams = (tabSelected) => {
+        const chartActive = getChartActive(tabSelected);
         return {
-            tabVariableParams: variableListParam.groupList.filter(variable =>
-                variableArray.includes(variable.id)),
-            name: variableListParam.chartTitle,
-            chartType: variableListParam.chartType
+            variables: tabSelected.variables,
+            chartActive: { ...chartActive },
+            name: tabSelected.chartTitle,
+            chartType: chartActive.chartType || tabSelected.chartType || tabSelected.variables[0].chartType,
+            backgroundBands: getBackgroundBands(chartActive, tabSelected)
         };
     };
-    getSingleVariableChartParams = (tabSelected) => {
-        const variableParams = tabSelected.variables[0];
-        let chartParams;
-        if (variableParams.chartList) {
-            const chartActive = variableParams.chartList.find(chart =>
-                chart.active) || variableParams.chartList[0];
-            chartParams = {
-                id: variableParams.id,
-                name: variableParams.name,
-                unit: chartActive.unit,
-                yaxis: chartActive.yaxis,
-                yaxis2: chartActive.yaxis2,
-                chartType: chartActive.chartType || ""
-            };
-        } else {
-            chartParams = variableParams;
-        }
-        return chartParams;
-    };
-    showChart = () => {
-        if (!this.props.maskLoading) {
-            const activeTab = this.getActiveTab();
-            let chartTypeSelected = {};
-            if (activeTab.chartType === MULTI_VARIABLE_CHART) {
-                chartTypeSelected = this.getMultiVariableChartParams();
-            } else {
-                chartTypeSelected = this.getSingleVariableChartParams(activeTab);
-            }
-            return (
-                <InfoChartRender
-                    dataFetched = {this.props.data}
-                    handleRelayout= { this.handleRelayout }
-                    chartRelayout= { this.props.chartRelayout}
-                    infoChartSize={ this.props.infoChartSize}
-                    isCollapsedFormGroup={this.props.isCollapsedFormGroup}
-                    variableChartParams={ chartTypeSelected }
-                    unitPrecipitazione = { this.props.unitPrecipitazione }
-                    format={ this.props.timeUnit }
-                />);
-        }
-        return null;
+
+    showChart = (chartTypeSelected) => {
+        return (
+            <InfoChartRender
+                dataFetched = { this.props.data }
+                handleRelayout= { this.handleRelayout }
+                chartRelayout= { this.props.chartRelayout}
+                infoChartSize={ this.props.infoChartSize}
+                isCollapsedFormGroup={this.props.isCollapsedFormGroup}
+                chartParams={ chartTypeSelected }
+                unitPrecipitazione = { this.props.unitPrecipitazione }
+                format={ this.props.timeUnit }
+            />);
     }
     getHeader = () => {
         return ( <span role="header" style={{ position: 'relative', zIndex: 1000, padding: "10px" }}>
@@ -337,7 +324,7 @@ class InfoChart extends React.Component {
         );
     }
 
-    getPanelFormGroup = () => {
+    getPanelFormGroup = (showOneDatePicker) => {
         const tabSelected = this.getActiveTab();
         return (
             <div id="collapse-form-group">
@@ -368,6 +355,7 @@ class InfoChart extends React.Component {
                     toDataSelected={this.state.toDataSelected}
                     fromDataSelected={this.state.fromDataSelected}
                     handleChangeChartType={this.handleChangeChartType}
+                    showOneDatePicker={showOneDatePicker}
                 />
             </div>
         );
@@ -375,6 +363,8 @@ class InfoChart extends React.Component {
     getBody = () => {
         const rotateIcon = this.props.isCollapsedFormGroup ? 'rotate(180deg)' : 'rotate(0deg)';
         const startPosition = getStartPositionPanel();
+        const chartTypeSelected = this.getVariableChartParams(this.getActiveTab());
+        const showOneDatePicker = chartTypeSelected.chartActive?.showOneDatePicker || chartTypeSelected.variables[0]?.showOneDatePicker;
         return (
             <Dialog maskLoading={this.props.maskLoading} id={this.props.id}
                 style={{
@@ -414,9 +404,9 @@ class InfoChart extends React.Component {
                                 <span className="collapse-rangepicker-icon"  style={{ transform: rotateIcon }}>&#9650;</span>
                             </Button>
                             <Collapse in={!this.props.isCollapsedFormGroup}>
-                                {this.getPanelFormGroup()}
+                                {this.getPanelFormGroup(showOneDatePicker)}
                             </Collapse>
-                            {this.showChart()}
+                            {!this.props.maskLoading && this.showChart(chartTypeSelected)}
                         </div>
                     </Resizable>
                 </div>
@@ -466,19 +456,26 @@ class InfoChart extends React.Component {
         }
         if ( this.props.activeRangeManager === FIXED_RANGE) {
             fromDateToValidate = moment(toDate).clone().subtract(periodApplied.max, 'days').toDate();
-            // this.setState({ periodTypeSelected: periodApplied });
         }
         this.setState({ fromDataSelected: moment(fromDateToValidate).clone().format(this.props.timeUnit) });
         this.setState({ toDataSelected: moment(toDate).clone().format(this.props.timeUnit)  });
-        const validation = DateAPI.validateDateRange(
-            fromDateToValidate,
-            toDate,
-            this.props.firstAvailableDate,
-            this.props.lastAvailableDate,
-            this.props.timeUnit
-        );
+
+        const chartTypeSelected = this.getVariableChartParams(this.getActiveTab());
+        const showOneDatePicker = chartTypeSelected.chartActive?.showOneDatePicker || chartTypeSelected.variables[0]?.showOneDatePicker;
+        let validation = true;
+        if (showOneDatePicker) {
+            validation = DateAPI.validateOneDate(toDate, this.props.firstAvailableDate, this.props.lastAvailableDate, this.props.timeUnit);
+        } else {
+            validation = DateAPI.validateDateRange(
+                fromDateToValidate,
+                toDate,
+                this.props.firstAvailableDate,
+                this.props.lastAvailableDate,
+                this.props.timeUnit
+            );
+        }
         if (!validation.isValid) {
-            this.props.onOpenAlert("gcapp.infochart.errorMessages." + validation.errorMessage);
+            this.props.onOpenAlert("gcapp.infochart.errorMessages." + validation.errorMessage + ( showOneDatePicker ? "OneDate" : ""));
             this.resetChartData();
             return false;
         }

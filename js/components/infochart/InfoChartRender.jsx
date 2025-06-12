@@ -8,23 +8,26 @@
 import React, { useState, useEffect } from 'react';
 import Plot from '@mapstore/components/charts/PlotlyChart.jsx';
 import {
-    SINGLE_VARIABLE_CHART,
-    MULTI_VARIABLE_CHART,
+    SPI_SPEI_CHART,
     CUMULATA_CHART,
-    createMultiTraces,
+    AIB_HISTORIC_CHART,
+    AIB_PREVISIONALE,
+    CLIMA_CHART,
+    createVariableLineTraces,
     createBackgroundBands,
     createCumulataBarTraces,
     createObservedAndClimatologicalTraces,
     createLayout,
-    createCumulataBarLayout
+    createCumulataBarLayout, createAIBPrevTraces
 } from '../../utils/VariabiliMeteoUtils';
+import DateAPI from '../../utils/ManageDateUtils';
 import moment from 'moment';
 import momentLocaliser from 'react-widgets/lib/localizers/moment';
 momentLocaliser(moment);
 
 const InfoChartRender = ({
     dataFetched,
-    variableChartParams,
+    chartParams,
     handleRelayout,
     chartRelayout,
     infoChartSize,
@@ -36,25 +39,48 @@ const InfoChartRender = ({
     const [layout, setLayout] = useState({});
 
     useEffect(() => {
-        const dates = dataFetched.map(item => moment(item.data).toDate());
         let newTraces = [];
-        const chartTitle = variableChartParams.name || "";
+        const chartTitle = chartParams.variables.name || "";
+        const locationLabel  = dataFetched?.[0]?.comune || "";
+        const chartType = chartParams.chartType ||  chartParams.chartActive.chartType;
         let newLayout = {};
 
         // Calculate the traces and layout based on the chart type
-        switch (variableChartParams.chartType) {
-        case MULTI_VARIABLE_CHART:
-            newTraces = createMultiTraces(variableChartParams.tabVariableParams, dates, dataFetched);
-            newTraces = createBackgroundBands(dates).concat(newTraces);
-            newLayout = createLayout(chartTitle, "", dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, MULTI_VARIABLE_CHART);
+        switch (chartType) {
+        case SPI_SPEI_CHART:
+            newTraces = createVariableLineTraces(chartParams.variables, DateAPI.extractDates(dataFetched), dataFetched);
+            newTraces = createBackgroundBands(DateAPI.extractDates(dataFetched), chartParams.backgroundBands).concat(newTraces);
+            newLayout = createLayout( chartParams.name || "", "", locationLabel, DateAPI.extractDates(dataFetched), format, newTraces, chartRelayout,
+                infoChartSize, isCollapsedFormGroup, chartParams.backgroundBands);
+            break;
+        case CLIMA_CHART:
+            newTraces = createObservedAndClimatologicalTraces(chartParams, DateAPI.extractDates(dataFetched), dataFetched, unitPrecipitazione,
+                chartParams.chartActive?.hideClimatologicalTrace);
+            newLayout = createLayout(chartParams.variables[0].name || "", chartParams.chartActive?.yaxis || chartParams.variables[0].yaxis, locationLabel,
+                DateAPI.extractDates(dataFetched), format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, chartParams.backgroundBands);
             break;
         case CUMULATA_CHART:
-            newTraces = createCumulataBarTraces(variableChartParams, dates, dataFetched);
-            newLayout = createCumulataBarLayout(variableChartParams, chartTitle, newTraces, dates, format, chartRelayout, infoChartSize, isCollapsedFormGroup);
+            newTraces = createCumulataBarTraces(chartParams, DateAPI.extractDates(dataFetched), dataFetched);
+            newLayout = createCumulataBarLayout(chartParams, chartParams.variables[0].name, newTraces, DateAPI.extractDates(dataFetched), format, chartRelayout,
+                infoChartSize, isCollapsedFormGroup);
             break;
-        default: // SINGLE_VARIABLE_CHART or other cases
-            newTraces = createObservedAndClimatologicalTraces(variableChartParams, dates, dataFetched, unitPrecipitazione);
-            newLayout = createLayout(chartTitle, variableChartParams.yaxis, dates, format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup, SINGLE_VARIABLE_CHART);
+        case AIB_HISTORIC_CHART:
+            newTraces = createObservedAndClimatologicalTraces(chartParams, DateAPI.extractDates(dataFetched[0]?.osservato || []), dataFetched[0]?.osservato || [],
+                unitPrecipitazione,  chartParams.chartActive?.hideClimatologicalTrace);
+            newTraces = createBackgroundBands(DateAPI.extractDates(dataFetched[0]?.osservato || []), chartParams.variables[0].backgroundBands).concat(newTraces);
+            newLayout = createLayout(chartParams.variables[0].name, "", locationLabel, DateAPI.extractDates(dataFetched[0]?.osservato || []), format, newTraces, chartRelayout,
+                infoChartSize, isCollapsedFormGroup, chartParams.backgroundBands);
+            break;
+        case AIB_PREVISIONALE:
+            newTraces = createAIBPrevTraces(chartParams.variables, dataFetched, format);
+            newTraces = createBackgroundBands(DateAPI.extractPrevDates(dataFetched, format), chartParams.variables[0].backgroundBands).concat(newTraces);
+            newLayout = createLayout(chartParams.variables[0].name, "", locationLabel, DateAPI.extractPrevDates(dataFetched, format), format, newTraces, chartRelayout, infoChartSize, isCollapsedFormGroup,
+                chartParams.backgroundBands);
+            break;
+        default:
+            newTraces = createVariableLineTraces(chartParams.variables, DateAPI.extractDates(dataFetched), dataFetched);
+            newLayout = createLayout(chartTitle, "", locationLabel, DateAPI.extractDates(dataFetched), format, newTraces, chartRelayout, infoChartSize,
+                isCollapsedFormGroup, chartParams.backgroundBands);
             break;
         }
         // Merge the new traces with the previously set ones to preserve the visibility state
@@ -68,7 +94,7 @@ const InfoChartRender = ({
             });
         });
         setLayout(newLayout);
-    }, [dataFetched, variableChartParams, unitPrecipitazione, format, infoChartSize, isCollapsedFormGroup]);
+    }, [dataFetched, chartParams, unitPrecipitazione, format, infoChartSize, isCollapsedFormGroup]);
 
     // Function to toggle the visibility of the clicked trace
     const toggleLegendItem = (event) => {

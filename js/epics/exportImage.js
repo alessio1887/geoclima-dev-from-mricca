@@ -31,7 +31,6 @@ import GeoClimaAPI from '../api/GeoClimaApi';
 const exportImageEpic = (action$) =>
     action$.ofType(EXPORTIMAGE_LOADING)
         .switchMap(action =>
-        // Usa defer per ritardare l'esecuzione della funzione
             Observable.defer(() => {
                 return GeoClimaAPI.exportImage(
                     action.layerName,

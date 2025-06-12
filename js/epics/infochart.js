@@ -16,20 +16,20 @@ import {
     fetchedInfoChartData,
     setInfoChartVisibility,
     fetchInfoChartData,
+    notFetchedInfoChartData,
     setRangeManager,
-    changePeriod,
-    changeFromData,
-    changeToData,
+    changePeriod, changeFromData,
+    changeTab, changeToData,
     changeFixedRangeToData,
     markInfoChartAsNotLoaded,
-    changeTab, changeChartVariable,
+    openAlert, changeChartVariable,
     closeAlert, resetChartRelayout,
     setDefaultPanelSize, resizeInfoChart } from '../actions/infochart';
 import { CLICK_ON_MAP } from '@mapstore/actions/map';
 import { LOADING } from '@mapstore/actions/maps';
 import { getMarkerLayer } from '../../MapStore2/web/client/utils/MapInfoUtils';
 import API from '../api/GeoClimaApi';
-import { FIXED_RANGE, FREE_RANGE, MARKER_ID, getVisibleLayers, getDefaultPanelSize } from '../utils/VariabiliMeteoUtils';
+import { FIXED_RANGE, FREE_RANGE, MARKER_ID, getVisibleLayers, getDefaultPanelSize, containsValidChartData } from '../utils/VariabiliMeteoUtils';
 import DateAPI from '../utils/ManageDateUtils';
 import { showFixedRangePickerSelector, periodTypeSelector, isPluginLoadedSelector as isFixedRangeLoaded,
     fromDataFormSelector as fromDataFixedRangeForm, toDataFormSelector as toDataFixedRangeForm  } from '../selectors/fixedRangePicker';
@@ -124,6 +124,57 @@ const getDisableInfoChartActions = (appState) => {
 };
 
 /**
+ * Processes the API response data for chart display, determining appropriate Redux actions
+ * based on data validity and structure. It dispatches different actions and alerts
+ * depending on whether the data is present, partially present (for AIB nested responses),
+ * or entirely absent.
+ *
+ * @param {Array} data The raw data array received from the API.
+ * @param {object} infochartState The Redux state slice containing infoChartData parameters.
+ * @returns {Array} An array of Redux actions to be dispatched.
+ */
+const checkResponseData = (data, infochartState) => {
+    let actions = [];
+    const infoChartParams = infochartState.infoChartData;
+    const validationResult = containsValidChartData(data, infoChartParams);
+
+    if (!validationResult.hasData) { // Case: No overall valid data found (e.g., empty array, or all values are null)
+        actions.push(notFetchedInfoChartData());
+        if (validationResult.isAibNested) {
+            actions.push(openAlert("gcapp.errorMessages.noObservPrevData"));
+        } else {
+            actions.push(openAlert("gcapp.errorMessages.noData"));
+        }
+    } else if (validationResult.isAibNested) {  // Case: It's an AIB nested response and has at least some valid data (could be partial)
+        const { hasObservatoData, hasPrevisioniData } = validationResult;
+        if (hasObservatoData && hasPrevisioniData) {
+            actions.push(fetchedInfoChartData(data, false));
+        } else if (hasObservatoData) {
+            actions.push(fetchedInfoChartData(data, false));
+            actions.push(openAlert("gcapp.errorMessages.noPrevData"));
+        } else if (hasPrevisioniData) {
+            actions.push(fetchedInfoChartData(data, false));
+            actions.push(openAlert("gcapp.errorMessages.noObservData"));
+        }
+    } else {  // Case: It's a flat/Geoclima response and has valid data (validationResult.hasData is true here)
+        actions.push(fetchedInfoChartData(data, false));
+    }
+    return actions;
+};
+
+const getErrorHandlingActions = (error) => {
+    const actions = [notFetchedInfoChartData()];
+    const code = error?.data?.code;
+    const status = error?.response?.status || error?.status;
+    let erroreMessage = "gcapp.errorMessages.genericError";
+    if (status === 400 && code === 'OUT_OF_REGION') {
+        erroreMessage = "gcapp.errorMessages.outsideRegion";
+    }
+    actions.push(openAlert(erroreMessage));
+    return actions;
+};
+
+/**
  * This method returns the first visible layer from an array of layers,
  * considering visibility defined either as an independent layer ID
  * or within a group of layers with a visibility property.
@@ -205,19 +256,10 @@ const setVisVariable = (visibleLayer, idVariabiliLayers) => {
 const getVisibleLayerValues = (visibleLayer, appState) => {
     const idVariabiliLayers = appState.infochart.idVariabiliLayers;
     const variable = setVisVariable(visibleLayer.name, idVariabiliLayers);
-    // const fromData = visibleLayer.params?.fromData || getDefaultValues(idVariabiliLayers, appState).fromData;
-    // const toData = visibleLayer.params?.toData || getDefaultValues(idVariabiliLayers, appState).toData;
-    // const periodType = appState.fixedrangepicker?.showFixedRangePicker
-    // ? appState.fixedrangepicker?.periodType
-    // : getDefaultValues(idVariabiliLayers, appState).periodType;
-    // Dynamically determine idTab based on the variable using the tabList from appState
     const idTab = getIdTabFromVariable(variable, appState.infochart.tabList); // Use the function to get idTab
     return {
         variable,
-        // fromData,
-        // toData,
-        // periodType,
-        idTab // Added idTab
+        idTab
     };
 };
 
@@ -225,23 +267,31 @@ const getVisibleLayerValues = (visibleLayer, appState) => {
  * Calculates and returns the variables needed for configuring the InfoChart panel.
  *
  * @param {Object} appState - The global state of the application.
- * @param {Object|null} visibleLayer - The currently selected visible layer, or `null` if none are available.
- * @param {Object} idVariabiliLayers - An object mapping layer IDs to their respective variables.
  * @returns {Object} - An object containing:
  *   - `variable` (string): The selected variable.
  *   - 'idTab' (string): chart's type
  */
-const getVariableFromLayer = (appState, idVariabiliLayers) => {
-    // If there is a visible layer, use the layer's values
+const getInitialChartConfig = (appState) => {
+    // 1. Check for tab with isDefaultTab === true
+    const defaultTab = appState.infochart.tabList.find(tab => tab.isDefaultTab);
+    if (defaultTab && defaultTab.groupList?.length > 0) {
+        return {
+            variable: defaultTab.groupList[0].id,
+            idTab: defaultTab.id
+        };
+    }
+    // 2. If no default tab, check for a visible layer
+    const idVariabiliLayers = appState.infochart.idVariabiliLayers;
     const visibleLayer = getFirstVisibleLayer(getVisibleLayers(appState.layers.flat, idVariabiliLayers), getVisibleGroups(appState.layers.groups));
     if (visibleLayer) {
         return getVisibleLayerValues(visibleLayer, appState);
     }
-    // Otherwise, return the default values
+    // 3. Fallback
     return getDefaultValues(idVariabiliLayers, appState);
 };
 
 // Close infochart when user come back to homepage
+// TODO improve this method adding more actions to close the infochart panel ( set dates, infochart size, etc. )
 const closeInfoChartPanel = (action$, store) =>
     action$.ofType(LOADING).switchMap(() => {
         const appState = store.getState();
@@ -336,10 +386,9 @@ const toggleControlEpic = (action$, store) => {
  * If no plugin is active or the selected range is invalid, it falls back to the default date range.
  *
  * @param {Object} appState - The application state.
- * @param {string} timeUnit - The time unit format for date calculations.
  * @returns {Object} An object containing fromData, toData, and rangeManager.
  */
-const getDateFromRangePicker = (appState, timeUnit) => {
+const getDateFromRangePicker = (appState) => {
     let fromData = null; let toData = null; let periodType = null;
     let rangeManager = FIXED_RANGE;
     if (isFixedRangeLoaded(appState) && showFixedRangePickerSelector(appState)) {
@@ -352,11 +401,12 @@ const getDateFromRangePicker = (appState, timeUnit) => {
         toData = toDataFreeRangeForm(appState);
     }
     // Se nessun plugin è attivo o il range non è valido, usa le date di default
+    const infoChartState = appState.infochart;
     if (!fromData || !toData ||
-        !DateAPI.validateDateRange(fromData, toData, appState.infochart.firstAvailableDate, appState.infochart.lastAvailableDate, timeUnit).isValid) {
-        toData = appState.infochart.lastAvailableDate;
+        !DateAPI.validateDateRange(fromData, toData, infoChartState.firstAvailableDate, infoChartState.lastAvailableDate, infoChartState.timeUnit).isValid) {
+        toData = infoChartState.lastAvailableDate;
         // Perche in componentDidMount() viene settato il defaultPeriod
-        fromData = moment(toData).clone().subtract(appState.infochart.periodType.max, 'days').toDate();
+        fromData = moment(toData).clone().subtract(infoChartState.periodType.max, 'days').toDate();
     }
     return { fromData, toData, periodType, rangeManager };
 };
@@ -373,18 +423,22 @@ const clickedPointCheckEpic = (action$, store) =>
     action$.ofType(CLICK_ON_MAP)
         .filter(() => store.getState().controls?.chartinfo?.enabled)
         .switchMap((action) => {
-            const appState = store.getState();
-            const timeUnit = appState.infochart.timeUnit;
+            const infochartState = store.getState().infochart;
+            const timeUnit = infochartState.timeUnit;
             const latlng = action.point.latlng;
             let actions = [];
             let fromData; let toData;
             let variable; let idTab;
             let periodType = null;
             let markerAction;
-            if (!appState.infochart.showInfoChartPanel) {
-                const { fromData: fromDataTmp, toData: toDataTmp, periodType: periodTypeTmp, rangeManager } = getDateFromRangePicker(appState, timeUnit);
-                const { variable: variableTmp, idTab: idTabTmp } = getVariableFromLayer(appState, appState.infochart.idVariabiliLayers);
-                const infoChartSize = appState.infochart.infoChartSize;
+            // Clear alert message if validations pass
+            if (infochartState.alertMessage) {
+                actions.push(closeAlert());
+            }
+            if (!infochartState.showInfoChartPanel) {
+                const { fromData: fromDataTmp, toData: toDataTmp, periodType: periodTypeTmp, rangeManager } = getDateFromRangePicker(store.getState());
+                const { variable: variableTmp, idTab: idTabTmp } = getInitialChartConfig(store.getState());
+                const infoChartSize = infochartState.infoChartSize;
                 const { width: newWidth, height: newHeight } = getDefaultPanelSize();
                 fromData = fromDataTmp;
                 toData = toDataTmp;
@@ -397,7 +451,7 @@ const clickedPointCheckEpic = (action$, store) =>
                 actions.push(changeToData(new Date(toData)));
                 actions.push(changeTab(idTab));
                 actions.push(changeChartVariable(idTab,
-                    [getVariableParamsFromTab(idTab, variable, appState.infochart.tabList)]));
+                    [getVariableParamsFromTab(idTab, variable, infochartState.tabList)]));
                 markerAction = getNewMarker(latlng);
                 if (periodType) {
                     actions.push(changePeriod(periodType));
@@ -409,11 +463,11 @@ const clickedPointCheckEpic = (action$, store) =>
                 }
             } else {
                 // Se InfoChart è già aperto, le date e la variabile non cambiano.
-                fromData = appState.infochart.infoChartData.fromData;
-                toData = appState.infochart.infoChartData.toData;
-                variable = appState.infochart.infoChartData.variables;
-                idTab = appState.infochart.infoChartData.idTab;
-                periodType = appState.infochart.periodType;
+                fromData = infochartState.infoChartData.fromData;
+                toData = infochartState.infoChartData.toData;
+                variable = infochartState.infoChartData.variables;
+                idTab = infochartState.infoChartData.idTab;
+                periodType = infochartState.periodType;
                 markerAction = updateMarkerPosition(latlng);
                 actions.push(resetChartRelayout());
             }
@@ -424,33 +478,52 @@ const clickedPointCheckEpic = (action$, store) =>
                 toData: moment(toData).format(timeUnit),
                 fromData: moment(fromData).format(timeUnit),
                 variables: variable,
-                periodType: periodType || appState.infochart.periodType,
+                periodType: periodType || infochartState.periodType,
                 idTab: idTab
             }));
             actions.push(markerAction);
             return Observable.of(...actions);
         });
 
-
 /**
- * Epic that listens for the "FETCH_INFOCHART_DATA" action to fetch infochart data from an API
- * and dispatches the resulting data.
+ * Handles fetching chart data (AIB or Geoclima)
+ * based on the active tab. It dispatches appropriate success, failure,
+ * or alert actions after validating the API response.
  *
- * When the "FETCH_INFOCHART_DATA" action is triggered, this Epic retrieves data
- * from the API and, once received, emits the `fetchedInfoChartData` action with the obtained data.
- *
- * @param  {external:Observable} action$ - Stream of actions that emits the "FETCH_INFOCHART_DATA" action.
- * @param  {object} store - The Redux store to access the current state, including `infochart.infoChartData`.
- * @memberof epics.infochart
- * @return {external:Observable} - Stream of actions that emits the `fetchedInfoChartData` action with the infochart data.
+ * @param {Observable} action$ - The Redux-Observable action stream.
+ * @param {object} store - The Redux store instance, used to access the current state.
+ * @returns {Observable<Action>} An observable of Redux actions to be dispatched.
  */
 const loadInfoChartDataEpic = (action$, store) =>
     action$.ofType(FETCH_INFOCHART_DATA)
-        .switchMap(() => Observable.fromPromise(
-            API.geoclimachart(store.getState().infochart.infoChartData, store.getState().infochart.defaultUrlGeoclimaChart)
-                .then(res => res.data)
-        ))
-        .switchMap(data => Observable.of(fetchedInfoChartData(data, false)));
+        .switchMap(() => {
+            const state = store.getState().infochart;
+            let apiCall;
+            let apiUrl;
+
+            const activeTab = state.tabVariables.find(tab => tab.active);
+
+            if (activeTab && activeTab.id === 'aib') {
+                apiCall = API.getAibChart;
+                apiUrl = state.defaultUrlAibChart;
+            } else {
+                apiCall = API.geoclimachart;
+                apiUrl = state.defaultUrlGeoclimaChart;
+            }
+
+            return Observable.defer(() => apiCall(state.infoChartData, apiUrl).then(res => res.data)
+            ).switchMap(data => {
+                const actions = checkResponseData(data, state);
+                return Observable.of(...actions);
+            }).catch(error => {
+                const errorHandlingActions = getErrorHandlingActions(error);
+                return Observable.concat(
+                    ...errorHandlingActions.map(action => Observable.of(action)),
+                    Observable.throw(error)
+                );
+            });
+        });
+
 
 export {
     toggleMapInfoEpic,

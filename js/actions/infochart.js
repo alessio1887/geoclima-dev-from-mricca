@@ -13,6 +13,7 @@ export const SET_INFOCHART_VISIBILITY = 'SET_INFOCHART_VISIBILITY';
 export const CHART_PERIOD_CHANGED = 'INFOCHART:CHART_PERIOD_CHANGED';
 export const FETCH_INFOCHART_DATA = 'FETCH_INFOCHART_DATA';
 export const FETCHED_INFOCHART_DATA = 'FETCHED_INFOCHART_DATA';
+export const NOT_FETCHED_INFOCHART_DATA = 'NOT_FETCHED_INFOCHART_DATA';
 export const TOGGLE_INFOCHART = 'TOGGLE_INFOCHART';
 export const COLLAPSE_RANGE_PICKER = 'INFOCHART:COLLAPSE_RANGE_PICKER';
 export const SET_RANGE_MANAGER = 'INFOCHART:SET_RANGE_MANAGER';
@@ -23,7 +24,7 @@ export const RESET_CHART_RELAYOUT = 'INFOCHART:RESET_CHART_RELAYOUT';
 export const RESIZE_INFOCHART = 'RESIZE_INFOCHART';
 export const SET_DEFAULT_SIZE = 'INOFCHART:SET_DEFAULT_SIZE';
 export const SET_IDVARIABILI_LAYERS = 'SET_ID_VARIABILI_LAYERS';
-export const SET_DEFAULT_URL = 'INFOCHART:SET_DEFULT_URL';
+export const SET_DEFAULT_URLS = 'INFOCHART:SET_DEFULT_URLS';
 export const SET_DEFAULT_DATES = 'INFOCHART:SET_DEFULT_DATES';
 export const SET_TABLIST = 'INFOCHART:SET_TABLIST';
 export const INITIALIZE_TABS = 'INFOCHART:INITIALIZE_TABS';
@@ -109,6 +110,12 @@ export function fetchedInfoChartData(data, maskLoading) {
     };
 }
 
+export function notFetchedInfoChartData() {
+    return {
+        type: NOT_FETCHED_INFOCHART_DATA
+    };
+}
+
 /**
  * when fullscreen have to be toggled
  * @memberof actions.fullscreen
@@ -186,10 +193,13 @@ export function setIdVariabiliLayers(idVariabiliLayers) {
     };
 }
 
-export function setDefaultUrlGeoclimaChart(defaultUrlGeoclimaChart) {
+export function setDefaultUrls(urls) {
     return {
-        type: SET_DEFAULT_URL,
-        defaultUrlGeoclimaChart
+        type: SET_DEFAULT_URLS,
+        urls: {
+            defaultUrlGeoclimaChart: urls.defaultUrlGeoclimaChart,
+            defaultUrlAibChart: urls.defaultUrlAibChart
+        }
     };
 }
 
@@ -208,29 +218,6 @@ export function setTabList(tabList) {
         tabList
     };
 }
-
-// export function setAvailableDatesInfoChart(dataInizio, dataFine) {
-//     return {
-//         type: INFOCHART_SET_AVAILABLE_DATES,
-//         dataInizio,
-//         dataFine
-//     };
-// }
-
-// export function fetchSelectDate(variabileLastAvailableData, urlGetLastAvailableData) {
-//     return (dispatch) => {
-//         GeoClimaAPI.getAvailableDates(variabileLastAvailableData, urlGetLastAvailableData)
-//             .then(response => {
-//                 const dataFine = new Date(response.data[0].data_fine);
-//                 const dataInizio = new Date(response.data[0].data_inizio);
-//                 dispatch(setAvailableDatesInfoChart(dataInizio, dataFine));
-//                 dispatch(updateParamsInfoChart(dataInizio, dataFine));
-//             })
-//             .catch(error => {
-//                 dispatch(apiError(error));
-//             });
-//     };
-// }
 
 export const checkLaunchSelectDateQuery = (variableSelectDate, urlSelectDate, timeUnit) => {
     return {
