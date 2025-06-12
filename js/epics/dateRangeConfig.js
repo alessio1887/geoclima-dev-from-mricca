@@ -158,7 +158,8 @@ const setPluginsDatesOnInitEpic = (action$, store) =>
 
 const updateRangePickerInfoEpic = (action$, store) =>
     action$.ofType(LAYER_LOAD)
-        .mergeMap(({layerId}) => {
+        .filter(({layerId}) => layerId)
+        .switchMap(({layerId}) => {
             const currentState = store.getState();
             const layers = currentState.layers?.flat || [];
             const variabiliMeteo = getVariabiliMeteo(currentState);
