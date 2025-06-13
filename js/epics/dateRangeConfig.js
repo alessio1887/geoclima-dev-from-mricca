@@ -13,7 +13,7 @@ import { FETCHED_AVAILABLE_DATES,  updateDatesLayer, errorLayerNotFound, errorLa
 import { TOGGLE_PLUGIN, changePeriod, changePeriodToData } from '../actions/fixedrangepicker';
 import { changeFromData, changeToData } from '../actions/freerangepicker';
 import { isPluginLoadedSelector as isFreeRangeLoaded } from '../selectors/freeRangePicker';
-import { isPluginLoadedSelector as isFixedRangeLoaded } from '../selectors/fixedRangePicker';
+import { isPluginLoadedSelector as isFixedRangeLoaded, isInOneDatePickerMode } from '../selectors/fixedRangePicker';
 import DateAPI from '../utils/ManageDateUtils';
 import { FIXED_RANGE, FREE_RANGE, getVisibleLayers, getVariabiliMeteo, isVariabiliMeteoLayer  } from '@js/utils/VariabiliMeteoUtils';
 import moment from 'moment';
@@ -99,7 +99,7 @@ const updateParamsByDateRangeEpic = (action$, store) =>
         })
         .switchMap((action) => {
             const appState = store.getState();
-            const isMapfilenameNotChange = appState.fixedrangepicker?.isPluginLoaded && appState.fixedrangepicker?.showOneDatePicker;
+            const isMapfilenameNotChange = isFixedRangeLoaded(appState) && isInOneDatePickerMode(appState);
             const layers = action.payload.config?.map?.layers || [];
             const toData = action.payload.availableDate;
             const timeUnit = action.payload.timeUnit;
