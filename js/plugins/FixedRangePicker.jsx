@@ -160,7 +160,7 @@ class FixedRangePicker extends React.Component {
         settings: PropTypes.object,
         shiftDown: PropTypes.bool,
         shiftRight: PropTypes.bool,
-        showOneDatePicker: PropTypes.bool,
+        showOneDatePicker: PropTypes.bool, // true when the FixedRange plugin is loaded in "One Date Picker" mode.
         showChangeRangePickerButton: PropTypes.bool,
         style: PropTypes.object,
         timeUnit: PropTypes.string,
@@ -215,12 +215,6 @@ class FixedRangePicker extends React.Component {
         isPluginLoaded: false,
         timeUnit: DATE_FORMAT
     };
-
-    // state = {
-    //     fromDataAlertMessage: moment(this.props.fromDataLayer).clone().format(this.props.timeUnit),
-    //     toDataAlertMessage: moment(this.props.toDataLayer).clone().format(this.props.timeUnit),
-    //     defaultPeriodType: this.props.periodType
-    // }
 
     componentDidMount() {
         const defaultPeriod = DateAPI.getDefaultPeriod(this.props.periodTypes);
@@ -289,7 +283,7 @@ class FixedRangePicker extends React.Component {
             </div>
         );
     }
-
+    // The plugin is loaded in "Date Range Picker" mode.
     showFixedRangeManager = () => {
         return (
             <div className="ms-fixedrangepicker-action">
@@ -326,6 +320,7 @@ class FixedRangePicker extends React.Component {
             </div>
         );
     }
+    // The plugin is loaded in "One Date Picker" mode.
     showDailyDatePicker = () => {
         return (
             <DailyManager
