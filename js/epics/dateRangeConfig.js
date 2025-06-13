@@ -157,6 +157,17 @@ const setPluginsDatesOnInitEpic = (action$, store) =>
             return Observable.of(...actionsSetPluginsDates);
         });
 
+/**
+ * Epic that reacts to LAYER_LOAD actions and updates the range picker
+ * (fixed or free) with the correct date range based on the loaded layer.
+ *
+ * It filters out events without a layerId or if neither range picker plugin is loaded.
+ * Then, for layers corresponding to meteorological variables, it extracts the `fromData`
+ * and `toData` parameters to update the corresponding date selector.
+ *
+ * If the layer is not found, not relevant, or missing required date parameters,
+ * appropriate error actions are dispatched.
+ */
 const updateRangePickerInfoEpic = (action$, store) =>
     action$.ofType(LAYER_LOAD)
         .filter(({layerId}) => {

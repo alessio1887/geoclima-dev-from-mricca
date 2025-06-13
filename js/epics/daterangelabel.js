@@ -12,7 +12,11 @@ import { isVariabiliMeteoLayer } from '../utils/VariabiliMeteoUtils';
 
 const updateDateLabelEpic = (action$, store) =>
     action$.ofType(LAYER_LOAD)
-        .mergeMap(({layerId}) => {
+        .filter(({layerId}) => {
+            const pluginState = store.getState().daterangelabel || {};
+            return layerId && pluginState.isPluginLoaded;
+        })
+        .switchMap(({layerId}) => {
             const currentState = store.getState();
             const layers = currentState.layers?.flat || [];
             const variabiliMeteo = currentState.daterangelabel.variabiliMeteo;

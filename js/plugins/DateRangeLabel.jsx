@@ -10,7 +10,7 @@ import React from "react";
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { DATE_FORMAT } from '../utils/ManageDateUtils';
-import { setVariabiliMeteo } from '../actions/daterangelabel';
+import { setVariabiliMeteo, markAsLoaded, markAsNotLoaded } from '../actions/daterangelabel';
 import daterangelabel from '../reducers/daterangelabel';
 import assign from 'object-assign';
 import updateDateLabelEpic from '../epics/daterangelabel';
@@ -41,7 +41,10 @@ class DateRangeLabel extends React.Component {
         onSetVariabiliMeteo: PropTypes.func,
         style: PropTypes.object,
         id: PropTypes.string,
+        isPluginLoaded: PropTypes.bool,
         fromData: PropTypes.instanceOf(Date),
+        onMarkPluginAsLoaded: PropTypes.func,
+        onMarkPluginAsNotLoaded: PropTypes.func,
         toData: PropTypes.instanceOf(Date),
         variabiliMeteo: PropTypes.object,
         timeUnit: PropTypes.string
@@ -67,6 +70,14 @@ class DateRangeLabel extends React.Component {
     };
     componentDidMount() {
         this.props.onSetVariabiliMeteo(this.props.variabiliMeteo);
+        if (!this.props.isPluginLoaded) {
+            this.props.onMarkPluginAsLoaded();
+        }
+    }
+    componentWillUnmount() {
+        if (this.props.isPluginLoaded) {
+            this.props.onMarkPluginAsNotLoaded();
+        }
     }
     render() {
         return (
@@ -84,13 +95,16 @@ const mapStateToProps = (state) => {
     return {
         variabiliMeteo: state.daterangelabel?.variabiliMeteo,
         fromData: state.daterangelabel?.fromData ? new Date(state.daterangelabel.fromData) : new Date(moment().subtract(1, 'month')._d),
-        toData: state.daterangelabel?.toData ? new Date(state.daterangelabel.toData) : new Date(moment().subtract(1, 'day')._d)
+        toData: state.daterangelabel?.toData ? new Date(state.daterangelabel.toData) : new Date(moment().subtract(1, 'day')._d),
+        isPluginLoaded: state.daterangelabel?.isPluginLoaded
     };
 };
 
 const DateRangeLabelPlugin = connect(
     mapStateToProps, {
-        onSetVariabiliMeteo: setVariabiliMeteo
+        onSetVariabiliMeteo: setVariabiliMeteo,
+        onMarkPluginAsLoaded: markAsLoaded,
+        onMarkPluginAsNotLoaded: markAsNotLoaded
     }
 )(DateRangeLabel);
 
