@@ -11,10 +11,11 @@ import { LAYER_LOAD, updateSettings, updateNode } from '@mapstore/actions/layers
 import { layersSelector } from '@mapstore/selectors/layers';
 import { FETCHED_AVAILABLE_DATES,  updateDatesLayer, errorLayerNotFound, errorLayerDateMissing  } from '../actions/updateDatesParams';
 import { TOGGLE_PLUGIN, changePeriod, changePeriodToData } from '../actions/fixedrangepicker';
-import { changeFromData, changeToData  } from '../actions/freerangepicker';
+import { changeFromData, changeToData } from '../actions/freerangepicker';
+import { isPluginLoadedSelector as isFreeRangeLoaded } from '../selectors/freeRangePicker';
+import { isPluginLoadedSelector as isFixedRangeLoaded } from '../selectors/fixedRangePicker';
 import DateAPI from '../utils/ManageDateUtils';
-import { getVisibleLayers, FIXED_RANGE, FREE_RANGE } from '@js/utils/VariabiliMeteoUtils';
-import {  getVariabiliMeteo, isVariabiliMeteoLayer } from '../utils/VariabiliMeteoUtils';
+import { FIXED_RANGE, FREE_RANGE, getVisibleLayers, getVariabiliMeteo, isVariabiliMeteoLayer  } from '@js/utils/VariabiliMeteoUtils';
 import moment from 'moment';
 import momentLocaliser from 'react-widgets/lib/localizers/moment';
 momentLocaliser(moment);
@@ -158,7 +159,10 @@ const setPluginsDatesOnInitEpic = (action$, store) =>
 
 const updateRangePickerInfoEpic = (action$, store) =>
     action$.ofType(LAYER_LOAD)
-        .filter(({layerId}) => layerId)
+        .filter(({layerId}) => {
+            const currentState = (store.getState());
+            return  layerId && (isFixedRangeLoaded(currentState) || isFreeRangeLoaded(currentState));
+        })
         .switchMap(({layerId}) => {
             const currentState = store.getState();
             const layers = currentState.layers?.flat || [];
