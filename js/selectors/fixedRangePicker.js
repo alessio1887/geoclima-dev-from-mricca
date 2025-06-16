@@ -62,3 +62,9 @@ export const isCollapsedPluginSelector = createSelector(
     [getFixedRangePickerState],
     (fixedrangepicker) => fixedrangepicker?.isCollapsedPlugin || false
 );
+
+// Returns true when the FixedRange plugin is loaded in "One Date Picker" mode.
+export const isInOneDatePickerMode = createSelector(
+    [getFixedRangePickerState],
+    (fixedrangepicker) => !!fixedrangepicker?.showOneDatePicker
+);

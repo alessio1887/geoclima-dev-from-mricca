@@ -18,7 +18,7 @@ const defaultState = {
     tabVariables: []
 };
 
-function daterangelabel(state = defaultState, action) {
+function exportimage(state = defaultState, action) {
     switch (action.type) {
     case UPDATE_DATES:
         return {
@@ -83,11 +83,9 @@ function daterangelabel(state = defaultState, action) {
         };
     case CLEAR_IMAGE_URL:
         return { ...state, imageUrl: null, fileName: DEFAULT_FILENAME };
-    // case TOGGLE_PLUGIN:
-    //     return { ...state, isPluginOpen: action.payload };
     default:
         return state;
     }
 }
 
-export default daterangelabel;
+export default exportimage;

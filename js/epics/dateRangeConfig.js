@@ -11,10 +11,11 @@ import { LAYER_LOAD, updateSettings, updateNode } from '@mapstore/actions/layers
 import { layersSelector } from '@mapstore/selectors/layers';
 import { FETCHED_AVAILABLE_DATES,  updateDatesLayer, errorLayerNotFound, errorLayerDateMissing  } from '../actions/updateDatesParams';
 import { TOGGLE_PLUGIN, changePeriod, changePeriodToData } from '../actions/fixedrangepicker';
-import { changeFromData, changeToData  } from '../actions/freerangepicker';
+import { changeFromData, changeToData } from '../actions/freerangepicker';
+import { isPluginLoadedSelector as isFreeRangeLoaded } from '../selectors/freeRangePicker';
+import { isPluginLoadedSelector as isFixedRangeLoaded, isInOneDatePickerMode } from '../selectors/fixedRangePicker';
 import DateAPI from '../utils/ManageDateUtils';
-import { getVisibleLayers, FIXED_RANGE, FREE_RANGE } from '@js/utils/VariabiliMeteoUtils';
-import {  getVariabiliMeteo, isVariabiliMeteoLayer } from '../utils/VariabiliMeteoUtils';
+import { FIXED_RANGE, FREE_RANGE, getVisibleLayers, getVariabiliMeteo, isVariabiliMeteoLayer  } from '@js/utils/VariabiliMeteoUtils';
 import moment from 'moment';
 import momentLocaliser from 'react-widgets/lib/localizers/moment';
 momentLocaliser(moment);
@@ -98,7 +99,7 @@ const updateParamsByDateRangeEpic = (action$, store) =>
         })
         .switchMap((action) => {
             const appState = store.getState();
-            const isMapfilenameNotChange = appState.fixedrangepicker?.isPluginLoaded && appState.fixedrangepicker?.showOneDatePicker;
+            const isMapfilenameNotChange = isFixedRangeLoaded(appState) && isInOneDatePickerMode(appState);
             const layers = action.payload.config?.map?.layers || [];
             const toData = action.payload.availableDate;
             const timeUnit = action.payload.timeUnit;
@@ -156,9 +157,24 @@ const setPluginsDatesOnInitEpic = (action$, store) =>
             return Observable.of(...actionsSetPluginsDates);
         });
 
+/**
+ * Epic that reacts to LAYER_LOAD actions and updates the range picker
+ * (fixed or free) with the correct date range based on the loaded layer.
+ *
+ * It filters out events without a layerId or if neither range picker plugin is loaded.
+ * Then, for layers corresponding to meteorological variables, it extracts the `fromData`
+ * and `toData` parameters to update the corresponding date selector.
+ *
+ * If the layer is not found, not relevant, or missing required date parameters,
+ * appropriate error actions are dispatched.
+ */
 const updateRangePickerInfoEpic = (action$, store) =>
     action$.ofType(LAYER_LOAD)
-        .mergeMap(({layerId}) => {
+        .filter(({layerId}) => {
+            const currentState = (store.getState());
+            return  layerId && (isFixedRangeLoaded(currentState) || isFreeRangeLoaded(currentState));
+        })
+        .switchMap(({layerId}) => {
             const currentState = store.getState();
             const layers = currentState.layers?.flat || [];
             const variabiliMeteo = getVariabiliMeteo(currentState);

@@ -5,11 +5,12 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree.
 */
-import { UPDATE_RANGE_LABEL, SET_VARIABILIMETEO } from '../actions/daterangelabel';
+import { UPDATE_RANGE_LABEL, SET_VARIABILIMETEO, PLUGIN_LOADED, PLUGIN_NOT_LOADED } from '../actions/daterangelabel';
 
 const defaultState = {
     fromData: new Date(),
-    toData: new Date()
+    toData: new Date(),
+    isPluginLoaded: false
 };
 
 function daterangelabel(state = defaultState, action) {
@@ -24,6 +25,12 @@ function daterangelabel(state = defaultState, action) {
         return {
             ...state,
             variabiliMeteo: action.variabiliMeteo
+        };
+    case PLUGIN_LOADED:
+    case PLUGIN_NOT_LOADED:
+        return {
+            ...state,
+            isPluginLoaded: action.type === PLUGIN_LOADED
         };
     default:
         return state;

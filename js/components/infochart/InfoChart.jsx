@@ -193,7 +193,6 @@ class InfoChart extends React.Component {
         // Default date values to use in case of invalid or missing date input
         fromDataSelected: moment(this.props.fromData).clone().format(this.props.timeUnit),
         toDataSelected: moment(this.props.toData).clone().format(this.props.timeUnit)
-        // periodTypeSelected: this.props.periodType
     }
 
     initializeTabs = () => {

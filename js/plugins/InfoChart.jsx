@@ -331,7 +331,8 @@ Plugin configuration
                     "id": "aib2",
                     "name": "Previsonale",
                     "chartType": "aib_previsionale",
-                    "showOneDatePicker": true
+                    "showOneDatePicker": true,
+                    "needsDataReload": true
                   }
             ],
             "groupList": [
