@@ -1064,7 +1064,8 @@
                     "id": "aib2",
                     "name": "Storico",
                     "chartType": "aib_historic_chart",
-                    "hideClimatologicalTrace": true
+                    "hideClimatologicalTrace": true,
+                    "needsDataReload": true
                   }
             ],
             "groupList": [

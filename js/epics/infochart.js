@@ -15,6 +15,7 @@ import {
     FETCH_INFOCHART_DATA,
     SET_INFOCHART_VISIBILITY,
     PLUGIN_NOT_LOADED,
+    CHART_TYPE_CHANGED,
     fetchedInfoChartData,
     setInfoChartVisibility,
     fetchInfoChartData,
@@ -534,6 +535,55 @@ const loadInfoChartDataEpic = (action$, store) =>
                 });
         });
 
+const fetchChartDataOnChartTypeChangeEpic = (action$, store) =>
+    action$.ofType(CHART_TYPE_CHANGED)
+        .filter((action) => {
+            const infochartState = store.getState().infochart;
+            const { idChartType } = action;
+            const activeTab = infochartState.tabVariables.find(tab => tab.active === true);
+            if (!activeTab) {
+                return false;
+            }
+            const chartConfig = activeTab.chartList.find(chart => chart.id === idChartType);
+            if (!chartConfig) {
+                return false;
+            }
+            return chartConfig.needsDataReload;
+        })
+        .switchMap(() => {
+            const infochartState = store.getState().infochart;
+            const activeTab = infochartState.tabVariables.find(tab => tab.active === true);
+
+            const currentInfoChartData = infochartState.infoChartData;
+
+            let tabVariablesString = null;
+            if (activeTab.variables && activeTab.variables.length > 0) {
+                if (activeTab.variables.length === 1) {
+                    // Se c'è un solo elemento, prendi direttamente il suo id
+                    tabVariablesString = activeTab.variables[0].id;
+                } else {
+                    // Se ci sono più elementi, concatena gli id con una virgola
+                    tabVariablesString = activeTab.variables.map(v => v.id).join(',');
+                }
+            }
+
+            // Se tabVariablesString è falsy (null o stringa vuota), ritorna EMPTY
+            if (!tabVariablesString) {
+                // do nothing
+                return Observable.empty();
+            }
+
+            const params = {
+                fromData: currentInfoChartData.fromData,
+                idTab: currentInfoChartData.idTab,
+                latlng: currentInfoChartData.latlng,
+                periodType: currentInfoChartData.periodType,
+                toData: currentInfoChartData.toData,
+                variables: tabVariablesString
+            };
+            return Observable.of(fetchInfoChartData(params));
+        });
+
 
 export {
     toggleMapInfoEpic,
@@ -541,5 +591,6 @@ export {
     clickedPointCheckEpic,
     loadInfoChartDataEpic,
     closeInfoChartPanel,
-    toggleControlEpic
+    toggleControlEpic,
+    fetchChartDataOnChartTypeChangeEpic
 };
