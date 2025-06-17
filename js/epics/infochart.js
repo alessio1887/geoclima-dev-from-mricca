@@ -535,6 +535,25 @@ const loadInfoChartDataEpic = (action$, store) =>
                 });
         });
 
+/**
+ * Epic that reacts to a change in chart type (`CHART_TYPE_CHANGED`), then  based on specific conditions,
+ * dispatches the `fetchInfoChartData` action to dynamically fetch chart-related data via API call.
+ *
+ * It first checks whether the currently active chart requires reloading (`needsDataReload`)
+ * and ensures that there is an active tab and valid chart configuration.
+ *
+ * If a reload is necessary, it further checks whether the list of variables selected in the active tab
+ * differs from the ones currently used in the chart data (`infoChartData.variables`).
+ *
+ * Only if the variables have changed, it triggers the `fetchInfoChartData` action
+ * to fetch new chart data from the server.
+ *
+ * This prevents unnecessary API calls when the chart type changes but the data is already up to date.
+ *
+ * @param {Observable<Action>} action$ - The stream of Redux actions.
+ * @param {Object} store - The Redux store instance, used to access the current state.
+ * @returns {Observable<Action>} A stream of `FETCH_INFOCHART_DATA` actions or an empty observable.
+ */
 const fetchChartDataOnChartTypeChangeEpic = (action$, store) =>
     action$.ofType(CHART_TYPE_CHANGED)
         .filter((action) => {
@@ -559,16 +578,16 @@ const fetchChartDataOnChartTypeChangeEpic = (action$, store) =>
             let tabVariablesString = null;
             if (activeTab.variables && activeTab.variables.length > 0) {
                 if (activeTab.variables.length === 1) {
-                    // Se c'è un solo elemento, prendi direttamente il suo id
                     tabVariablesString = activeTab.variables[0].id;
                 } else {
-                    // Se ci sono più elementi, concatena gli id con una virgola
                     tabVariablesString = activeTab.variables.map(v => v.id).join(',');
                 }
             }
-
-            // Se tabVariablesString è falsy (null o stringa vuota), ritorna EMPTY
-            if (!tabVariablesString) {
+            /*
+             * Check if the tabVariablesString is empty or matches the current variables
+             to avoid unnecessary API calls if the data are the same
+             */
+            if (!tabVariablesString || tabVariablesString.trim() === currentInfoChartData.variables) {
                 // do nothing
                 return Observable.empty();
             }
