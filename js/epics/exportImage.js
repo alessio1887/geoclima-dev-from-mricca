@@ -52,8 +52,7 @@ const exportImageEpic = (action$) =>
                     }
                     // Restituisce l'azione di successo con l'URL e il nome del file
                     return exportImageSuccess(url, fileName);
-                }).catch(error => {
-                    // Gestione degli errori
+                }).catch(error => { // Gestione degli errori
                     return apiError(error);
                 });
             })
