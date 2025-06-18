@@ -1,3 +1,10 @@
+/**
+ * Copyright 2024, Consorzio LaMMA.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 import axios from "axios";
 import { Observable } from "rxjs";
 import { MAP_CONFIG_LOADED } from "@mapstore/actions/config";
