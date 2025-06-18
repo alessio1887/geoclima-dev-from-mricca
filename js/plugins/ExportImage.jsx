@@ -112,7 +112,7 @@ const ExportImage = ({
     // useRef stores the previous values of fromData and toData
     const prevFromData = useRef(fromData);
     const prevToData = useRef(toData);
-    // Stato per il container del portal
+    // portal-container state is used to manage the portal container for rendering the dialog
     const [portalContainer, setPortalContainer] = useState(null);
 
     const initializeTabs = useCallback(() => {
@@ -154,6 +154,7 @@ const ExportImage = ({
         prevToData.current = toData;
     }, [fromData, toData, imageUrl, onClearImageUrl, timeUnit]);
 
+    // Create the portal container when the component mounts to avoid visibility problems of this plugin
     useEffect(() => {
         const div = document.createElement('div');
         div.id = 'exportimage-portal-root';
