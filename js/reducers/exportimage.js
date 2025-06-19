@@ -5,8 +5,9 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree.
 */
-import { UPDATE_DATES, SET_VARIABILIMETEO, INITIALIZE_TABS, TAB_CHANGED, EXPORTIMAGE_ERROR, RESET_TABS,
-    IMAGEVARIABLE_CHANGED, EXPORTIMAGE_SUCCESS, CLEAR_IMAGE_URL, EXPORTIMAGE_LOADING, SET_TIME_UNIT } from '../actions/exportimage';
+import { UPDATE_DATES, SET_VARIABILIMETEO, INITIALIZE_TABS, TAB_CHANGED, EXPORTIMAGE_ERROR, RESET_PLUGIN,
+    IMAGEVARIABLE_CHANGED, EXPORTIMAGE_SUCCESS, CLEAR_IMAGE_URL, EXPORTIMAGE_LOADING, SET_TIME_UNIT,
+    PLUGIN_LOADED, PLUGIN_NOT_LOADED} from '../actions/exportimage';
 import { DEFAULT_FILENAME } from '../utils/VariabiliMeteoUtils';
 import DateAPI from '../utils/ManageDateUtils';
 
@@ -15,7 +16,8 @@ const defaultState = {
     fromData: new Date(),
     toData: new Date(),
     fileName: DEFAULT_FILENAME,
-    tabVariables: []
+    tabVariables: [],
+    climateLayers: []
 };
 
 function exportimage(state = defaultState, action) {
@@ -42,10 +44,11 @@ function exportimage(state = defaultState, action) {
             ...state,
             tabVariables: action.tabVariables
         };
-    case RESET_TABS:
+    case RESET_PLUGIN:
         return {
             ...state,
-            tabVariables: defaultState.tabVariables
+            tabVariables: defaultState.tabVariables,
+            climateLayers: defaultState.climateLayers
         };
     case TAB_CHANGED:
         return {
@@ -83,6 +86,16 @@ function exportimage(state = defaultState, action) {
         };
     case CLEAR_IMAGE_URL:
         return { ...state, imageUrl: null, fileName: DEFAULT_FILENAME };
+    case PLUGIN_LOADED:
+        return {
+            ...state,
+            isPluginLoaded: true
+        };
+    case PLUGIN_NOT_LOADED:
+        return {
+            ...state,
+            isPluginLoaded: false
+        };
     default:
         return state;
     }

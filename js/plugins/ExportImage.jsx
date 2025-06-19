@@ -18,11 +18,11 @@ import Dialog from '@mapstore/components/misc/Dialog';
 
 import { exportImageEnabledSelector, fileNameSelector, fromDataSelector, toDataSelector,
     isLayerLoadingSelector, tabVariablesSelector, imageUrlSelector, exportImageApiSelector,
-    alertMessageSelector } from '../selectors/exportImage';
+    alertMessageSelector, isPluginLoadedSelector } from '../selectors/exportImage';
 import * as exportImageEpics from '../epics/exportImage';
 import exportimage from '../reducers/exportimage';
 import { initializeVariableTabs, setVariabiliMeteo, changeTab, changeImageVariable,
-    exportImage, clearImageUrl, setTimeUnit } from '../actions/exportimage';
+    exportImage, clearImageUrl, setTimeUnit, markAsLoaded } from '../actions/exportimage';
 
 import moment from 'moment';
 import momentLocaliser from 'react-widgets/lib/localizers/moment';
@@ -92,6 +92,7 @@ const ExportImage = ({
     fileNameExported,
     fromData,
     isInteractionDisabled,
+    isPluginLoaded,
     maskLoading,
     onToggleControlExportImage,
     toData,
@@ -100,6 +101,7 @@ const ExportImage = ({
     onChangeTab,
     onExportImage,
     onInitializeVariableTabs,
+    onMarkAsLoaded,
     onSetTimeUnit,
     onSetVariabiliMeteo,
     variabiliMeteo,
@@ -130,8 +132,11 @@ const ExportImage = ({
             initializeTabs();
             onSetTimeUnit(timeUnit);
         }
-        if (!climateLayers ) {
+        if (climateLayers.length <= 0 ) {
             onSetVariabiliMeteo(variabiliMeteo);
+        }
+        if (!isPluginLoaded) {
+            onMarkAsLoaded();
         }
     }, [variabiliMeteo, onSetVariabiliMeteo, initializeTabs]);
 
@@ -221,6 +226,7 @@ const mapStateToProps = createStructuredSelector({
     toData: toDataSelector,
     active: exportImageEnabledSelector,
     isInteractionDisabled: isLayerLoadingSelector,
+    isPluginLoaded: isPluginLoadedSelector,
     tabVariables: tabVariablesSelector,
     imageUrl: imageUrlSelector,
     alertMessage: alertMessageSelector
@@ -232,6 +238,7 @@ const mapDispatchToProps = {
     onClearImageUrl: clearImageUrl,
     onExportImage: exportImage,
     onInitializeVariableTabs: initializeVariableTabs,
+    onMarkAsLoaded: markAsLoaded,
     onSetTimeUnit: setTimeUnit,
     onSetVariabiliMeteo: setVariabiliMeteo,
     onToggleControlExportImage: () => toggleControl('exportImage', 'enabled')
