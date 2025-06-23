@@ -40,7 +40,6 @@ function fixedrangepicker(state = defaultState, action) {
         return {
             ...state,
             fromData: moment(state.toData).clone().subtract(action.periodType.max, 'days').toDate(),
-            // toData: new Date(DateAPI.calculateDateFromKeyReal(action.periodType, state.toData).toData),
             periodType: action.periodType
         };
     case UPDATE_DATES_LAYER:

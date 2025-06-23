@@ -359,10 +359,6 @@ class FixedRangePicker extends React.Component {
             this.props.firstAvailableDate, this.props.lastAvailableDate, this.props.timeUnit
         );
         if (!validation.isValid) {
-            // this.setState({
-            //     fromDataAlertMessage: moment(newFromData).clone().format(this.props.timeUnit),
-            //     toDataAlertMessage: moment(newToData).clone().format(this.props.timeUnit)
-            // });
             this.props.onOpenAlert("gcapp.errorMessages." + validation.errorMessage);
             return;
         }
@@ -375,6 +371,11 @@ class FixedRangePicker extends React.Component {
             mapNameSuffix
         });
     }
+    /**
+     * Updates meteorological layers based on the selected dates.
+     * If `checkPrefixes` is true, updates the layer's name, title, and passes only the `map` param.
+     * Otherwise, updates the `map`, `fromData`, and `toData` params using the standard logic.
+     */
     updateParams = (datesParam, onUpdateNode = true) => {
         this.props.layers.map((layer) => {
             if (onUpdateNode && isVariabiliMeteoLayer(layer.name, this.props.variabiliMeteo, this.props.checkPrefixes)) {

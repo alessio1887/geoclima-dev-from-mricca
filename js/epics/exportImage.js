@@ -61,8 +61,8 @@ const exportImageEpic = (action$) =>
 
 const updateDatesExportImageEpic = (action$, store) =>
     action$.ofType(LAYER_LOAD)
-        .filter(() => isPluginLoadedSelector(store.getState()))
-        .mergeMap(({layerId}) => {
+        .filter(({layerId}) => layerId && isPluginLoadedSelector(store.getState()))
+        .switchMap(({layerId}) => {
             const currentState = store.getState();
             const layers = currentState.layers?.flat || [];
             const variabiliMeteo = currentState.exportimage.climateLayers;
