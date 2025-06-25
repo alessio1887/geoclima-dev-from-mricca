@@ -92,9 +92,7 @@ const closeExportImagePanel = (action$, store) =>
 const resetPluginStateOnHomeEpic = (action$, store) =>
     action$.ofType(LOADING)
         .filter(() => isPluginLoadedSelector(store.getState()))
-        .take(1)
-        .mergeMap(() => [markAsNotLoaded(), resetTabsClimateData(), clearImageUrl()
-        ]);
+        .switchMap(() => Observable.of(markAsNotLoaded(), resetTabsClimateData(), clearImageUrl()));
 
 /**
  * Epic that ensures the correct map layout when the plugin is open.

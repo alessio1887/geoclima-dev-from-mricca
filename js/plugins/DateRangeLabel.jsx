@@ -13,7 +13,7 @@ import { DATE_FORMAT } from '../utils/ManageDateUtils';
 import { setVariabiliMeteo, markAsLoaded, markAsNotLoaded } from '../actions/daterangelabel';
 import daterangelabel from '../reducers/daterangelabel';
 import assign from 'object-assign';
-import updateDateLabelEpic from '../epics/daterangelabel';
+import * as dateRangeLabelEpics from '../epics/daterangelabel';
 import './daterangelabel.css';
 import moment from 'moment';
 import momentLocaliser from 'react-widgets/lib/localizers/moment';
@@ -69,14 +69,9 @@ class DateRangeLabel extends React.Component {
         }
     };
     componentDidMount() {
-        this.props.onSetVariabiliMeteo(this.props.variabiliMeteo);
         if (!this.props.isPluginLoaded) {
+            this.props.onSetVariabiliMeteo(this.props.variabiliMeteo);
             this.props.onMarkPluginAsLoaded();
-        }
-    }
-    componentWillUnmount() {
-        if (this.props.isPluginLoaded) {
-            this.props.onMarkPluginAsNotLoaded();
         }
     }
     render() {
@@ -118,5 +113,5 @@ export default createPlugin("DateRangeLabelPlugin", {
         }
     }),
     reducers: { daterangelabel },
-    epics: { updateDateLabelEpic }
+    epics: dateRangeLabelEpics
 });

@@ -7,14 +7,19 @@
 */
 import { Observable } from 'rxjs';
 import { LAYER_LOAD } from '@mapstore/actions/layers';
-import { updateDatesLayer, errorLayerNotFound, errorLayerDateMissing } from '../actions/daterangelabel';
+import { updateDatesLayer, errorLayerNotFound, errorLayerDateMissing, markAsNotLoaded } from '../actions/daterangelabel';
 import { isVariabiliMeteoLayer } from '../utils/VariabiliMeteoUtils';
+import { LOADING } from '@mapstore/actions/maps';
 
 const updateDateLabelEpic = (action$, store) =>
     action$.ofType(LAYER_LOAD)
         .filter(({layerId}) => {
-            const pluginState = store.getState().daterangelabel || {};
-            return layerId && pluginState.isPluginLoaded;
+            const state = store.getState();
+            const pluginsFromContext = state?.context?.currentContext?.plugins?.desktop || [];
+            const pluginsFromConfig = state?.context?.pluginsConfig?.desktop || [];
+            const allPlugins = [...pluginsFromContext, ...pluginsFromConfig];
+            const isPluginLoaded = allPlugins.some(p => p?.name === 'DateRangeLabel');
+            return layerId && isPluginLoaded;
         })
         .switchMap(({layerId}) => {
             const currentState = store.getState();
@@ -35,4 +40,13 @@ const updateDateLabelEpic = (action$, store) =>
             return Observable.of(updateDatesLayer(layerId, fromData, toData));
         });
 
-export default updateDateLabelEpic;
+// Epic that resets plugin's state when the LOADING action is dispatched (i.e. when the user returns to the homepage)
+const resetDateRangeLabelEpic = (action$, store) =>
+    action$.ofType(LOADING)
+        .filter(() => store.getState().daterangelabel.isPluginLoaded)
+        .switchMap(() => Observable.of(markAsNotLoaded()));
+
+export {
+    updateDateLabelEpic,
+    resetDateRangeLabelEpic
+};

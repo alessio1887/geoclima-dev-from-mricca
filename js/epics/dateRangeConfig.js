@@ -102,6 +102,7 @@ const updateParamsByDateRangeEpic = (action$, store) =>
     action$.ofType(COMBINED_DATE_MAPCONFIG)
         .filter(() => {
             const appState = store.getState();
+            // TODO prova a mettere const pluginsFromContext = state?.context?.currentContext?.plugins?.desktop || [];const pluginsFromConfig = state?.context?.pluginsConfig?.desktop || [];
             return appState.fixedrangepicker?.isPluginLoaded || appState.freerangepicker?.isPluginLoaded;
         })
         .switchMap((action) => {
