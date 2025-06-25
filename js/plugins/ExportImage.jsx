@@ -18,11 +18,11 @@ import Dialog from '@mapstore/components/misc/Dialog';
 
 import { exportImageEnabledSelector, fileNameSelector, fromDataSelector, toDataSelector,
     isLayerLoadingSelector, tabVariablesSelector, imageUrlSelector, exportImageApiSelector,
-    alertMessageSelector } from '../selectors/exportImage';
+    alertMessageSelector, isPluginLoadedSelector } from '../selectors/exportImage';
 import * as exportImageEpics from '../epics/exportImage';
 import exportimage from '../reducers/exportimage';
 import { initializeVariableTabs, setVariabiliMeteo, changeTab, changeImageVariable,
-    exportImage, clearImageUrl, setTimeUnit } from '../actions/exportimage';
+    exportImage, clearImageUrl, setTimeUnit, markAsLoaded } from '../actions/exportimage';
 
 import moment from 'moment';
 import momentLocaliser from 'react-widgets/lib/localizers/moment';
@@ -92,6 +92,7 @@ const ExportImage = ({
     fileNameExported,
     fromData,
     isInteractionDisabled,
+    isPluginLoaded,
     maskLoading,
     onToggleControlExportImage,
     toData,
@@ -100,6 +101,7 @@ const ExportImage = ({
     onChangeTab,
     onExportImage,
     onInitializeVariableTabs,
+    onMarkAsLoaded,
     onSetTimeUnit,
     onSetVariabiliMeteo,
     variabiliMeteo,
@@ -112,7 +114,7 @@ const ExportImage = ({
     // useRef stores the previous values of fromData and toData
     const prevFromData = useRef(fromData);
     const prevToData = useRef(toData);
-    // Stato per il container del portal
+    // portal-container state is used to manage the portal container for rendering the dialog
     const [portalContainer, setPortalContainer] = useState(null);
 
     const initializeTabs = useCallback(() => {
@@ -130,8 +132,11 @@ const ExportImage = ({
             initializeTabs();
             onSetTimeUnit(timeUnit);
         }
-        if (!climateLayers ) {
+        if (climateLayers.length <= 0 ) {
             onSetVariabiliMeteo(variabiliMeteo);
+        }
+        if (!isPluginLoaded) {
+            onMarkAsLoaded();
         }
     }, [variabiliMeteo, onSetVariabiliMeteo, initializeTabs]);
 
@@ -154,6 +159,7 @@ const ExportImage = ({
         prevToData.current = toData;
     }, [fromData, toData, imageUrl, onClearImageUrl, timeUnit]);
 
+    // Create the portal container when the component mounts to avoid visibility problems of this plugin
     useEffect(() => {
         const div = document.createElement('div');
         div.id = 'exportimage-portal-root';
@@ -220,6 +226,7 @@ const mapStateToProps = createStructuredSelector({
     toData: toDataSelector,
     active: exportImageEnabledSelector,
     isInteractionDisabled: isLayerLoadingSelector,
+    isPluginLoaded: isPluginLoadedSelector,
     tabVariables: tabVariablesSelector,
     imageUrl: imageUrlSelector,
     alertMessage: alertMessageSelector
@@ -231,6 +238,7 @@ const mapDispatchToProps = {
     onClearImageUrl: clearImageUrl,
     onExportImage: exportImage,
     onInitializeVariableTabs: initializeVariableTabs,
+    onMarkAsLoaded: markAsLoaded,
     onSetTimeUnit: setTimeUnit,
     onSetVariabiliMeteo: setVariabiliMeteo,
     onToggleControlExportImage: () => toggleControl('exportImage', 'enabled')

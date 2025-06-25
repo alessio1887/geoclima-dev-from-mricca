@@ -17,7 +17,7 @@ export const imageUrlSelector = state => state.exportimage?.imageUrl;
 export const fileNameSelector = state => state.exportimage?.fileName;
 export const exportImageApiSelector = state => state.exportimage?.maskLoading || false;
 export const alertMessageSelector = state => state.exportimage?.alertMessage;
-// export const isPluginOpenSelector = state => state.exportimage?.isPluginOpen;
+export const isPluginLoadedSelector = state => state.exportimage?.isPluginLoaded;
 
 export const isLayerLoadingSelector = createSelector(
     [layersSelector],

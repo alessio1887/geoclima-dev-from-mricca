@@ -19,7 +19,9 @@ export const EXPORTIMAGE_SUCCESS = 'EXPORTIMAGE:EXPORTIMAGE_SUCCESS';
 export const EXPORTIMAGE_LOADING = 'EXPORTIMAGE:EXPORT_IMAGE_LOADING';
 export const CLEAR_IMAGE_URL = 'EXPORTIMAGE:CLEAR_IMAGE_URL';
 export const SET_TIME_UNIT = 'EXPORTIMAGE:SET_TIME_UNIT';
-export const RESET_TABS = 'EXPORTIMAGE:RESET_TABS';
+export const RESET_PLUGIN = 'EXPORTIMAGE:RESET_PLUGIN';
+export const PLUGIN_LOADED = 'EXPORTIMAGE:PLUGIN_LOADED';
+export const PLUGIN_NOT_LOADED = 'EXPORTIMAGE:PLUGIN_NOT_LOADED';
 
 export function updateExportImageDates(fromData, toData, layerId) {
     return {
@@ -109,8 +111,20 @@ export function exportImage(layerName, fromData, toData, defaultUrlExportImage) 
     };
 }
 
-export function resetTabVariables() {
+export function resetTabsClimateData() {
     return {
-        type: RESET_TABS
+        type: RESET_PLUGIN
+    };
+}
+
+export function markAsLoaded() {
+    return {
+        type: PLUGIN_LOADED
+    };
+}
+
+export function markAsNotLoaded() {
+    return {
+        type: PLUGIN_NOT_LOADED
     };
 }

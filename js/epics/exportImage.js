@@ -7,9 +7,10 @@
 */
 import { Observable } from 'rxjs';
 import { LAYER_LOAD } from '@mapstore/actions/layers';
-import { EXPORTIMAGE_LOADING, updateExportImageDates, apiError, resetTabVariables,
-    errorLayerNotFound, errorLayerDateMissing, exportImageSuccess } from '../actions/exportimage';
-import { exportImageEnabledSelector, tabVariablesSelector } from '../selectors/exportImage';
+import { EXPORTIMAGE_LOADING, updateExportImageDates, apiError, markAsNotLoaded,
+    resetTabsClimateData, errorLayerNotFound, errorLayerDateMissing, exportImageSuccess,
+    clearImageUrl } from '../actions/exportimage';
+import { exportImageEnabledSelector, isPluginLoadedSelector } from '../selectors/exportImage';
 import { isVariabiliMeteoLayer } from '../utils/VariabiliMeteoUtils';
 import { toggleControl } from '@mapstore/actions/controls';
 import { CLICK_ON_MAP } from '@mapstore/actions/map';
@@ -52,8 +53,7 @@ const exportImageEpic = (action$) =>
                     }
                     // Restituisce l'azione di successo con l'URL e il nome del file
                     return exportImageSuccess(url, fileName);
-                }).catch(error => {
-                    // Gestione degli errori
+                }).catch(error => { // Gestione degli errori
                     return apiError(error);
                 });
             })
@@ -61,8 +61,8 @@ const exportImageEpic = (action$) =>
 
 const updateDatesExportImageEpic = (action$, store) =>
     action$.ofType(LAYER_LOAD)
-        // .filter(() => exportImageEnabledSelector(store.getState()))
-        .mergeMap(({layerId}) => {
+        .filter(({layerId}) => layerId && isPluginLoadedSelector(store.getState()))
+        .switchMap(({layerId}) => {
             const currentState = store.getState();
             const layers = currentState.layers?.flat || [];
             const variabiliMeteo = currentState.exportimage.climateLayers;
@@ -89,13 +89,10 @@ const closeExportImagePanel = (action$, store) =>
         );
 
 // Epic that resets the tabVariables state when the LOADING action is dispatched (i.e. when the user returns to the homepage)
-const resetTabVariablesEpic = (action$, store) =>
+const resetPluginStateOnHomeEpic = (action$, store) =>
     action$.ofType(LOADING)
-        .filter(() => {
-            const tabVariables = tabVariablesSelector(store.getState());
-            return Array.isArray(tabVariables) && tabVariables.length > 0;
-        }).map(() => resetTabVariables()
-        );
+        .filter(() => isPluginLoadedSelector(store.getState()))
+        .switchMap(() => Observable.of(markAsNotLoaded(), resetTabsClimateData(), clearImageUrl()));
 
 /**
  * Epic that ensures the correct map layout when the plugin is open.
@@ -123,29 +120,17 @@ const disablePluginWhenLoadFeatureInfo = (action$, store) =>
     action$.ofType(CLICK_ON_MAP)
         .filter(() => {
             const appState = store.getState();
-            // return appState.controls?.chartinfo?.enabled && exportImageEnabledSelector(appState);
             return appState.mapInfo?.enabled && exportImageEnabledSelector(appState);
         })
         .switchMap(() => {
             return Observable.of(toggleControl('exportImage', 'enabled'));
         });
 
-// const disablePluginWhenFetchInfoChartData = (action$, store) =>
-//     action$.ofType(SET_INFOCHART_VISIBILITY)
-//         .filter(({ status }) => {
-//             const appState = store.getState();
-//             // Controlla se mapInfo è attivo o se l'azione ha status === true
-//             return appState.controls?.chartinfo?.enabled && status === true && exportImageEnabledSelector(appState);
-//         })
-//         .switchMap(() => {
-//             return Observable.of(toggleControl('exportImage', 'enabled'));
-//         });
-
 export { exportImageEpic,
     updateDatesExportImageEpic,
     updateToolbarLayoutEpic,
     disablePluginWhenLoadFeatureInfo,
-    resetTabVariablesEpic,
+    resetPluginStateOnHomeEpic,
     closeExportImagePanel
 };
 
